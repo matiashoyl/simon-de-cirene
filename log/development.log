@@ -1469,3 +1469,17 @@ Processing by HomeController#index as HTML
   Rendered layouts/_navigation.html.erb (65.9ms)
   Rendered layouts/_messages.html.erb (0.1ms)
 Completed 200 OK in 96ms (Views: 94.5ms | ActiveRecord: 0.7ms)
+Connecting to database specified by database.yml
+Connecting to database specified by database.yml
+
+
+Started GET "/" for 127.0.0.1 at 2013-12-12 17:10:09 -0300
+  [1m[36mUser Load (0.2ms)[0m  [1mSELECT "users".* FROM "users" WHERE "users"."id" = 2 LIMIT 1[0m
+Processing by HomeController#index as HTML
+  [1m[35mUser Load (0.2ms)[0m  SELECT "users".* FROM "users" 
+  Rendered home/index.html.erb within layouts/application (3.3ms)
+  [1m[36m (0.1ms)[0m  [1mSELECT COUNT(*) FROM "roles" INNER JOIN "users_roles" ON "roles"."id" = "users_roles"."role_id" WHERE "users_roles"."user_id" = 2 AND (((roles.name = 'admin') AND (roles.resource_type IS NULL) AND (roles.resource_id IS NULL)))[0m
+  Rendered layouts/_navigation_links.html.erb (64.5ms)
+  Rendered layouts/_navigation.html.erb (66.9ms)
+  Rendered layouts/_messages.html.erb (0.6ms)
+Completed 200 OK in 164ms (Views: 162.0ms | ActiveRecord: 0.8ms)
