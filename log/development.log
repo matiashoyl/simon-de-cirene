@@ -23232,3 +23232,146 @@ Processing by UsersController#index as HTML
   Rendered devise/registrations/_new.html.erb (38.0ms)
   Rendered devise/sessions/_new.html.erb (4.8ms)
 Completed 200 OK in 221ms (Views: 207.5ms | ActiveRecord: 2.3ms)
+
+
+Started GET "/" for 127.0.0.1 at 2013-12-16 19:09:50 -0300
+  [1m[35mUser Load (0.1ms)[0m  SELECT "users".* FROM "users" WHERE "users"."id" = 1 LIMIT 1
+Processing by HomeController#index as HTML
+  [1m[36mUser Load (0.2ms)[0m  [1mSELECT "users".* FROM "users" [0m
+  Rendered home/index.html.erb within layouts/application (1.8ms)
+  [1m[35m (0.1ms)[0m  SELECT COUNT(*) FROM "roles" INNER JOIN "users_roles" ON "roles"."id" = "users_roles"."role_id" WHERE "users_roles"."user_id" = 1 AND (((roles.name = 'admin') AND (roles.resource_type IS NULL) AND (roles.resource_id IS NULL)))
+  Rendered layouts/_navigation_links.html.erb (0.8ms)
+  Rendered layouts/_navigation.html.erb (19.7ms)
+  Rendered devise/registrations/_new.html.erb (5.7ms)
+  Rendered devise/sessions/_new.html.erb (5.1ms)
+Completed 200 OK in 117ms (Views: 114.9ms | ActiveRecord: 0.7ms)
+Connecting to database specified by database.yml
+
+
+Started GET "/" for 127.0.0.1 at 2013-12-16 19:24:16 -0300
+  [1m[36mUser Load (0.2ms)[0m  [1mSELECT "users".* FROM "users" WHERE "users"."id" = 1 LIMIT 1[0m
+Processing by HomeController#index as HTML
+  [1m[35mUser Load (0.2ms)[0m  SELECT "users".* FROM "users" 
+  Rendered home/index.html.erb within layouts/application (3.4ms)
+Compiled cursos.css  (1ms)  (pid 6880)
+Compiled framework_and_overrides.css  (1478ms)  (pid 6880)
+Compiled home.css  (0ms)  (pid 6880)
+Compiled scaffolds.css  (5ms)  (pid 6880)
+Compiled application.css  (1541ms)  (pid 6880)
+Compiled jquery.js  (3ms)  (pid 6880)
+Compiled jquery_ujs.js  (1ms)  (pid 6880)
+Compiled bootstrap-transition.js  (0ms)  (pid 6880)
+Compiled bootstrap-affix.js  (0ms)  (pid 6880)
+Compiled bootstrap-alert.js  (0ms)  (pid 6880)
+Compiled bootstrap-button.js  (0ms)  (pid 6880)
+Compiled bootstrap-carousel.js  (0ms)  (pid 6880)
+Compiled bootstrap-collapse.js  (0ms)  (pid 6880)
+Compiled bootstrap-dropdown.js  (0ms)  (pid 6880)
+Compiled bootstrap-modal.js  (0ms)  (pid 6880)
+Compiled bootstrap-scrollspy.js  (0ms)  (pid 6880)
+Compiled bootstrap-tab.js  (0ms)  (pid 6880)
+Compiled bootstrap-tooltip.js  (0ms)  (pid 6880)
+Compiled bootstrap-popover.js  (0ms)  (pid 6880)
+Compiled bootstrap-typeahead.js  (71ms)  (pid 6880)
+Compiled bootstrap.js  (196ms)  (pid 6880)
+Compiled cursos.js  (143ms)  (pid 6880)
+Compiled home.js  (67ms)  (pid 6880)
+Compiled application.js  (470ms)  (pid 6880)
+  [1m[36m (0.1ms)[0m  [1mSELECT COUNT(*) FROM "roles" INNER JOIN "users_roles" ON "roles"."id" = "users_roles"."role_id" WHERE "users_roles"."user_id" = 1 AND (((roles.name = 'admin') AND (roles.resource_type IS NULL) AND (roles.resource_id IS NULL)))[0m
+  Rendered layouts/_navigation_links.html.erb (2.7ms)
+  Rendered layouts/_navigation.html.erb (73.1ms)
+  Rendered devise/registrations/_new.html.erb (90.3ms)
+  Rendered devise/sessions/_new.html.erb (6.9ms)
+Completed 200 OK in 2337ms (Views: 2334.1ms | ActiveRecord: 0.8ms)
+
+
+Started GET "/" for 127.0.0.1 at 2013-12-16 19:24:31 -0300
+  [1m[35mUser Load (0.2ms)[0m  SELECT "users".* FROM "users" WHERE "users"."id" = 1 LIMIT 1
+Processing by HomeController#index as HTML
+  [1m[36mUser Load (0.2ms)[0m  [1mSELECT "users".* FROM "users" [0m
+  Rendered home/index.html.erb within layouts/application (2.3ms)
+  [1m[35m (0.3ms)[0m  SELECT COUNT(*) FROM "roles" INNER JOIN "users_roles" ON "roles"."id" = "users_roles"."role_id" WHERE "users_roles"."user_id" = 1 AND (((roles.name = 'admin') AND (roles.resource_type IS NULL) AND (roles.resource_id IS NULL)))
+  Rendered layouts/_navigation_links.html.erb (1.1ms)
+  Rendered layouts/_navigation.html.erb (9.0ms)
+  Rendered devise/registrations/_new.html.erb (12.8ms)
+  Rendered devise/sessions/_new.html.erb (10.3ms)
+Completed 200 OK in 95ms (Views: 91.7ms | ActiveRecord: 0.5ms)
+
+
+Started GET "/" for 127.0.0.1 at 2013-12-16 19:24:32 -0300
+  [1m[36mUser Load (0.3ms)[0m  [1mSELECT "users".* FROM "users" WHERE "users"."id" = 1 LIMIT 1[0m
+Processing by HomeController#index as HTML
+  [1m[35mUser Load (0.2ms)[0m  SELECT "users".* FROM "users" 
+  Rendered home/index.html.erb within layouts/application (1.3ms)
+  [1m[36m (0.3ms)[0m  [1mSELECT COUNT(*) FROM "roles" INNER JOIN "users_roles" ON "roles"."id" = "users_roles"."role_id" WHERE "users_roles"."user_id" = 1 AND (((roles.name = 'admin') AND (roles.resource_type IS NULL) AND (roles.resource_id IS NULL)))[0m
+  Rendered layouts/_navigation_links.html.erb (0.7ms)
+  Rendered layouts/_navigation.html.erb (7.5ms)
+  Rendered devise/registrations/_new.html.erb (5.7ms)
+  Rendered devise/sessions/_new.html.erb (7.4ms)
+Completed 200 OK in 66ms (Views: 63.1ms | ActiveRecord: 0.5ms)
+Connecting to database specified by database.yml
+
+
+Started GET "/" for 127.0.0.1 at 2013-12-16 19:26:42 -0300
+  [1m[36mUser Load (0.2ms)[0m  [1mSELECT "users".* FROM "users" WHERE "users"."id" = 1 LIMIT 1[0m
+Processing by HomeController#index as HTML
+  [1m[35mUser Load (0.3ms)[0m  SELECT "users".* FROM "users" 
+  Rendered home/index.html.erb within layouts/application (3.5ms)
+  [1m[36m (0.2ms)[0m  [1mSELECT COUNT(*) FROM "roles" INNER JOIN "users_roles" ON "roles"."id" = "users_roles"."role_id" WHERE "users_roles"."user_id" = 1 AND (((roles.name = 'admin') AND (roles.resource_type IS NULL) AND (roles.resource_id IS NULL)))[0m
+  Rendered layouts/_navigation_links.html.erb (1.4ms)
+  Rendered layouts/_navigation.html.erb (73.8ms)
+  Rendered devise/registrations/_new.html.erb (75.8ms)
+  Rendered devise/sessions/_new.html.erb (6.8ms)
+Completed 200 OK in 304ms (Views: 300.0ms | ActiveRecord: 0.9ms)
+
+
+Started GET "/" for 127.0.0.1 at 2013-12-16 19:26:42 -0300
+  [1m[35mUser Load (0.2ms)[0m  SELECT "users".* FROM "users" WHERE "users"."id" = 1 LIMIT 1
+Processing by HomeController#index as HTML
+  [1m[36mUser Load (0.1ms)[0m  [1mSELECT "users".* FROM "users" [0m
+  Rendered home/index.html.erb within layouts/application (1.1ms)
+  [1m[35m (0.2ms)[0m  SELECT COUNT(*) FROM "roles" INNER JOIN "users_roles" ON "roles"."id" = "users_roles"."role_id" WHERE "users_roles"."user_id" = 1 AND (((roles.name = 'admin') AND (roles.resource_type IS NULL) AND (roles.resource_id IS NULL)))
+  Rendered layouts/_navigation_links.html.erb (0.8ms)
+  Rendered layouts/_navigation.html.erb (37.8ms)
+  Rendered devise/registrations/_new.html.erb (9.9ms)
+  Rendered devise/sessions/_new.html.erb (6.2ms)
+Completed 200 OK in 94ms (Views: 92.3ms | ActiveRecord: 0.3ms)
+
+
+Started GET "/" for 127.0.0.1 at 2013-12-16 19:26:51 -0300
+  [1m[36mUser Load (0.2ms)[0m  [1mSELECT "users".* FROM "users" WHERE "users"."id" = 1 LIMIT 1[0m
+Processing by HomeController#index as HTML
+  [1m[35mUser Load (0.2ms)[0m  SELECT "users".* FROM "users" 
+  Rendered home/index.html.erb within layouts/application (2.0ms)
+  [1m[36m (0.2ms)[0m  [1mSELECT COUNT(*) FROM "roles" INNER JOIN "users_roles" ON "roles"."id" = "users_roles"."role_id" WHERE "users_roles"."user_id" = 1 AND (((roles.name = 'admin') AND (roles.resource_type IS NULL) AND (roles.resource_id IS NULL)))[0m
+  Rendered layouts/_navigation_links.html.erb (1.1ms)
+  Rendered layouts/_navigation.html.erb (7.9ms)
+  Rendered devise/registrations/_new.html.erb (58.5ms)
+  Rendered devise/sessions/_new.html.erb (9.9ms)
+Completed 200 OK in 142ms (Views: 139.5ms | ActiveRecord: 0.4ms)
+
+
+Started GET "/" for 127.0.0.1 at 2013-12-16 19:26:51 -0300
+  [1m[35mUser Load (0.2ms)[0m  SELECT "users".* FROM "users" WHERE "users"."id" = 1 LIMIT 1
+Processing by HomeController#index as HTML
+  [1m[36mUser Load (0.2ms)[0m  [1mSELECT "users".* FROM "users" [0m
+  Rendered home/index.html.erb within layouts/application (1.2ms)
+  [1m[35m (0.2ms)[0m  SELECT COUNT(*) FROM "roles" INNER JOIN "users_roles" ON "roles"."id" = "users_roles"."role_id" WHERE "users_roles"."user_id" = 1 AND (((roles.name = 'admin') AND (roles.resource_type IS NULL) AND (roles.resource_id IS NULL)))
+  Rendered layouts/_navigation_links.html.erb (0.7ms)
+  Rendered layouts/_navigation.html.erb (5.5ms)
+  Rendered devise/registrations/_new.html.erb (48.4ms)
+  Rendered devise/sessions/_new.html.erb (5.6ms)
+Completed 200 OK in 104ms (Views: 102.2ms | ActiveRecord: 0.3ms)
+
+
+Started GET "/" for 127.0.0.1 at 2013-12-16 19:27:25 -0300
+  [1m[36mUser Load (0.2ms)[0m  [1mSELECT "users".* FROM "users" WHERE "users"."id" = 1 LIMIT 1[0m
+Processing by HomeController#index as HTML
+  [1m[35mUser Load (0.2ms)[0m  SELECT "users".* FROM "users" 
+  Rendered home/index.html.erb within layouts/application (1.5ms)
+  [1m[36m (0.2ms)[0m  [1mSELECT COUNT(*) FROM "roles" INNER JOIN "users_roles" ON "roles"."id" = "users_roles"."role_id" WHERE "users_roles"."user_id" = 1 AND (((roles.name = 'admin') AND (roles.resource_type IS NULL) AND (roles.resource_id IS NULL)))[0m
+  Rendered layouts/_navigation_links.html.erb (0.7ms)
+  Rendered layouts/_navigation.html.erb (41.1ms)
+  Rendered devise/registrations/_new.html.erb (9.0ms)
+  Rendered devise/sessions/_new.html.erb (5.0ms)
+Completed 200 OK in 96ms (Views: 93.9ms | ActiveRecord: 0.3ms)
