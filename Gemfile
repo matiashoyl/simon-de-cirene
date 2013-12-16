@@ -1,7 +1,6 @@
 source 'https://rubygems.org'
 ruby '2.0.0'
 gem 'rails', '3.2.13'
-gem 'sqlite3'
 gem 'rake', '0.9.6'
 group :assets do
   gem 'sass-rails',   '~> 3.2.3'
@@ -23,6 +22,7 @@ group :development do
   gem 'rails_layout'
 end
 group :development, :test do
+  gem 'sqlite3'
   gem 'factory_girl_rails'
   gem 'rspec-rails'
 end
@@ -30,4 +30,7 @@ group :test do
   gem 'capybara'
   gem 'database_cleaner', '1.0.1'
   gem 'email_spec'
+end
+group :production do
+  gem 'pg'
 end
