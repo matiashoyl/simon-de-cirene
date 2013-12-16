@@ -25,6 +25,8 @@ group :development, :test do
   gem 'sqlite3'
   gem 'factory_girl_rails'
   gem 'rspec-rails'
+  gem 'sqlite3'
+  gem 'meta_request'
 end
 group :test do
   gem 'capybara'

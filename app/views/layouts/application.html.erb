@@ -5,6 +5,7 @@
     <title><%= content_for?(:title) ? yield(:title) : "Simon De Cirene" %></title>
     <meta name="description" content="<%= content_for?(:description) ? yield(:description) : "Simon De Cirene" %>">
     <%= stylesheet_link_tag "application", media: "all" %>
+    <%= javascript_include_tag 'http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js' %>
     <%= javascript_include_tag "application" %>
     <%= csrf_meta_tags %>
   </head>
@@ -27,5 +28,7 @@
         </div>
       </div>
     </main>
+    <%= render 'devise/registrations/new' %>
+    <%= render 'devise/sessions/new' %>
   </body>
 </html>
