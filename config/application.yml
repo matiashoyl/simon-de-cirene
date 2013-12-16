@@ -13,4 +13,4 @@ GMAIL_PASSWORD: Your_Password
 ADMIN_NAME: Admin
 ADMIN_EMAIL: admin@simondecirene.cl
 ADMIN_PASSWORD: simondecirene
-ROLES: [administrador, coordinador, relator]
+ROLES: [admin, coordinador, relator]
