@@ -1,0 +1,17 @@
+<div id="login" class="modal hide fade modal-login" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+  	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h2>Entrar</h2>
+  </div>
+	<div class="modal-body">
+		<%= simple_form_for(resource, :as => resource_name, :url => session_path(resource_name), :html => {:class => 'form-vertical' }) do |f| %>
+		  <%= f.input :email, :autofocus => true, :label => false, :placeholder => 'Email' %>
+		  <%= f.input :password, :label => false, :placeholder => 'Contraseña' %>
+		  <%= f.input :remember_me, :as => :boolean, :label => false, :inline_label => true, inline_label: 'No cerrar sesión' if devise_mapping.rememberable? %>
+	</div>
+	<div class="modal-footer">
+		  <%= f.button :submit, "Sign in", :class => 'btn-primary' %>
+		<% end %>
+		<a href="#" class="btn" data-dismiss="modal">Cerrar</a>
+	</div>
+</div>
