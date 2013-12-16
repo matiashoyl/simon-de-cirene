@@ -12,9 +12,16 @@
  *= require_tree .
  */
 
-body .modal-register {
+body .modal-login {
     width: 18%;
     left: 41%; /* (100%-width)/2 */
+    margin-left:auto;
+  	margin-right:auto;
+}
+
+body .modal-register {
+    width: 22%;
+    left: 39%; /* (100%-width)/2 */
     margin-left:auto;
   	margin-right:auto;
 }
