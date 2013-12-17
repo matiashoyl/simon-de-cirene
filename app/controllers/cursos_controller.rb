@@ -3,7 +3,8 @@ class CursosController < ApplicationController
   # GET /cursos.json
   def index
     @cursos = Curso.all
-
+    @curso = Curso.new
+    
     respond_to do |format|
       format.html # index.html.erb
       format.json { render json: @cursos }

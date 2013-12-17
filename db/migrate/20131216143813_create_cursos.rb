@@ -3,8 +3,7 @@ class CreateCursos < ActiveRecord::Migration
     create_table :cursos do |t|
       t.string :codigo
       t.string :nombre
-      t.datetime :fecha_inicio
-      t.datetime :fecha_termino
+      t.string :comuna
 
       t.timestamps
     end
