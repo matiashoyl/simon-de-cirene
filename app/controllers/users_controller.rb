@@ -1,9 +1,6 @@
 class UsersController < ApplicationController
-  load_and_authorize_resource
-  before_filter :authenticate_user!
 
   def index
-    authorize! :index, @user, :message => 'Not authorized as an administrator.'
     @users = User.all
     @user = User.new
   end
@@ -18,6 +15,20 @@ class UsersController < ApplicationController
     respond_to do |format|
       format.html # new.html.erb
       format.json { render json: @curso }
+    end
+  end
+
+  def update_password
+    @user = User.find(current_user.id)
+    password = params[:user][:password]
+    #debugger
+    if @user.update_attributes(:password => password, :password_confirmation => params[:user][:password_confirmation])
+      # Sign in the user by passing validation in case his password changed
+      sign_in @user, :bypass => true
+      redirect_to root_path, :notice => "Contraseña cambiada"
+      UserMailer.password_changed(@user, password).deliver
+    else
+      redirect_to root_path, :alert => "No se pudo cambiar la contraseña"
     end
   end
   
