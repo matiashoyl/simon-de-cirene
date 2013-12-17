@@ -7,7 +7,6 @@
       <th>Email</th>
       <th>Rol</th>
       <th></th>
-      <th></th>
     </tr>
   </thead>
   <tbody>
@@ -15,16 +14,15 @@
     <tr>
       <td><%= link_to user.name, user %></td>
       <td><%= user.email %></td>
-      <td><%= user.roles.first.name.titleize unless user.roles.first.nil? %></td>
       <td>
-        <a data-toggle="modal" href="#role-options-<%= user.id %>" class="btn btn-mini" type="button">Cambiar Rol</a>
+        <a data-toggle="modal" href="#role-options-<%= user.id %>" class="btn btn-mini btn-block" type="button"><%= user.roles.first.name.titleize unless user.roles.first.nil? %></a>
         <%= render user %>
       </td>
-      <td><%= link_to("Eliminar", user_path(user), :data => { :confirm => "Are you sure?" }, :method => :delete, :class => 'btn btn-mini btn-danger') unless user == current_user %></td>
+      <td><%= link_to("Eliminar", user_path(user), :data => { :confirm => "Are you sure?" }, :method => :delete, :class => 'btn btn-mini btn-inverse') unless user == current_user %></td>
     </tr>
   <% end %>
   </tbody>
 </table>
-<a data-toggle="modal" href="#new-user" class="btn btn-mini" type="button">Crear Usuario</a>
+<a data-toggle="modal" href="#new-user" class="btn btn-mini btn-info" type="button">Crear Usuario</a>
 <%= render 'new' %>
 </div>
