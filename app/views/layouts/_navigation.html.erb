@@ -16,6 +16,9 @@
               <% if user_signed_in? %>
                 <% if current_user.has_role? :admin %>
                   <li><%= link_to 'Usuarios', users_path %></li>
+                  <li><%= link_to 'Cursos', cursos_path %></li>
+                <% elsif current_user.has_role? :coordinador %>
+                  <li><%= link_to 'Cursos', cursos_path %></li>
                 <% end %>
               <% end %>
             </ul>

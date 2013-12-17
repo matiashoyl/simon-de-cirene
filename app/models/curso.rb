@@ -1,3 +1,3 @@
 class Curso < ActiveRecord::Base
-  attr_accessible :codigo, :fecha_inicio, :fecha_termino, :nombre
+  attr_accessible :codigo, :comuna, :nombre
 end

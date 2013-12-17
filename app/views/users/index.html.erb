@@ -1,28 +1,29 @@
-<h3>Usuarios</h3>
+<div class="span2"></div>
 <div class="span8">
-<table class="table table-condensed table-striped">
-  <thead>
-    <tr>
-      <th>Usuario</th>
-      <th>Email</th>
-      <th>Rol</th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-  <% @users.each do |user| %>
-    <tr>
-      <td><%= link_to user.name, user %></td>
-      <td><%= user.email %></td>
-      <td>
-        <a data-toggle="modal" href="#role-options-<%= user.id %>" class="btn btn-mini btn-block" type="button"><%= user.roles.first.name.titleize unless user.roles.first.nil? %></a>
-        <%= render user %>
-      </td>
-      <td><%= link_to("Eliminar", user_path(user), :data => { :confirm => "Are you sure?" }, :method => :delete, :class => 'btn btn-mini btn-inverse') unless user == current_user %></td>
-    </tr>
-  <% end %>
-  </tbody>
-</table>
-<a data-toggle="modal" href="#new-user" class="btn btn-mini btn-info" type="button">Crear Usuario</a>
-<%= render 'new' %>
+  <h3>Usuarios</h3>
+  <table class="table table-condensed table-striped">
+    <thead>
+      <tr>
+        <th>Usuario</th>
+        <th>Email</th>
+        <th>Rol</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+    <% @users.each do |user| %>
+      <tr>
+        <td><%= link_to user.name, user %></td>
+        <td><%= user.email %></td>
+        <td>
+          <a data-toggle="modal" href="#role-options-<%= user.id %>" class="btn btn-mini btn-block" type="button"><%= user.roles.first.name.titleize unless user.roles.first.nil? %></a>
+          <%= render user %>
+        </td>
+        <td><%= link_to("Eliminar", user_path(user), :data => { :confirm => "Are you sure?" }, :method => :delete, :class => 'btn btn-mini btn-inverse') unless user == current_user %></td>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
+  <a data-toggle="modal" href="#new-user" class="btn btn-mini btn-info" type="button">Crear Usuario</a>
+  <%= render 'new' %>
 </div>
