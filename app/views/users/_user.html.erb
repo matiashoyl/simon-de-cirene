@@ -1,11 +1,11 @@
-<div id="role-options-<%= user.id %>" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div id="role-options-<%= user.id %>" class="modal hide fade modal-role" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-header">
       <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
       <h3>Cambiar Rol</h3>
     </div>
     <div class="modal-body">
-      <%= simple_form_for user, :url => user_path(user), :html => {:method => :put, :class => 'form-horizontal' } do |f| %>
-      <%= f.input :role_ids, :collection => Role.all, :as => :radio_buttons, :label_method => lambda {|t| t.name.titleize}, :label => false, :item_wrapper_class => 'inline', checked: user.role_ids.first %>
+      <%= simple_form_for user, :url => user_path(user), :html => {:method => :put } do |f| %>
+      <%= f.input :role_ids, :collection => Role.all, :as => :radio_buttons, :label_method => lambda {|t| t.name.titleize}, :label => false, checked: user.role_ids.first %>
     </div>
     <div class="modal-footer">
       <%= f.button :submit, "Cambiar", :class => "btn-info" %>
