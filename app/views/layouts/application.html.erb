@@ -29,5 +29,8 @@
     </main>
     <%= render 'devise/registrations/new' %>
     <%= render 'devise/sessions/new' %>
+    <% if user_signed_in? %>
+      <%= render 'users/change_password' %>
+    <% end %>
   </body>
 </html>

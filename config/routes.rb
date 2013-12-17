@@ -12,4 +12,9 @@ SimonDeCirene::Application.routes.draw do
   	get "edit_user_registration",   :to => "users#edit"
   end
   resources :users, :controller => "users"
+  resource :user, only: [:edit] do
+    collection do
+      put 'update_password'
+    end
+  end
 end
