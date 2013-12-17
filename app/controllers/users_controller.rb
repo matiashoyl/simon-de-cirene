@@ -28,10 +28,10 @@ class UsersController < ApplicationController
     UserMailer.welcome(@user, password).deliver
     respond_to do |format|
       if @user.save
-        format.html { redirect_to @user, notice: 'Usuario creado exitosamente' }
+        format.html { redirect_to users_path }
         format.json { render json: @user, status: :created, location: @user }
       else
-        format.html { render action: "new" }
+        format.html { render users_path, :notice => "No se pudo crear el usuario" }
         format.json { render json: @user.errors, status: :unprocessable_entity }
       end
     end
@@ -55,6 +55,20 @@ class UsersController < ApplicationController
       redirect_to users_path, :notice => "User deleted."
     else
       redirect_to users_path, :notice => "Can't delete yourself."
+    end
+  end
+
+  def update_password
+    @user = User.find(current_user.id)
+    password = params[:user][:password]
+    #debugger
+    if @user.update_attributes(:password => password, :password_confirmation => params[:user][:password_confirmation])
+      # Sign in the user by passing validation in case his password changed
+      sign_in @user, :bypass => true
+      redirect_to root_path, :notice => "Contraseña cambiada"
+      UserMailer.password_changed(@user, password).deliver
+    else
+      redirect_to root_path, :alert => "No se pudo cambiar la contraseña"
     end
   end
 end
