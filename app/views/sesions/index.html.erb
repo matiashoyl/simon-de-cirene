@@ -1,0 +1,35 @@
+<h1>Listing sesions</h1>
+
+<table>
+  <tr>
+    <th>Tema</th>
+    <th>Hora inicio</th>
+    <th>Hora termino</th>
+    <th>Fecha</th>
+    <th>Tipo</th>
+    <th>Direccion</th>
+    <th>Comentario</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @sesions.each do |sesion| %>
+  <tr>
+    <td><%= sesion.tema %></td>
+    <td><%= sesion.hora_inicio %></td>
+    <td><%= sesion.hora_termino %></td>
+    <td><%= sesion.fecha %></td>
+    <td><%= sesion.tipo %></td>
+    <td><%= sesion.direccion %></td>
+    <td><%= sesion.comentario %></td>
+    <td><%= link_to 'Show', sesion %></td>
+    <td><%= link_to 'Edit', edit_sesion_path(sesion) %></td>
+    <td><%= link_to 'Destroy', sesion, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Sesion', new_sesion_path %>

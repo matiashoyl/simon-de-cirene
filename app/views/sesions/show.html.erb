@@ -1,0 +1,40 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Tema:</b>
+  <%= @sesion.tema %>
+</p>
+
+<p>
+  <b>Hora inicio:</b>
+  <%= @sesion.hora_inicio %>
+</p>
+
+<p>
+  <b>Hora termino:</b>
+  <%= @sesion.hora_termino %>
+</p>
+
+<p>
+  <b>Fecha:</b>
+  <%= @sesion.fecha %>
+</p>
+
+<p>
+  <b>Tipo:</b>
+  <%= @sesion.tipo %>
+</p>
+
+<p>
+  <b>Direccion:</b>
+  <%= @sesion.direccion %>
+</p>
+
+<p>
+  <b>Comentario:</b>
+  <%= @sesion.comentario %>
+</p>
+
+
+<%= link_to 'Edit', edit_sesion_path(@sesion) %> |
+<%= link_to 'Back', sesions_path %>

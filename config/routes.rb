@@ -1,4 +1,7 @@
 SimonDeCirene::Application.routes.draw do
+  resources :sesions
+
+
   resources :cursos, :controller => "cursos"
 
   match "/cursos/:id", to: "cursos#update", :as => :update_curso, :via => :put

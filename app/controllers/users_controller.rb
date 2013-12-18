@@ -1,5 +1,4 @@
 class UsersController < ApplicationController
-  load_and_authorize_resource
   before_filter :authenticate_user!
 
   def index
@@ -25,13 +24,13 @@ class UsersController < ApplicationController
     authorize! :create, @user, :message => 'Not authorized as an administrator.'
     password = Devise.friendly_token.first(8)
     @user = User.new(:name => params[:user][:name], :email => params[:user][:email], :role_ids => params[:user][:role_ids], :password => password, :password_confirmation => password)
-    UserMailer.welcome(@user, password).deliver
     respond_to do |format|
       if @user.save
+        UserMailer.welcome(@user, password).deliver
         format.html { redirect_to users_path }
         format.json { render json: @user, status: :created, location: @user }
       else
-        format.html { render users_path, :notice => "No se pudo crear el usuario" }
+        format.html { render action: "new" }
         format.json { render json: @user.errors, status: :unprocessable_entity }
       end
     end
@@ -41,9 +40,9 @@ class UsersController < ApplicationController
     authorize! :update, @user, :message => 'Not authorized as an administrator.'
     @user = User.find(params[:id])
     if @user.update_attributes(params[:user], :as => :admin)
-      redirect_to users_path, :notice => "User updated."
+      redirect_to users_path
     else
-      redirect_to users_path, :alert => "Unable to update user."
+      redirect_to users_path, :alert => "No se pudo actualizar el usuario"
     end
   end
     
