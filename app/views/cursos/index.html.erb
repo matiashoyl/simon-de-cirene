@@ -8,8 +8,6 @@
         <th>Nombre</th>
         <th>Comuna</th>
         <th></th>
-        <th></th>
-        <th></th>
       </tr>
     </thead>
     <tbody>
@@ -18,9 +16,11 @@
           <td><%= curso.codigo %></td>
           <td><%= curso.nombre %></td>
           <td><%= curso.comuna %></td>
-          <td><%= link_to 'Show', curso %></td>
-          <td><%= link_to 'Edit', edit_curso_path(curso) %></td>
-          <td><%= link_to 'Destroy', curso, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+          <td>
+            <a data-toggle="modal" href="#edit-curso-<%= curso.id %>" class="btn btn-mini" type="button">Editar</a>
+            <%= render curso %>
+            <%= link_to("Eliminar", curso, :data => { :confirm => "Are you sure?" }, :method => :delete, :class => 'btn btn-mini btn-inverse') %>
+          </td>
         </tr>
       <% end %>
     </tbody>
