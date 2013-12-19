@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 ruby '2.0.0'
-gem 'rails', '3.2.13'
+gem 'rails', '3.2.14'
 gem 'rake', '0.9.6'
 group :assets do
   gem 'sass-rails',   '~> 3.2.3'
@@ -15,6 +15,8 @@ gem 'devise'
 gem 'figaro'
 gem 'rolify'
 gem 'simple_form'
+gem 'bootstrap-datepicker-rails'
+gem 'bootstrap-timepicker-rails'
 gem 'thin'
 group :development do
   gem 'better_errors'

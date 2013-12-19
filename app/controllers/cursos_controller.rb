@@ -15,6 +15,7 @@ class CursosController < ApplicationController
   # GET /cursos/1.json
   def show
     @curso = Curso.find(params[:id])
+    @sesion = Sesion.new
 
     respond_to do |format|
       format.html # show.html.erb
