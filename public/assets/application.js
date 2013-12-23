@@ -25770,6 +25770,890 @@ $.widget( "ui.tooltip", {
 
 
 
+/*!
+ * Timepicker Component for Twitter Bootstrap
+ *
+ * Copyright 2013 Joris de Wit
+ *
+ * Contributors https://github.com/jdewit/bootstrap-timepicker/graphs/contributors
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+;(function($, window, document, undefined) {
+
+  'use strict'; // jshint ;_;
+
+  // TIMEPICKER PUBLIC CLASS DEFINITION
+  var Timepicker = function(element, options) {
+    this.widget = '';
+    this.$element = $(element);
+    this.defaultTime = options.defaultTime;
+    this.disableFocus = options.disableFocus;
+    this.isOpen = options.isOpen;
+    this.minuteStep = options.minuteStep;
+    this.modalBackdrop = options.modalBackdrop;
+    this.secondStep = options.secondStep;
+    this.showInputs = options.showInputs;
+    this.showMeridian = options.showMeridian;
+    this.showSeconds = options.showSeconds;
+    this.template = options.template;
+    this.appendWidgetTo = options.appendWidgetTo;
+
+    this._init();
+  };
+
+  Timepicker.prototype = {
+
+    constructor: Timepicker,
+
+    _init: function() {
+      var self = this;
+
+      if (this.$element.parent().hasClass('input-append') || this.$element.parent().hasClass('input-prepend')) {
+          this.$element.parent('.input-append, .input-prepend').find('.add-on').on({
+            'click.timepicker': $.proxy(this.showWidget, this)
+          });
+          this.$element.on({
+            'focus.timepicker': $.proxy(this.highlightUnit, this),
+            'click.timepicker': $.proxy(this.highlightUnit, this),
+            'keydown.timepicker': $.proxy(this.elementKeydown, this),
+            'blur.timepicker': $.proxy(this.blurElement, this)
+          });
+      } else {
+        if (this.template) {
+          this.$element.on({
+            'focus.timepicker': $.proxy(this.showWidget, this),
+            'click.timepicker': $.proxy(this.showWidget, this),
+            'blur.timepicker': $.proxy(this.blurElement, this)
+          });
+        } else {
+          this.$element.on({
+            'focus.timepicker': $.proxy(this.highlightUnit, this),
+            'click.timepicker': $.proxy(this.highlightUnit, this),
+            'keydown.timepicker': $.proxy(this.elementKeydown, this),
+            'blur.timepicker': $.proxy(this.blurElement, this)
+          });
+        }
+      }
+
+      if (this.template !== false) {
+        this.$widget = $(this.getTemplate()).prependTo(this.$element.parents(this.appendWidgetTo)).on('click', $.proxy(this.widgetClick, this));
+      } else {
+        this.$widget = false;
+      }
+
+      if (this.showInputs && this.$widget !== false) {
+          this.$widget.find('input').each(function() {
+            $(this).on({
+              'click.timepicker': function() { $(this).select(); },
+              'keydown.timepicker': $.proxy(self.widgetKeydown, self)
+            });
+          });
+      }
+
+      this.setDefaultTime(this.defaultTime);
+    },
+
+    blurElement: function() {
+      this.highlightedUnit = undefined;
+      this.updateFromElementVal();
+    },
+
+    decrementHour: function() {
+      if (this.showMeridian) {
+        if (this.hour === 1) {
+          this.hour = 12;
+        } else if (this.hour === 12) {
+          this.hour--;
+
+          return this.toggleMeridian();
+        } else if (this.hour === 0) {
+          this.hour = 11;
+
+          return this.toggleMeridian();
+        } else {
+          this.hour--;
+        }
+      } else {
+        if (this.hour === 0) {
+          this.hour = 23;
+        } else {
+          this.hour--;
+        }
+      }
+      this.update();
+    },
+
+    decrementMinute: function(step) {
+      var newVal;
+
+      if (step) {
+        newVal = this.minute - step;
+      } else {
+        newVal = this.minute - this.minuteStep;
+      }
+
+      if (newVal < 0) {
+        this.decrementHour();
+        this.minute = newVal + 60;
+      } else {
+        this.minute = newVal;
+      }
+      this.update();
+    },
+
+    decrementSecond: function() {
+      var newVal = this.second - this.secondStep;
+
+      if (newVal < 0) {
+        this.decrementMinute(true);
+        this.second = newVal + 60;
+      } else {
+        this.second = newVal;
+      }
+      this.update();
+    },
+
+    elementKeydown: function(e) {
+      switch (e.keyCode) {
+        case 9: //tab
+          this.updateFromElementVal();
+
+          switch (this.highlightedUnit) {
+            case 'hour':
+              e.preventDefault();
+              this.highlightNextUnit();
+            break;
+            case 'minute':
+              if (this.showMeridian || this.showSeconds) {
+                e.preventDefault();
+                this.highlightNextUnit();
+              }
+            break;
+            case 'second':
+              if (this.showMeridian) {
+                e.preventDefault();
+                this.highlightNextUnit();
+              }
+            break;
+          }
+        break;
+        case 27: // escape
+          this.updateFromElementVal();
+        break;
+        case 37: // left arrow
+          e.preventDefault();
+          this.highlightPrevUnit();
+          this.updateFromElementVal();
+        break;
+        case 38: // up arrow
+          e.preventDefault();
+          switch (this.highlightedUnit) {
+            case 'hour':
+              this.incrementHour();
+              this.highlightHour();
+            break;
+            case 'minute':
+              this.incrementMinute();
+              this.highlightMinute();
+            break;
+            case 'second':
+              this.incrementSecond();
+              this.highlightSecond();
+            break;
+            case 'meridian':
+              this.toggleMeridian();
+              this.highlightMeridian();
+            break;
+          }
+        break;
+        case 39: // right arrow
+          e.preventDefault();
+          this.updateFromElementVal();
+          this.highlightNextUnit();
+        break;
+        case 40: // down arrow
+          e.preventDefault();
+          switch (this.highlightedUnit) {
+            case 'hour':
+              this.decrementHour();
+              this.highlightHour();
+            break;
+            case 'minute':
+              this.decrementMinute();
+              this.highlightMinute();
+            break;
+            case 'second':
+              this.decrementSecond();
+              this.highlightSecond();
+            break;
+            case 'meridian':
+              this.toggleMeridian();
+              this.highlightMeridian();
+            break;
+          }
+        break;
+      }
+    },
+
+    formatTime: function(hour, minute, second, meridian) {
+      hour = hour < 10 ? '0' + hour : hour;
+      minute = minute < 10 ? '0' + minute : minute;
+      second = second < 10 ? '0' + second : second;
+
+      return hour + ':' + minute + (this.showSeconds ? ':' + second : '') + (this.showMeridian ? ' ' + meridian : '');
+    },
+
+    getCursorPosition: function() {
+      var input = this.$element.get(0);
+
+      if ('selectionStart' in input) {// Standard-compliant browsers
+
+        return input.selectionStart;
+      } else if (document.selection) {// IE fix
+        input.focus();
+        var sel = document.selection.createRange(),
+          selLen = document.selection.createRange().text.length;
+
+        sel.moveStart('character', - input.value.length);
+
+        return sel.text.length - selLen;
+      }
+    },
+
+    getTemplate: function() {
+      var template,
+        hourTemplate,
+        minuteTemplate,
+        secondTemplate,
+        meridianTemplate,
+        templateContent;
+
+      if (this.showInputs) {
+        hourTemplate = '<input type="text" name="hour" class="bootstrap-timepicker-hour" maxlength="2"/>';
+        minuteTemplate = '<input type="text" name="minute" class="bootstrap-timepicker-minute" maxlength="2"/>';
+        secondTemplate = '<input type="text" name="second" class="bootstrap-timepicker-second" maxlength="2"/>';
+        meridianTemplate = '<input type="text" name="meridian" class="bootstrap-timepicker-meridian" maxlength="2"/>';
+      } else {
+        hourTemplate = '<span class="bootstrap-timepicker-hour"></span>';
+        minuteTemplate = '<span class="bootstrap-timepicker-minute"></span>';
+        secondTemplate = '<span class="bootstrap-timepicker-second"></span>';
+        meridianTemplate = '<span class="bootstrap-timepicker-meridian"></span>';
+      }
+
+      templateContent = '<table>'+
+         '<tr>'+
+           '<td><a href="#" data-action="incrementHour"><i class="icon-chevron-up"></i></a></td>'+
+           '<td class="separator">&nbsp;</td>'+
+           '<td><a href="#" data-action="incrementMinute"><i class="icon-chevron-up"></i></a></td>'+
+           (this.showSeconds ?
+             '<td class="separator">&nbsp;</td>'+
+             '<td><a href="#" data-action="incrementSecond"><i class="icon-chevron-up"></i></a></td>'
+           : '') +
+           (this.showMeridian ?
+             '<td class="separator">&nbsp;</td>'+
+             '<td class="meridian-column"><a href="#" data-action="toggleMeridian"><i class="icon-chevron-up"></i></a></td>'
+           : '') +
+         '</tr>'+
+         '<tr>'+
+           '<td>'+ hourTemplate +'</td> '+
+           '<td class="separator">:</td>'+
+           '<td>'+ minuteTemplate +'</td> '+
+           (this.showSeconds ?
+            '<td class="separator">:</td>'+
+            '<td>'+ secondTemplate +'</td>'
+           : '') +
+           (this.showMeridian ?
+            '<td class="separator">&nbsp;</td>'+
+            '<td>'+ meridianTemplate +'</td>'
+           : '') +
+         '</tr>'+
+         '<tr>'+
+           '<td><a href="#" data-action="decrementHour"><i class="icon-chevron-down"></i></a></td>'+
+           '<td class="separator"></td>'+
+           '<td><a href="#" data-action="decrementMinute"><i class="icon-chevron-down"></i></a></td>'+
+           (this.showSeconds ?
+            '<td class="separator">&nbsp;</td>'+
+            '<td><a href="#" data-action="decrementSecond"><i class="icon-chevron-down"></i></a></td>'
+           : '') +
+           (this.showMeridian ?
+            '<td class="separator">&nbsp;</td>'+
+            '<td><a href="#" data-action="toggleMeridian"><i class="icon-chevron-down"></i></a></td>'
+           : '') +
+         '</tr>'+
+       '</table>';
+
+      switch(this.template) {
+        case 'modal':
+          template = '<div class="bootstrap-timepicker-widget modal hide fade in" data-backdrop="'+ (this.modalBackdrop ? 'true' : 'false') +'">'+
+            '<div class="modal-header">'+
+              '<a href="#" class="close" data-dismiss="modal">×</a>'+
+              '<h3>Pick a Time</h3>'+
+            '</div>'+
+            '<div class="modal-content">'+
+              templateContent +
+            '</div>'+
+            '<div class="modal-footer">'+
+              '<a href="#" class="btn btn-primary" data-dismiss="modal">OK</a>'+
+            '</div>'+
+          '</div>';
+        break;
+        case 'dropdown':
+          template = '<div class="bootstrap-timepicker-widget dropdown-menu">'+ templateContent +'</div>';
+        break;
+      }
+
+      return template;
+    },
+
+    getTime: function() {
+      return this.formatTime(this.hour, this.minute, this.second, this.meridian);
+    },
+
+    hideWidget: function() {
+      if (this.isOpen === false) {
+        return;
+      }
+
+			if (this.showInputs) {
+				this.updateFromWidgetInputs();
+			}
+
+      this.$element.trigger({
+        'type': 'hide.timepicker',
+        'time': {
+            'value': this.getTime(),
+            'hours': this.hour,
+            'minutes': this.minute,
+            'seconds': this.second,
+            'meridian': this.meridian
+         }
+      });
+
+      if (this.template === 'modal') {
+        this.$widget.modal('hide');
+      } else {
+        this.$widget.removeClass('open');
+      }
+
+      $(document).off('mousedown.timepicker');
+
+      this.isOpen = false;
+    },
+
+    highlightUnit: function() {
+      this.position = this.getCursorPosition();
+      if (this.position >= 0 && this.position <= 2) {
+        this.highlightHour();
+      } else if (this.position >= 3 && this.position <= 5) {
+        this.highlightMinute();
+      } else if (this.position >= 6 && this.position <= 8) {
+        if (this.showSeconds) {
+          this.highlightSecond();
+        } else {
+          this.highlightMeridian();
+        }
+      } else if (this.position >= 9 && this.position <= 11) {
+        this.highlightMeridian();
+      }
+    },
+
+    highlightNextUnit: function() {
+      switch (this.highlightedUnit) {
+        case 'hour':
+          this.highlightMinute();
+        break;
+        case 'minute':
+          if (this.showSeconds) {
+            this.highlightSecond();
+          } else if (this.showMeridian){
+            this.highlightMeridian();
+          } else {
+            this.highlightHour();
+          }
+        break;
+        case 'second':
+          if (this.showMeridian) {
+            this.highlightMeridian();
+          } else {
+            this.highlightHour();
+          }
+        break;
+        case 'meridian':
+          this.highlightHour();
+        break;
+      }
+    },
+
+    highlightPrevUnit: function() {
+      switch (this.highlightedUnit) {
+        case 'hour':
+          this.highlightMeridian();
+        break;
+        case 'minute':
+          this.highlightHour();
+        break;
+        case 'second':
+          this.highlightMinute();
+        break;
+        case 'meridian':
+          if (this.showSeconds) {
+            this.highlightSecond();
+          } else {
+            this.highlightMinute();
+          }
+        break;
+      }
+    },
+
+    highlightHour: function() {
+      var $element = this.$element.get(0);
+
+      this.highlightedUnit = 'hour';
+
+			if ($element.setSelectionRange) {
+				setTimeout(function() {
+					$element.setSelectionRange(0,2);
+				}, 0);
+			}
+    },
+
+    highlightMinute: function() {
+      var $element = this.$element.get(0);
+
+      this.highlightedUnit = 'minute';
+
+			if ($element.setSelectionRange) {
+				setTimeout(function() {
+					$element.setSelectionRange(3,5);
+				}, 0);
+			}
+    },
+
+    highlightSecond: function() {
+      var $element = this.$element.get(0);
+
+      this.highlightedUnit = 'second';
+
+			if ($element.setSelectionRange) {
+				setTimeout(function() {
+					$element.setSelectionRange(6,8);
+				}, 0);
+			}
+    },
+
+    highlightMeridian: function() {
+      var $element = this.$element.get(0);
+
+      this.highlightedUnit = 'meridian';
+
+			if ($element.setSelectionRange) {
+				if (this.showSeconds) {
+					setTimeout(function() {
+						$element.setSelectionRange(9,11);
+					}, 0);
+				} else {
+					setTimeout(function() {
+						$element.setSelectionRange(6,8);
+					}, 0);
+				}
+			}
+    },
+
+    incrementHour: function() {
+      if (this.showMeridian) {
+        if (this.hour === 11) {
+          this.hour++;
+          return this.toggleMeridian();
+        } else if (this.hour === 12) {
+          this.hour = 0;
+        }
+      }
+      if (this.hour === 23) {
+        return this.hour = 0;
+      }
+      this.hour++;
+      this.update();
+    },
+
+    incrementMinute: function(step) {
+      var newVal;
+
+      if (step) {
+        newVal = this.minute + step;
+      } else {
+        newVal = this.minute + this.minuteStep - (this.minute % this.minuteStep);
+      }
+
+      if (newVal > 59) {
+        this.incrementHour();
+        this.minute = newVal - 60;
+      } else {
+        this.minute = newVal;
+      }
+      this.update();
+    },
+
+    incrementSecond: function() {
+      var newVal = this.second + this.secondStep - (this.second % this.secondStep);
+
+      if (newVal > 59) {
+        this.incrementMinute(true);
+        this.second = newVal - 60;
+      } else {
+        this.second = newVal;
+      }
+      this.update();
+    },
+
+    remove: function() {
+      $('document').off('.timepicker');
+      if (this.$widget) {
+        this.$widget.remove();
+      }
+      delete this.$element.data().timepicker;
+    },
+
+    setDefaultTime: function(defaultTime){
+      if (!this.$element.val()) {
+        if (defaultTime === 'current') {
+          var dTime = new Date(),
+            hours = dTime.getHours(),
+            minutes = Math.floor(dTime.getMinutes() / this.minuteStep) * this.minuteStep,
+            seconds = Math.floor(dTime.getSeconds() / this.secondStep) * this.secondStep,
+            meridian = 'AM';
+
+          if (this.showMeridian) {
+            if (hours === 0) {
+              hours = 12;
+            } else if (hours >= 12) {
+              if (hours > 12) {
+                hours = hours - 12;
+              }
+              meridian = 'PM';
+            } else {
+              meridian = 'AM';
+            }
+          }
+
+          this.hour = hours;
+          this.minute = minutes;
+          this.second = seconds;
+          this.meridian = meridian;
+
+          this.update();
+
+        } else if (defaultTime === false) {
+          this.hour = 0;
+          this.minute = 0;
+          this.second = 0;
+          this.meridian = 'AM';
+        } else {
+          this.setTime(defaultTime);
+        }
+      } else {
+        this.updateFromElementVal();
+      }
+    },
+
+    setTime: function(time) {
+      var arr,
+        timeArray;
+
+      if (this.showMeridian) {
+        arr = time.split(' ');
+        timeArray = arr[0].split(':');
+        this.meridian = arr[1];
+      } else {
+        timeArray = time.split(':');
+      }
+
+      this.hour = parseInt(timeArray[0], 10);
+      this.minute = parseInt(timeArray[1], 10);
+      this.second = parseInt(timeArray[2], 10);
+
+      if (isNaN(this.hour)) {
+        this.hour = 0;
+      }
+      if (isNaN(this.minute)) {
+        this.minute = 0;
+      }
+
+      if (this.showMeridian) {
+        if (this.hour > 12) {
+          this.hour = 12;
+        } else if (this.hour < 1) {
+          this.hour = 12;
+        }
+
+        if (this.meridian === 'am' || this.meridian === 'a') {
+          this.meridian = 'AM';
+        } else if (this.meridian === 'pm' || this.meridian === 'p') {
+          this.meridian = 'PM';
+        }
+
+        if (this.meridian !== 'AM' && this.meridian !== 'PM') {
+          this.meridian = 'AM';
+        }
+      } else {
+         if (this.hour >= 24) {
+          this.hour = 23;
+        } else if (this.hour < 0) {
+          this.hour = 0;
+        }
+      }
+
+      if (this.minute < 0) {
+        this.minute = 0;
+      } else if (this.minute >= 60) {
+        this.minute = 59;
+      }
+
+      if (this.showSeconds) {
+        if (isNaN(this.second)) {
+          this.second = 0;
+        } else if (this.second < 0) {
+          this.second = 0;
+        } else if (this.second >= 60) {
+          this.second = 59;
+        }
+      }
+
+      this.update();
+    },
+
+    showWidget: function() {
+      if (this.isOpen) {
+        return;
+      }
+
+      var self = this;
+      $(document).on('mousedown.timepicker', function (e) {
+        // Clicked outside the timepicker, hide it
+        if ($(e.target).closest('.bootstrap-timepicker-widget').length === 0) {
+          self.hideWidget();
+        }
+      });
+
+      this.$element.trigger({
+        'type': 'show.timepicker',
+        'time': {
+            'value': this.getTime(),
+            'hours': this.hour,
+            'minutes': this.minute,
+            'seconds': this.second,
+            'meridian': this.meridian
+         }
+      });
+
+      if (this.disableFocus) {
+        this.$element.blur();
+      }
+
+      this.updateFromElementVal();
+
+      if (this.template === 'modal') {
+        this.$widget.modal('show').on('hidden', $.proxy(this.hideWidget, this));
+      } else {
+        if (this.isOpen === false) {
+          this.$widget.addClass('open');
+        }
+      }
+
+      this.isOpen = true;
+    },
+
+    toggleMeridian: function() {
+      this.meridian = this.meridian === 'AM' ? 'PM' : 'AM';
+      this.update();
+    },
+
+    update: function() {
+      this.$element.trigger({
+        'type': 'changeTime.timepicker',
+        'time': {
+            'value': this.getTime(),
+            'hours': this.hour,
+            'minutes': this.minute,
+            'seconds': this.second,
+            'meridian': this.meridian
+         }
+      });
+
+      this.updateElement();
+      this.updateWidget();
+    },
+
+    updateElement: function() {
+      this.$element.val(this.getTime()).change();
+    },
+
+    updateFromElementVal: function() {
+			var val = this.$element.val();
+
+			if (val) {
+				this.setTime(val);
+			}
+    },
+
+    updateWidget: function() {
+      if (this.$widget === false) {
+        return;
+      }
+
+      var hour = this.hour < 10 ? '0' + this.hour : this.hour,
+          minute = this.minute < 10 ? '0' + this.minute : this.minute,
+          second = this.second < 10 ? '0' + this.second : this.second;
+
+      if (this.showInputs) {
+        this.$widget.find('input.bootstrap-timepicker-hour').val(hour);
+        this.$widget.find('input.bootstrap-timepicker-minute').val(minute);
+
+        if (this.showSeconds) {
+          this.$widget.find('input.bootstrap-timepicker-second').val(second);
+        }
+        if (this.showMeridian) {
+          this.$widget.find('input.bootstrap-timepicker-meridian').val(this.meridian);
+        }
+      } else {
+        this.$widget.find('span.bootstrap-timepicker-hour').text(hour);
+        this.$widget.find('span.bootstrap-timepicker-minute').text(minute);
+
+        if (this.showSeconds) {
+          this.$widget.find('span.bootstrap-timepicker-second').text(second);
+        }
+        if (this.showMeridian) {
+          this.$widget.find('span.bootstrap-timepicker-meridian').text(this.meridian);
+        }
+      }
+    },
+
+    updateFromWidgetInputs: function() {
+      if (this.$widget === false) {
+        return;
+      }
+      var time = $('input.bootstrap-timepicker-hour', this.$widget).val() + ':' +
+        $('input.bootstrap-timepicker-minute', this.$widget).val() +
+        (this.showSeconds ? ':' + $('input.bootstrap-timepicker-second', this.$widget).val() : '') +
+        (this.showMeridian ? ' ' + $('input.bootstrap-timepicker-meridian', this.$widget).val() : '');
+
+      this.setTime(time);
+    },
+
+    widgetClick: function(e) {
+      e.stopPropagation();
+      e.preventDefault();
+
+      var action = $(e.target).closest('a').data('action');
+      if (action) {
+        this[action]();
+      }
+    },
+
+    widgetKeydown: function(e) {
+      var $input = $(e.target).closest('input'),
+          name = $input.attr('name');
+
+      switch (e.keyCode) {
+        case 9: //tab
+          if (this.showMeridian) {
+            if (name === 'meridian') {
+              return this.hideWidget();
+            }
+          } else {
+            if (this.showSeconds) {
+              if (name === 'second') {
+                return this.hideWidget();
+              }
+            } else {
+              if (name === 'minute') {
+                return this.hideWidget();
+              }
+            }
+          }
+
+          this.updateFromWidgetInputs();
+        break;
+        case 27: // escape
+          this.hideWidget();
+        break;
+        case 38: // up arrow
+          e.preventDefault();
+          switch (name) {
+            case 'hour':
+              this.incrementHour();
+            break;
+            case 'minute':
+              this.incrementMinute();
+            break;
+            case 'second':
+              this.incrementSecond();
+            break;
+            case 'meridian':
+              this.toggleMeridian();
+            break;
+          }
+        break;
+        case 40: // down arrow
+          e.preventDefault();
+          switch (name) {
+            case 'hour':
+              this.decrementHour();
+            break;
+            case 'minute':
+              this.decrementMinute();
+            break;
+            case 'second':
+              this.decrementSecond();
+            break;
+            case 'meridian':
+              this.toggleMeridian();
+            break;
+          }
+        break;
+      }
+    }
+  };
+
+
+  //TIMEPICKER PLUGIN DEFINITION
+  $.fn.timepicker = function(option) {
+    var args = Array.apply(null, arguments);
+    args.shift();
+    return this.each(function() {
+      var $this = $(this),
+        data = $this.data('timepicker'),
+        options = typeof option === 'object' && option;
+
+      if (!data) {
+        $this.data('timepicker', (data = new Timepicker(this, $.extend({}, $.fn.timepicker.defaults, options, $(this).data()))));
+      }
+
+      if (typeof option === 'string') {
+        data[option].apply(data, args);
+      }
+    });
+  };
+
+  $.fn.timepicker.defaults = {
+    defaultTime: 'current',
+    disableFocus: false,
+    isOpen: false,
+    minuteStep: 15,
+    modalBackdrop: false,
+    secondStep: 15,
+    showSeconds: false,
+    showInputs: true,
+    showMeridian: true,
+    template: 'dropdown',
+    appendWidgetTo: '.bootstrap-timepicker'
+  };
+
+  $.fn.timepicker.Constructor = Timepicker;
+
+})(jQuery, window, document);
 /* =========================================================
  * bootstrap-datepicker.js
  * Repo: https://github.com/eternicode/bootstrap-datepicker/
@@ -28200,890 +29084,6 @@ $.widget( "ui.tooltip", {
 }(jQuery));
 
 
-/*!
- * Timepicker Component for Twitter Bootstrap
- *
- * Copyright 2013 Joris de Wit
- *
- * Contributors https://github.com/jdewit/bootstrap-timepicker/graphs/contributors
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
-;(function($, window, document, undefined) {
-
-  'use strict'; // jshint ;_;
-
-  // TIMEPICKER PUBLIC CLASS DEFINITION
-  var Timepicker = function(element, options) {
-    this.widget = '';
-    this.$element = $(element);
-    this.defaultTime = options.defaultTime;
-    this.disableFocus = options.disableFocus;
-    this.isOpen = options.isOpen;
-    this.minuteStep = options.minuteStep;
-    this.modalBackdrop = options.modalBackdrop;
-    this.secondStep = options.secondStep;
-    this.showInputs = options.showInputs;
-    this.showMeridian = options.showMeridian;
-    this.showSeconds = options.showSeconds;
-    this.template = options.template;
-    this.appendWidgetTo = options.appendWidgetTo;
-
-    this._init();
-  };
-
-  Timepicker.prototype = {
-
-    constructor: Timepicker,
-
-    _init: function() {
-      var self = this;
-
-      if (this.$element.parent().hasClass('input-append') || this.$element.parent().hasClass('input-prepend')) {
-          this.$element.parent('.input-append, .input-prepend').find('.add-on').on({
-            'click.timepicker': $.proxy(this.showWidget, this)
-          });
-          this.$element.on({
-            'focus.timepicker': $.proxy(this.highlightUnit, this),
-            'click.timepicker': $.proxy(this.highlightUnit, this),
-            'keydown.timepicker': $.proxy(this.elementKeydown, this),
-            'blur.timepicker': $.proxy(this.blurElement, this)
-          });
-      } else {
-        if (this.template) {
-          this.$element.on({
-            'focus.timepicker': $.proxy(this.showWidget, this),
-            'click.timepicker': $.proxy(this.showWidget, this),
-            'blur.timepicker': $.proxy(this.blurElement, this)
-          });
-        } else {
-          this.$element.on({
-            'focus.timepicker': $.proxy(this.highlightUnit, this),
-            'click.timepicker': $.proxy(this.highlightUnit, this),
-            'keydown.timepicker': $.proxy(this.elementKeydown, this),
-            'blur.timepicker': $.proxy(this.blurElement, this)
-          });
-        }
-      }
-
-      if (this.template !== false) {
-        this.$widget = $(this.getTemplate()).prependTo(this.$element.parents(this.appendWidgetTo)).on('click', $.proxy(this.widgetClick, this));
-      } else {
-        this.$widget = false;
-      }
-
-      if (this.showInputs && this.$widget !== false) {
-          this.$widget.find('input').each(function() {
-            $(this).on({
-              'click.timepicker': function() { $(this).select(); },
-              'keydown.timepicker': $.proxy(self.widgetKeydown, self)
-            });
-          });
-      }
-
-      this.setDefaultTime(this.defaultTime);
-    },
-
-    blurElement: function() {
-      this.highlightedUnit = undefined;
-      this.updateFromElementVal();
-    },
-
-    decrementHour: function() {
-      if (this.showMeridian) {
-        if (this.hour === 1) {
-          this.hour = 12;
-        } else if (this.hour === 12) {
-          this.hour--;
-
-          return this.toggleMeridian();
-        } else if (this.hour === 0) {
-          this.hour = 11;
-
-          return this.toggleMeridian();
-        } else {
-          this.hour--;
-        }
-      } else {
-        if (this.hour === 0) {
-          this.hour = 23;
-        } else {
-          this.hour--;
-        }
-      }
-      this.update();
-    },
-
-    decrementMinute: function(step) {
-      var newVal;
-
-      if (step) {
-        newVal = this.minute - step;
-      } else {
-        newVal = this.minute - this.minuteStep;
-      }
-
-      if (newVal < 0) {
-        this.decrementHour();
-        this.minute = newVal + 60;
-      } else {
-        this.minute = newVal;
-      }
-      this.update();
-    },
-
-    decrementSecond: function() {
-      var newVal = this.second - this.secondStep;
-
-      if (newVal < 0) {
-        this.decrementMinute(true);
-        this.second = newVal + 60;
-      } else {
-        this.second = newVal;
-      }
-      this.update();
-    },
-
-    elementKeydown: function(e) {
-      switch (e.keyCode) {
-        case 9: //tab
-          this.updateFromElementVal();
-
-          switch (this.highlightedUnit) {
-            case 'hour':
-              e.preventDefault();
-              this.highlightNextUnit();
-            break;
-            case 'minute':
-              if (this.showMeridian || this.showSeconds) {
-                e.preventDefault();
-                this.highlightNextUnit();
-              }
-            break;
-            case 'second':
-              if (this.showMeridian) {
-                e.preventDefault();
-                this.highlightNextUnit();
-              }
-            break;
-          }
-        break;
-        case 27: // escape
-          this.updateFromElementVal();
-        break;
-        case 37: // left arrow
-          e.preventDefault();
-          this.highlightPrevUnit();
-          this.updateFromElementVal();
-        break;
-        case 38: // up arrow
-          e.preventDefault();
-          switch (this.highlightedUnit) {
-            case 'hour':
-              this.incrementHour();
-              this.highlightHour();
-            break;
-            case 'minute':
-              this.incrementMinute();
-              this.highlightMinute();
-            break;
-            case 'second':
-              this.incrementSecond();
-              this.highlightSecond();
-            break;
-            case 'meridian':
-              this.toggleMeridian();
-              this.highlightMeridian();
-            break;
-          }
-        break;
-        case 39: // right arrow
-          e.preventDefault();
-          this.updateFromElementVal();
-          this.highlightNextUnit();
-        break;
-        case 40: // down arrow
-          e.preventDefault();
-          switch (this.highlightedUnit) {
-            case 'hour':
-              this.decrementHour();
-              this.highlightHour();
-            break;
-            case 'minute':
-              this.decrementMinute();
-              this.highlightMinute();
-            break;
-            case 'second':
-              this.decrementSecond();
-              this.highlightSecond();
-            break;
-            case 'meridian':
-              this.toggleMeridian();
-              this.highlightMeridian();
-            break;
-          }
-        break;
-      }
-    },
-
-    formatTime: function(hour, minute, second, meridian) {
-      hour = hour < 10 ? '0' + hour : hour;
-      minute = minute < 10 ? '0' + minute : minute;
-      second = second < 10 ? '0' + second : second;
-
-      return hour + ':' + minute + (this.showSeconds ? ':' + second : '') + (this.showMeridian ? ' ' + meridian : '');
-    },
-
-    getCursorPosition: function() {
-      var input = this.$element.get(0);
-
-      if ('selectionStart' in input) {// Standard-compliant browsers
-
-        return input.selectionStart;
-      } else if (document.selection) {// IE fix
-        input.focus();
-        var sel = document.selection.createRange(),
-          selLen = document.selection.createRange().text.length;
-
-        sel.moveStart('character', - input.value.length);
-
-        return sel.text.length - selLen;
-      }
-    },
-
-    getTemplate: function() {
-      var template,
-        hourTemplate,
-        minuteTemplate,
-        secondTemplate,
-        meridianTemplate,
-        templateContent;
-
-      if (this.showInputs) {
-        hourTemplate = '<input type="text" name="hour" class="bootstrap-timepicker-hour" maxlength="2"/>';
-        minuteTemplate = '<input type="text" name="minute" class="bootstrap-timepicker-minute" maxlength="2"/>';
-        secondTemplate = '<input type="text" name="second" class="bootstrap-timepicker-second" maxlength="2"/>';
-        meridianTemplate = '<input type="text" name="meridian" class="bootstrap-timepicker-meridian" maxlength="2"/>';
-      } else {
-        hourTemplate = '<span class="bootstrap-timepicker-hour"></span>';
-        minuteTemplate = '<span class="bootstrap-timepicker-minute"></span>';
-        secondTemplate = '<span class="bootstrap-timepicker-second"></span>';
-        meridianTemplate = '<span class="bootstrap-timepicker-meridian"></span>';
-      }
-
-      templateContent = '<table>'+
-         '<tr>'+
-           '<td><a href="#" data-action="incrementHour"><i class="icon-chevron-up"></i></a></td>'+
-           '<td class="separator">&nbsp;</td>'+
-           '<td><a href="#" data-action="incrementMinute"><i class="icon-chevron-up"></i></a></td>'+
-           (this.showSeconds ?
-             '<td class="separator">&nbsp;</td>'+
-             '<td><a href="#" data-action="incrementSecond"><i class="icon-chevron-up"></i></a></td>'
-           : '') +
-           (this.showMeridian ?
-             '<td class="separator">&nbsp;</td>'+
-             '<td class="meridian-column"><a href="#" data-action="toggleMeridian"><i class="icon-chevron-up"></i></a></td>'
-           : '') +
-         '</tr>'+
-         '<tr>'+
-           '<td>'+ hourTemplate +'</td> '+
-           '<td class="separator">:</td>'+
-           '<td>'+ minuteTemplate +'</td> '+
-           (this.showSeconds ?
-            '<td class="separator">:</td>'+
-            '<td>'+ secondTemplate +'</td>'
-           : '') +
-           (this.showMeridian ?
-            '<td class="separator">&nbsp;</td>'+
-            '<td>'+ meridianTemplate +'</td>'
-           : '') +
-         '</tr>'+
-         '<tr>'+
-           '<td><a href="#" data-action="decrementHour"><i class="icon-chevron-down"></i></a></td>'+
-           '<td class="separator"></td>'+
-           '<td><a href="#" data-action="decrementMinute"><i class="icon-chevron-down"></i></a></td>'+
-           (this.showSeconds ?
-            '<td class="separator">&nbsp;</td>'+
-            '<td><a href="#" data-action="decrementSecond"><i class="icon-chevron-down"></i></a></td>'
-           : '') +
-           (this.showMeridian ?
-            '<td class="separator">&nbsp;</td>'+
-            '<td><a href="#" data-action="toggleMeridian"><i class="icon-chevron-down"></i></a></td>'
-           : '') +
-         '</tr>'+
-       '</table>';
-
-      switch(this.template) {
-        case 'modal':
-          template = '<div class="bootstrap-timepicker-widget modal hide fade in" data-backdrop="'+ (this.modalBackdrop ? 'true' : 'false') +'">'+
-            '<div class="modal-header">'+
-              '<a href="#" class="close" data-dismiss="modal">×</a>'+
-              '<h3>Pick a Time</h3>'+
-            '</div>'+
-            '<div class="modal-content">'+
-              templateContent +
-            '</div>'+
-            '<div class="modal-footer">'+
-              '<a href="#" class="btn btn-primary" data-dismiss="modal">OK</a>'+
-            '</div>'+
-          '</div>';
-        break;
-        case 'dropdown':
-          template = '<div class="bootstrap-timepicker-widget dropdown-menu">'+ templateContent +'</div>';
-        break;
-      }
-
-      return template;
-    },
-
-    getTime: function() {
-      return this.formatTime(this.hour, this.minute, this.second, this.meridian);
-    },
-
-    hideWidget: function() {
-      if (this.isOpen === false) {
-        return;
-      }
-
-			if (this.showInputs) {
-				this.updateFromWidgetInputs();
-			}
-
-      this.$element.trigger({
-        'type': 'hide.timepicker',
-        'time': {
-            'value': this.getTime(),
-            'hours': this.hour,
-            'minutes': this.minute,
-            'seconds': this.second,
-            'meridian': this.meridian
-         }
-      });
-
-      if (this.template === 'modal') {
-        this.$widget.modal('hide');
-      } else {
-        this.$widget.removeClass('open');
-      }
-
-      $(document).off('mousedown.timepicker');
-
-      this.isOpen = false;
-    },
-
-    highlightUnit: function() {
-      this.position = this.getCursorPosition();
-      if (this.position >= 0 && this.position <= 2) {
-        this.highlightHour();
-      } else if (this.position >= 3 && this.position <= 5) {
-        this.highlightMinute();
-      } else if (this.position >= 6 && this.position <= 8) {
-        if (this.showSeconds) {
-          this.highlightSecond();
-        } else {
-          this.highlightMeridian();
-        }
-      } else if (this.position >= 9 && this.position <= 11) {
-        this.highlightMeridian();
-      }
-    },
-
-    highlightNextUnit: function() {
-      switch (this.highlightedUnit) {
-        case 'hour':
-          this.highlightMinute();
-        break;
-        case 'minute':
-          if (this.showSeconds) {
-            this.highlightSecond();
-          } else if (this.showMeridian){
-            this.highlightMeridian();
-          } else {
-            this.highlightHour();
-          }
-        break;
-        case 'second':
-          if (this.showMeridian) {
-            this.highlightMeridian();
-          } else {
-            this.highlightHour();
-          }
-        break;
-        case 'meridian':
-          this.highlightHour();
-        break;
-      }
-    },
-
-    highlightPrevUnit: function() {
-      switch (this.highlightedUnit) {
-        case 'hour':
-          this.highlightMeridian();
-        break;
-        case 'minute':
-          this.highlightHour();
-        break;
-        case 'second':
-          this.highlightMinute();
-        break;
-        case 'meridian':
-          if (this.showSeconds) {
-            this.highlightSecond();
-          } else {
-            this.highlightMinute();
-          }
-        break;
-      }
-    },
-
-    highlightHour: function() {
-      var $element = this.$element.get(0);
-
-      this.highlightedUnit = 'hour';
-
-			if ($element.setSelectionRange) {
-				setTimeout(function() {
-					$element.setSelectionRange(0,2);
-				}, 0);
-			}
-    },
-
-    highlightMinute: function() {
-      var $element = this.$element.get(0);
-
-      this.highlightedUnit = 'minute';
-
-			if ($element.setSelectionRange) {
-				setTimeout(function() {
-					$element.setSelectionRange(3,5);
-				}, 0);
-			}
-    },
-
-    highlightSecond: function() {
-      var $element = this.$element.get(0);
-
-      this.highlightedUnit = 'second';
-
-			if ($element.setSelectionRange) {
-				setTimeout(function() {
-					$element.setSelectionRange(6,8);
-				}, 0);
-			}
-    },
-
-    highlightMeridian: function() {
-      var $element = this.$element.get(0);
-
-      this.highlightedUnit = 'meridian';
-
-			if ($element.setSelectionRange) {
-				if (this.showSeconds) {
-					setTimeout(function() {
-						$element.setSelectionRange(9,11);
-					}, 0);
-				} else {
-					setTimeout(function() {
-						$element.setSelectionRange(6,8);
-					}, 0);
-				}
-			}
-    },
-
-    incrementHour: function() {
-      if (this.showMeridian) {
-        if (this.hour === 11) {
-          this.hour++;
-          return this.toggleMeridian();
-        } else if (this.hour === 12) {
-          this.hour = 0;
-        }
-      }
-      if (this.hour === 23) {
-        return this.hour = 0;
-      }
-      this.hour++;
-      this.update();
-    },
-
-    incrementMinute: function(step) {
-      var newVal;
-
-      if (step) {
-        newVal = this.minute + step;
-      } else {
-        newVal = this.minute + this.minuteStep - (this.minute % this.minuteStep);
-      }
-
-      if (newVal > 59) {
-        this.incrementHour();
-        this.minute = newVal - 60;
-      } else {
-        this.minute = newVal;
-      }
-      this.update();
-    },
-
-    incrementSecond: function() {
-      var newVal = this.second + this.secondStep - (this.second % this.secondStep);
-
-      if (newVal > 59) {
-        this.incrementMinute(true);
-        this.second = newVal - 60;
-      } else {
-        this.second = newVal;
-      }
-      this.update();
-    },
-
-    remove: function() {
-      $('document').off('.timepicker');
-      if (this.$widget) {
-        this.$widget.remove();
-      }
-      delete this.$element.data().timepicker;
-    },
-
-    setDefaultTime: function(defaultTime){
-      if (!this.$element.val()) {
-        if (defaultTime === 'current') {
-          var dTime = new Date(),
-            hours = dTime.getHours(),
-            minutes = Math.floor(dTime.getMinutes() / this.minuteStep) * this.minuteStep,
-            seconds = Math.floor(dTime.getSeconds() / this.secondStep) * this.secondStep,
-            meridian = 'AM';
-
-          if (this.showMeridian) {
-            if (hours === 0) {
-              hours = 12;
-            } else if (hours >= 12) {
-              if (hours > 12) {
-                hours = hours - 12;
-              }
-              meridian = 'PM';
-            } else {
-              meridian = 'AM';
-            }
-          }
-
-          this.hour = hours;
-          this.minute = minutes;
-          this.second = seconds;
-          this.meridian = meridian;
-
-          this.update();
-
-        } else if (defaultTime === false) {
-          this.hour = 0;
-          this.minute = 0;
-          this.second = 0;
-          this.meridian = 'AM';
-        } else {
-          this.setTime(defaultTime);
-        }
-      } else {
-        this.updateFromElementVal();
-      }
-    },
-
-    setTime: function(time) {
-      var arr,
-        timeArray;
-
-      if (this.showMeridian) {
-        arr = time.split(' ');
-        timeArray = arr[0].split(':');
-        this.meridian = arr[1];
-      } else {
-        timeArray = time.split(':');
-      }
-
-      this.hour = parseInt(timeArray[0], 10);
-      this.minute = parseInt(timeArray[1], 10);
-      this.second = parseInt(timeArray[2], 10);
-
-      if (isNaN(this.hour)) {
-        this.hour = 0;
-      }
-      if (isNaN(this.minute)) {
-        this.minute = 0;
-      }
-
-      if (this.showMeridian) {
-        if (this.hour > 12) {
-          this.hour = 12;
-        } else if (this.hour < 1) {
-          this.hour = 12;
-        }
-
-        if (this.meridian === 'am' || this.meridian === 'a') {
-          this.meridian = 'AM';
-        } else if (this.meridian === 'pm' || this.meridian === 'p') {
-          this.meridian = 'PM';
-        }
-
-        if (this.meridian !== 'AM' && this.meridian !== 'PM') {
-          this.meridian = 'AM';
-        }
-      } else {
-         if (this.hour >= 24) {
-          this.hour = 23;
-        } else if (this.hour < 0) {
-          this.hour = 0;
-        }
-      }
-
-      if (this.minute < 0) {
-        this.minute = 0;
-      } else if (this.minute >= 60) {
-        this.minute = 59;
-      }
-
-      if (this.showSeconds) {
-        if (isNaN(this.second)) {
-          this.second = 0;
-        } else if (this.second < 0) {
-          this.second = 0;
-        } else if (this.second >= 60) {
-          this.second = 59;
-        }
-      }
-
-      this.update();
-    },
-
-    showWidget: function() {
-      if (this.isOpen) {
-        return;
-      }
-
-      var self = this;
-      $(document).on('mousedown.timepicker', function (e) {
-        // Clicked outside the timepicker, hide it
-        if ($(e.target).closest('.bootstrap-timepicker-widget').length === 0) {
-          self.hideWidget();
-        }
-      });
-
-      this.$element.trigger({
-        'type': 'show.timepicker',
-        'time': {
-            'value': this.getTime(),
-            'hours': this.hour,
-            'minutes': this.minute,
-            'seconds': this.second,
-            'meridian': this.meridian
-         }
-      });
-
-      if (this.disableFocus) {
-        this.$element.blur();
-      }
-
-      this.updateFromElementVal();
-
-      if (this.template === 'modal') {
-        this.$widget.modal('show').on('hidden', $.proxy(this.hideWidget, this));
-      } else {
-        if (this.isOpen === false) {
-          this.$widget.addClass('open');
-        }
-      }
-
-      this.isOpen = true;
-    },
-
-    toggleMeridian: function() {
-      this.meridian = this.meridian === 'AM' ? 'PM' : 'AM';
-      this.update();
-    },
-
-    update: function() {
-      this.$element.trigger({
-        'type': 'changeTime.timepicker',
-        'time': {
-            'value': this.getTime(),
-            'hours': this.hour,
-            'minutes': this.minute,
-            'seconds': this.second,
-            'meridian': this.meridian
-         }
-      });
-
-      this.updateElement();
-      this.updateWidget();
-    },
-
-    updateElement: function() {
-      this.$element.val(this.getTime()).change();
-    },
-
-    updateFromElementVal: function() {
-			var val = this.$element.val();
-
-			if (val) {
-				this.setTime(val);
-			}
-    },
-
-    updateWidget: function() {
-      if (this.$widget === false) {
-        return;
-      }
-
-      var hour = this.hour < 10 ? '0' + this.hour : this.hour,
-          minute = this.minute < 10 ? '0' + this.minute : this.minute,
-          second = this.second < 10 ? '0' + this.second : this.second;
-
-      if (this.showInputs) {
-        this.$widget.find('input.bootstrap-timepicker-hour').val(hour);
-        this.$widget.find('input.bootstrap-timepicker-minute').val(minute);
-
-        if (this.showSeconds) {
-          this.$widget.find('input.bootstrap-timepicker-second').val(second);
-        }
-        if (this.showMeridian) {
-          this.$widget.find('input.bootstrap-timepicker-meridian').val(this.meridian);
-        }
-      } else {
-        this.$widget.find('span.bootstrap-timepicker-hour').text(hour);
-        this.$widget.find('span.bootstrap-timepicker-minute').text(minute);
-
-        if (this.showSeconds) {
-          this.$widget.find('span.bootstrap-timepicker-second').text(second);
-        }
-        if (this.showMeridian) {
-          this.$widget.find('span.bootstrap-timepicker-meridian').text(this.meridian);
-        }
-      }
-    },
-
-    updateFromWidgetInputs: function() {
-      if (this.$widget === false) {
-        return;
-      }
-      var time = $('input.bootstrap-timepicker-hour', this.$widget).val() + ':' +
-        $('input.bootstrap-timepicker-minute', this.$widget).val() +
-        (this.showSeconds ? ':' + $('input.bootstrap-timepicker-second', this.$widget).val() : '') +
-        (this.showMeridian ? ' ' + $('input.bootstrap-timepicker-meridian', this.$widget).val() : '');
-
-      this.setTime(time);
-    },
-
-    widgetClick: function(e) {
-      e.stopPropagation();
-      e.preventDefault();
-
-      var action = $(e.target).closest('a').data('action');
-      if (action) {
-        this[action]();
-      }
-    },
-
-    widgetKeydown: function(e) {
-      var $input = $(e.target).closest('input'),
-          name = $input.attr('name');
-
-      switch (e.keyCode) {
-        case 9: //tab
-          if (this.showMeridian) {
-            if (name === 'meridian') {
-              return this.hideWidget();
-            }
-          } else {
-            if (this.showSeconds) {
-              if (name === 'second') {
-                return this.hideWidget();
-              }
-            } else {
-              if (name === 'minute') {
-                return this.hideWidget();
-              }
-            }
-          }
-
-          this.updateFromWidgetInputs();
-        break;
-        case 27: // escape
-          this.hideWidget();
-        break;
-        case 38: // up arrow
-          e.preventDefault();
-          switch (name) {
-            case 'hour':
-              this.incrementHour();
-            break;
-            case 'minute':
-              this.incrementMinute();
-            break;
-            case 'second':
-              this.incrementSecond();
-            break;
-            case 'meridian':
-              this.toggleMeridian();
-            break;
-          }
-        break;
-        case 40: // down arrow
-          e.preventDefault();
-          switch (name) {
-            case 'hour':
-              this.decrementHour();
-            break;
-            case 'minute':
-              this.decrementMinute();
-            break;
-            case 'second':
-              this.decrementSecond();
-            break;
-            case 'meridian':
-              this.toggleMeridian();
-            break;
-          }
-        break;
-      }
-    }
-  };
-
-
-  //TIMEPICKER PLUGIN DEFINITION
-  $.fn.timepicker = function(option) {
-    var args = Array.apply(null, arguments);
-    args.shift();
-    return this.each(function() {
-      var $this = $(this),
-        data = $this.data('timepicker'),
-        options = typeof option === 'object' && option;
-
-      if (!data) {
-        $this.data('timepicker', (data = new Timepicker(this, $.extend({}, $.fn.timepicker.defaults, options, $(this).data()))));
-      }
-
-      if (typeof option === 'string') {
-        data[option].apply(data, args);
-      }
-    });
-  };
-
-  $.fn.timepicker.defaults = {
-    defaultTime: 'current',
-    disableFocus: false,
-    isOpen: false,
-    minuteStep: 15,
-    modalBackdrop: false,
-    secondStep: 15,
-    showSeconds: false,
-    showInputs: true,
-    showMeridian: true,
-    template: 'dropdown',
-    appendWidgetTo: '.bootstrap-timepicker'
-  };
-
-  $.fn.timepicker.Constructor = Timepicker;
-
-})(jQuery, window, document);
 /* ===================================================
  * bootstrap-transition.js v2.3.2
  * http://twitter.github.com/bootstrap/javascript.html#transitions
@@ -31420,18 +31420,19 @@ $.widget( "ui.tooltip", {
 ;
 $(document).ready(function(){
     $('[data-behaviour~=datepicker]').datepicker({
-	    format: "dd/mm/yy",
+	    format: "dd/mm/yyyy",
         language: "es",
 	    autoclose: true
 	});
 
     var hora = new Date();
-    var caca = new Date()
     var horaInicio = hora.toLocaleTimeString();
     var aux = new Date(hora.setHours(hora.getHours()+2));
-	  var horaTermino = hora.toLocaleTimeString();
-	  $('#sesion_hora_inicio').timepicker({defaultTime: horaInicio});
+	var horaTermino = hora.toLocaleTimeString();
+	$('#sesion_hora_inicio').timepicker({defaultTime: horaInicio});
     $('#sesion_hora_termino').timepicker({defaultTime: horaTermino});
+    $('#sesion_hora_inicio_edit').timepicker({defaultTime: horaInicio});
+    $('#sesion_hora_termino_edit').timepicker({defaultTime: horaTermino});
     $('#sesion_hora_inicio').timepicker().on('changeTime.timepicker', function(e) {
     	var hour = parseInt($('#sesion_hora_inicio').val().substring(0,2));
     	var minutes = parseInt($('#sesion_hora_inicio').val().substring(3,5));
@@ -31447,2337 +31448,11 @@ $(document).ready(function(){
   	});
 })
 ;
-
-
-
-<!DOCTYPE html>
-<html>
-  <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# githubog: http://ogp.me/ns/fb/githubog#">
-    <meta charset='utf-8'>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>gmaps-autocomplete-rails/vendor/assets/javascripts/gmaps-auto-complete.js at master · kristianmandrup/gmaps-autocomplete-rails</title>
-    <link rel="search" type="application/opensearchdescription+xml" href="/opensearch.xml" title="GitHub" />
-    <link rel="fluid-icon" href="https://github.com/fluidicon.png" title="GitHub" />
-    <link rel="apple-touch-icon" sizes="57x57" href="/apple-touch-icon-114.png" />
-    <link rel="apple-touch-icon" sizes="114x114" href="/apple-touch-icon-114.png" />
-    <link rel="apple-touch-icon" sizes="72x72" href="/apple-touch-icon-144.png" />
-    <link rel="apple-touch-icon" sizes="144x144" href="/apple-touch-icon-144.png" />
-    <link rel="logo" type="image/svg" href="https://github-media-downloads.s3.amazonaws.com/github-logo.svg" />
-    <meta property="og:image" content="https://github.global.ssl.fastly.net/images/modules/logos_page/Octocat.png">
-    <meta name="hostname" content="github-fe129-cp1-prd.iad.github.net">
-    <meta name="ruby" content="ruby 1.9.3p194-tcs-github-tcmalloc (e1c0c3f392) [x86_64-linux]">
-    <link rel="assets" href="https://github.global.ssl.fastly.net/">
-    <link rel="conduit-xhr" href="https://ghconduit.com:25035/">
-    <link rel="xhr-socket" href="/_sockets" />
-    
-
-
-    <meta name="msapplication-TileImage" content="/windows-tile.png" />
-    <meta name="msapplication-TileColor" content="#ffffff" />
-    <meta name="selected-link" value="repo_source" data-pjax-transient />
-    <meta content="collector.githubapp.com" name="octolytics-host" /><meta content="collector-cdn.github.com" name="octolytics-script-host" /><meta content="github" name="octolytics-app-id" /><meta content="C86F7985:643D:5251EC9:52B84238" name="octolytics-dimension-request_id" /><meta content="2235378" name="octolytics-actor-id" /><meta content="matiashoyl" name="octolytics-actor-login" /><meta content="e7cee7765a51da46fb19fd1244e10ba0ab349926a906cf39e6b0823fe321c64a" name="octolytics-actor-hash" />
-    
-
-    
-    
-    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-
-    <meta content="authenticity_token" name="csrf-param" />
-<meta content="KnxWQeinDzhx4bbVjs+XyDUZTJs6E9mTEUiftAMuSvA=" name="csrf-token" />
-
-    <link href="https://github.global.ssl.fastly.net/assets/github-8f6ca9b17ae3eba1e30276eef0a16282cb651c78.css" media="all" rel="stylesheet" type="text/css" />
-    <link href="https://github.global.ssl.fastly.net/assets/github2-7ac593afddcc7532d8340dcde39be16c8cb6f732.css" media="all" rel="stylesheet" type="text/css" />
-    
-
-    
-
-      <script src="https://github.global.ssl.fastly.net/assets/frameworks-29a3fb0547e33bd8d4530bbad9bae3ef00d83293.js" type="text/javascript"></script>
-      <script src="https://github.global.ssl.fastly.net/assets/github-0b6bf4a8bb8bc8246eb6d07db6a63cde130f5001.js" type="text/javascript"></script>
-      
-      <meta http-equiv="x-pjax-version" content="25e9435426189c5ffea9ed5e7a16f621">
-
-        <link data-pjax-transient rel='permalink' href='/kristianmandrup/gmaps-autocomplete-rails/blob/115c5215251239285d7870b5d9e88d223d0a7053/vendor/assets/javascripts/gmaps-auto-complete.js'>
-  <meta property="og:title" content="gmaps-autocomplete-rails"/>
-  <meta property="og:type" content="githubog:gitrepository"/>
-  <meta property="og:url" content="https://github.com/kristianmandrup/gmaps-autocomplete-rails"/>
-  <meta property="og:image" content="https://github.global.ssl.fastly.net/images/gravatars/gravatar-user-420.png"/>
-  <meta property="og:site_name" content="GitHub"/>
-  <meta property="og:description" content="gmaps-autocomplete-rails - Google Maps v3 search with jQuery UI Autocomplete, ready for use with Rails asset pipeline"/>
-
-  <meta name="description" content="gmaps-autocomplete-rails - Google Maps v3 search with jQuery UI Autocomplete, ready for use with Rails asset pipeline" />
-
-  <meta content="125005" name="octolytics-dimension-user_id" /><meta content="kristianmandrup" name="octolytics-dimension-user_login" /><meta content="5705926" name="octolytics-dimension-repository_id" /><meta content="kristianmandrup/gmaps-autocomplete-rails" name="octolytics-dimension-repository_nwo" /><meta content="true" name="octolytics-dimension-repository_public" /><meta content="false" name="octolytics-dimension-repository_is_fork" /><meta content="5705926" name="octolytics-dimension-repository_network_root_id" /><meta content="kristianmandrup/gmaps-autocomplete-rails" name="octolytics-dimension-repository_network_root_nwo" />
-  <link href="https://github.com/kristianmandrup/gmaps-autocomplete-rails/commits/master.atom" rel="alternate" title="Recent Commits to gmaps-autocomplete-rails:master" type="application/atom+xml" />
-
-  </head>
-
-
-  <body class="logged_in  env-production macintosh vis-public page-blob">
-    <div class="wrapper">
-      
-      
-      
-      
-
-
-      <div class="header header-logged-in true">
-  <div class="container clearfix">
-
-    <a class="header-logo-invertocat" href="https://github.com/">
-  <span class="mega-octicon octicon-mark-github"></span>
-</a>
-
-    
-    <a href="/notifications" class="notification-indicator tooltipped downwards" data-gotokey="n" title="You have unread notifications">
-        <span class="mail-status unread"></span>
-</a>
-
-      <div class="command-bar js-command-bar  in-repository">
-          <form accept-charset="UTF-8" action="/search" class="command-bar-form" id="top_search_form" method="get">
-
-<input type="text" data-hotkey="/ s" name="q" id="js-command-bar-field" placeholder="Search or type a command" tabindex="1" autocapitalize="off"
-    
-    data-username="matiashoyl"
-      data-repo="kristianmandrup/gmaps-autocomplete-rails"
-      data-branch="master"
-      data-sha="582c925434edb8d44657c1cd545ffa7afd5fea11"
-  >
-
-    <input type="hidden" name="nwo" value="kristianmandrup/gmaps-autocomplete-rails" />
-
-    <div class="select-menu js-menu-container js-select-menu search-context-select-menu">
-      <span class="minibutton select-menu-button js-menu-target">
-        <span class="js-select-button">This repository</span>
-      </span>
-
-      <div class="select-menu-modal-holder js-menu-content js-navigation-container">
-        <div class="select-menu-modal">
-
-          <div class="select-menu-item js-navigation-item js-this-repository-navigation-item selected">
-            <span class="select-menu-item-icon octicon octicon-check"></span>
-            <input type="radio" class="js-search-this-repository" name="search_target" value="repository" checked="checked" />
-            <div class="select-menu-item-text js-select-button-text">This repository</div>
-          </div> <!-- /.select-menu-item -->
-
-          <div class="select-menu-item js-navigation-item js-all-repositories-navigation-item">
-            <span class="select-menu-item-icon octicon octicon-check"></span>
-            <input type="radio" name="search_target" value="global" />
-            <div class="select-menu-item-text js-select-button-text">All repositories</div>
-          </div> <!-- /.select-menu-item -->
-
-        </div>
-      </div>
-    </div>
-
-  <span class="octicon help tooltipped downwards" title="Show command bar help">
-    <span class="octicon octicon-question"></span>
-  </span>
-
-
-  <input type="hidden" name="ref" value="cmdform">
-
-</form>
-        <ul class="top-nav">
-          <li class="explore"><a href="/explore">Explore</a></li>
-            <li><a href="https://gist.github.com">Gist</a></li>
-            <li><a href="/blog">Blog</a></li>
-          <li><a href="https://help.github.com">Help</a></li>
-        </ul>
-      </div>
-
-    
-
-
-  <ul id="user-links">
-    <li>
-      <a href="/matiashoyl" class="name">
-        <img height="20" src="https://0.gravatar.com/avatar/dcf591cce8d7d137069aa888bc790b58?d=https%3A%2F%2Fidenticons.github.com%2F2e5b3ee1f082a584497ea7d7a39ffc57.png&amp;r=x&amp;s=140" width="20" /> matiashoyl
-      </a>
-    </li>
-
-      <li>
-        <a href="/new" id="new_repo" class="tooltipped downwards" title="Create a new repo" aria-label="Create a new repo">
-          <span class="octicon octicon-repo-create"></span>
-        </a>
-      </li>
-
-      <li>
-        <a href="/settings/profile" id="account_settings"
-          class="tooltipped downwards"
-          aria-label="Account settings "
-          title="Account settings ">
-          <span class="octicon octicon-tools"></span>
-        </a>
-      </li>
-      <li>
-        <a class="tooltipped downwards" href="/logout" data-method="post" id="logout" title="Sign out" aria-label="Sign out">
-          <span class="octicon octicon-log-out"></span>
-        </a>
-      </li>
-
-  </ul>
-
-<div class="js-new-dropdown-contents hidden">
-  
-
-<ul class="dropdown-menu">
-  <li>
-    <a href="/new"><span class="octicon octicon-repo-create"></span> New repository</a>
-  </li>
-  <li>
-    <a href="/organizations/new"><span class="octicon octicon-organization"></span> New organization</a>
-  </li>
-
-
-
-    <li class="section-title">
-      <span title="kristianmandrup/gmaps-autocomplete-rails">This repository</span>
-    </li>
-      <li>
-        <a href="/kristianmandrup/gmaps-autocomplete-rails/issues/new"><span class="octicon octicon-issue-opened"></span> New issue</a>
-      </li>
-</ul>
-
-</div>
-
-
-    
-  </div>
-</div>
-
-      
-
-      
-
-
-
-
-          <div class="site" itemscope itemtype="http://schema.org/WebPage">
-    
-    <div class="pagehead repohead instapaper_ignore readability-menu">
-      <div class="container">
-        
-
-<ul class="pagehead-actions">
-
-    <li class="subscription">
-      <form accept-charset="UTF-8" action="/notifications/subscribe" class="js-social-container" data-autosubmit="true" data-remote="true" method="post"><div style="margin:0;padding:0;display:inline"><input name="authenticity_token" type="hidden" value="KnxWQeinDzhx4bbVjs+XyDUZTJs6E9mTEUiftAMuSvA=" /></div>  <input id="repository_id" name="repository_id" type="hidden" value="5705926" />
-
-    <div class="select-menu js-menu-container js-select-menu">
-      <a class="social-count js-social-count" href="/kristianmandrup/gmaps-autocomplete-rails/watchers">
-        5
-      </a>
-      <span class="minibutton select-menu-button with-count js-menu-target" role="button" tabindex="0">
-        <span class="js-select-button">
-          <span class="octicon octicon-eye-watch"></span>
-          Watch
-        </span>
-      </span>
-
-      <div class="select-menu-modal-holder">
-        <div class="select-menu-modal subscription-menu-modal js-menu-content">
-          <div class="select-menu-header">
-            <span class="select-menu-title">Notification status</span>
-            <span class="octicon octicon-remove-close js-menu-close"></span>
-          </div> <!-- /.select-menu-header -->
-
-          <div class="select-menu-list js-navigation-container" role="menu">
-
-            <div class="select-menu-item js-navigation-item selected" role="menuitem" tabindex="0">
-              <span class="select-menu-item-icon octicon octicon-check"></span>
-              <div class="select-menu-item-text">
-                <input checked="checked" id="do_included" name="do" type="radio" value="included" />
-                <h4>Not watching</h4>
-                <span class="description">You only receive notifications for conversations in which you participate or are @mentioned.</span>
-                <span class="js-select-button-text hidden-select-button-text">
-                  <span class="octicon octicon-eye-watch"></span>
-                  Watch
-                </span>
-              </div>
-            </div> <!-- /.select-menu-item -->
-
-            <div class="select-menu-item js-navigation-item " role="menuitem" tabindex="0">
-              <span class="select-menu-item-icon octicon octicon octicon-check"></span>
-              <div class="select-menu-item-text">
-                <input id="do_subscribed" name="do" type="radio" value="subscribed" />
-                <h4>Watching</h4>
-                <span class="description">You receive notifications for all conversations in this repository.</span>
-                <span class="js-select-button-text hidden-select-button-text">
-                  <span class="octicon octicon-eye-unwatch"></span>
-                  Unwatch
-                </span>
-              </div>
-            </div> <!-- /.select-menu-item -->
-
-            <div class="select-menu-item js-navigation-item " role="menuitem" tabindex="0">
-              <span class="select-menu-item-icon octicon octicon-check"></span>
-              <div class="select-menu-item-text">
-                <input id="do_ignore" name="do" type="radio" value="ignore" />
-                <h4>Ignoring</h4>
-                <span class="description">You do not receive any notifications for conversations in this repository.</span>
-                <span class="js-select-button-text hidden-select-button-text">
-                  <span class="octicon octicon-mute"></span>
-                  Stop ignoring
-                </span>
-              </div>
-            </div> <!-- /.select-menu-item -->
-
-          </div> <!-- /.select-menu-list -->
-
-        </div> <!-- /.select-menu-modal -->
-      </div> <!-- /.select-menu-modal-holder -->
-    </div> <!-- /.select-menu -->
-
-</form>
-    </li>
-
-  <li>
-  
-
-  <div class="js-toggler-container js-social-container starring-container ">
-    <a href="/kristianmandrup/gmaps-autocomplete-rails/unstar"
-      class="minibutton with-count js-toggler-target star-button starred upwards"
-      title="Unstar this repository" data-remote="true" data-method="post" rel="nofollow">
-      <span class="octicon octicon-star-delete"></span><span class="text">Unstar</span>
-    </a>
-
-    <a href="/kristianmandrup/gmaps-autocomplete-rails/star"
-      class="minibutton with-count js-toggler-target star-button unstarred upwards"
-      title="Star this repository" data-remote="true" data-method="post" rel="nofollow">
-      <span class="octicon octicon-star"></span><span class="text">Star</span>
-    </a>
-
-      <a class="social-count js-social-count" href="/kristianmandrup/gmaps-autocomplete-rails/stargazers">
-        20
-      </a>
-  </div>
-
-  </li>
-
-
-        <li>
-          <a href="/kristianmandrup/gmaps-autocomplete-rails/fork" class="minibutton with-count js-toggler-target fork-button lighter upwards" title="Fork this repo" rel="facebox nofollow">
-            <span class="octicon octicon-git-branch-create"></span><span class="text">Fork</span>
-          </a>
-          <a href="/kristianmandrup/gmaps-autocomplete-rails/network" class="social-count">10</a>
-        </li>
-
-
-</ul>
-
-        <h1 itemscope itemtype="http://data-vocabulary.org/Breadcrumb" class="entry-title public">
-          <span class="repo-label"><span>public</span></span>
-          <span class="mega-octicon octicon-repo"></span>
-          <span class="author">
-            <a href="/kristianmandrup" class="url fn" itemprop="url" rel="author"><span itemprop="title">kristianmandrup</span></a>
-          </span>
-          <span class="repohead-name-divider">/</span>
-          <strong><a href="/kristianmandrup/gmaps-autocomplete-rails" class="js-current-repository js-repo-home-link">gmaps-autocomplete-rails</a></strong>
-
-          <span class="page-context-loader">
-            <img alt="Octocat-spinner-32" height="16" src="https://github.global.ssl.fastly.net/images/spinners/octocat-spinner-32.gif" width="16" />
-          </span>
-
-        </h1>
-      </div><!-- /.container -->
-    </div><!-- /.repohead -->
-
-    <div class="container">
-      
-
-      <div class="repository-with-sidebar repo-container  ">
-
-        <div class="repository-sidebar">
-            
-
-<div class="sunken-menu vertical-right repo-nav js-repo-nav js-repository-container-pjax js-octicon-loaders">
-  <div class="sunken-menu-contents">
-    <ul class="sunken-menu-group">
-      <li class="tooltipped leftwards" title="Code">
-        <a href="/kristianmandrup/gmaps-autocomplete-rails" aria-label="Code" class="selected js-selected-navigation-item sunken-menu-item" data-gotokey="c" data-pjax="true" data-selected-links="repo_source repo_downloads repo_commits repo_tags repo_branches /kristianmandrup/gmaps-autocomplete-rails">
-          <span class="octicon octicon-code"></span> <span class="full-word">Code</span>
-          <img alt="Octocat-spinner-32" class="mini-loader" height="16" src="https://github.global.ssl.fastly.net/images/spinners/octocat-spinner-32.gif" width="16" />
-</a>      </li>
-
-        <li class="tooltipped leftwards" title="Issues">
-          <a href="/kristianmandrup/gmaps-autocomplete-rails/issues" aria-label="Issues" class="js-selected-navigation-item sunken-menu-item js-disable-pjax" data-gotokey="i" data-selected-links="repo_issues /kristianmandrup/gmaps-autocomplete-rails/issues">
-            <span class="octicon octicon-issue-opened"></span> <span class="full-word">Issues</span>
-            <span class='counter'>3</span>
-            <img alt="Octocat-spinner-32" class="mini-loader" height="16" src="https://github.global.ssl.fastly.net/images/spinners/octocat-spinner-32.gif" width="16" />
-</a>        </li>
-
-      <li class="tooltipped leftwards" title="Pull Requests">
-        <a href="/kristianmandrup/gmaps-autocomplete-rails/pulls" aria-label="Pull Requests" class="js-selected-navigation-item sunken-menu-item js-disable-pjax" data-gotokey="p" data-selected-links="repo_pulls /kristianmandrup/gmaps-autocomplete-rails/pulls">
-            <span class="octicon octicon-git-pull-request"></span> <span class="full-word">Pull Requests</span>
-            <span class='counter'>1</span>
-            <img alt="Octocat-spinner-32" class="mini-loader" height="16" src="https://github.global.ssl.fastly.net/images/spinners/octocat-spinner-32.gif" width="16" />
-</a>      </li>
-
-
-        <li class="tooltipped leftwards" title="Wiki">
-          <a href="/kristianmandrup/gmaps-autocomplete-rails/wiki" aria-label="Wiki" class="js-selected-navigation-item sunken-menu-item" data-pjax="true" data-selected-links="repo_wiki /kristianmandrup/gmaps-autocomplete-rails/wiki">
-            <span class="octicon octicon-book"></span> <span class="full-word">Wiki</span>
-            <img alt="Octocat-spinner-32" class="mini-loader" height="16" src="https://github.global.ssl.fastly.net/images/spinners/octocat-spinner-32.gif" width="16" />
-</a>        </li>
-    </ul>
-    <div class="sunken-menu-separator"></div>
-    <ul class="sunken-menu-group">
-
-      <li class="tooltipped leftwards" title="Pulse">
-        <a href="/kristianmandrup/gmaps-autocomplete-rails/pulse" aria-label="Pulse" class="js-selected-navigation-item sunken-menu-item" data-pjax="true" data-selected-links="pulse /kristianmandrup/gmaps-autocomplete-rails/pulse">
-          <span class="octicon octicon-pulse"></span> <span class="full-word">Pulse</span>
-          <img alt="Octocat-spinner-32" class="mini-loader" height="16" src="https://github.global.ssl.fastly.net/images/spinners/octocat-spinner-32.gif" width="16" />
-</a>      </li>
-
-      <li class="tooltipped leftwards" title="Graphs">
-        <a href="/kristianmandrup/gmaps-autocomplete-rails/graphs" aria-label="Graphs" class="js-selected-navigation-item sunken-menu-item" data-pjax="true" data-selected-links="repo_graphs repo_contributors /kristianmandrup/gmaps-autocomplete-rails/graphs">
-          <span class="octicon octicon-graph"></span> <span class="full-word">Graphs</span>
-          <img alt="Octocat-spinner-32" class="mini-loader" height="16" src="https://github.global.ssl.fastly.net/images/spinners/octocat-spinner-32.gif" width="16" />
-</a>      </li>
-
-      <li class="tooltipped leftwards" title="Network">
-        <a href="/kristianmandrup/gmaps-autocomplete-rails/network" aria-label="Network" class="js-selected-navigation-item sunken-menu-item js-disable-pjax" data-selected-links="repo_network /kristianmandrup/gmaps-autocomplete-rails/network">
-          <span class="octicon octicon-git-branch"></span> <span class="full-word">Network</span>
-          <img alt="Octocat-spinner-32" class="mini-loader" height="16" src="https://github.global.ssl.fastly.net/images/spinners/octocat-spinner-32.gif" width="16" />
-</a>      </li>
-    </ul>
-
-
-  </div>
-</div>
-
-            <div class="only-with-full-nav">
-              
-
-  
-
-<div class="clone-url open"
-  data-protocol-type="http"
-  data-url="/users/set_protocol?protocol_selector=http&amp;protocol_type=clone">
-  <h3><strong>HTTPS</strong> clone URL</h3>
-  <div class="clone-url-box">
-    <input type="text" class="clone js-url-field"
-           value="https://github.com/kristianmandrup/gmaps-autocomplete-rails.git" readonly="readonly">
-
-    <span class="js-zeroclipboard url-box-clippy minibutton zeroclipboard-button" data-clipboard-text="https://github.com/kristianmandrup/gmaps-autocomplete-rails.git" data-copied-hint="copied!" title="copy to clipboard"><span class="octicon octicon-clippy"></span></span>
-  </div>
-</div>
-
-  
-
-<div class="clone-url "
-  data-protocol-type="ssh"
-  data-url="/users/set_protocol?protocol_selector=ssh&amp;protocol_type=clone">
-  <h3><strong>SSH</strong> clone URL</h3>
-  <div class="clone-url-box">
-    <input type="text" class="clone js-url-field"
-           value="git@github.com:kristianmandrup/gmaps-autocomplete-rails.git" readonly="readonly">
-
-    <span class="js-zeroclipboard url-box-clippy minibutton zeroclipboard-button" data-clipboard-text="git@github.com:kristianmandrup/gmaps-autocomplete-rails.git" data-copied-hint="copied!" title="copy to clipboard"><span class="octicon octicon-clippy"></span></span>
-  </div>
-</div>
-
-  
-
-<div class="clone-url "
-  data-protocol-type="subversion"
-  data-url="/users/set_protocol?protocol_selector=subversion&amp;protocol_type=clone">
-  <h3><strong>Subversion</strong> checkout URL</h3>
-  <div class="clone-url-box">
-    <input type="text" class="clone js-url-field"
-           value="https://github.com/kristianmandrup/gmaps-autocomplete-rails" readonly="readonly">
-
-    <span class="js-zeroclipboard url-box-clippy minibutton zeroclipboard-button" data-clipboard-text="https://github.com/kristianmandrup/gmaps-autocomplete-rails" data-copied-hint="copied!" title="copy to clipboard"><span class="octicon octicon-clippy"></span></span>
-  </div>
-</div>
-
-
-<p class="clone-options">You can clone with
-      <a href="#" class="js-clone-selector" data-protocol="http">HTTPS</a>,
-      <a href="#" class="js-clone-selector" data-protocol="ssh">SSH</a>,
-      or <a href="#" class="js-clone-selector" data-protocol="subversion">Subversion</a>.
-  <span class="octicon help tooltipped upwards" title="Get help on which URL is right for you.">
-    <a href="https://help.github.com/articles/which-remote-url-should-i-use">
-    <span class="octicon octicon-question"></span>
-    </a>
-  </span>
-</p>
-
-  <a href="http://mac.github.com" data-url="github-mac://openRepo/https://github.com/kristianmandrup/gmaps-autocomplete-rails" class="minibutton sidebar-button js-conduit-rewrite-url">
-    <span class="octicon octicon-device-desktop"></span>
-    Clone in Desktop
-  </a>
-
-
-              <a href="/kristianmandrup/gmaps-autocomplete-rails/archive/master.zip"
-                 class="minibutton sidebar-button"
-                 title="Download this repository as a zip file"
-                 rel="nofollow">
-                <span class="octicon octicon-cloud-download"></span>
-                Download ZIP
-              </a>
-            </div>
-        </div><!-- /.repository-sidebar -->
-
-        <div id="js-repo-pjax-container" class="repository-content context-loader-container" data-pjax-container>
-          
-
-
-<!-- blob contrib key: blob_contributors:v21:b243e97650b890ba64d2f9f7bfc54669 -->
-
-<p title="This is a placeholder element" class="js-history-link-replace hidden"></p>
-
-<a href="/kristianmandrup/gmaps-autocomplete-rails/find/master" data-pjax data-hotkey="t" class="js-show-file-finder" style="display:none">Show File Finder</a>
-
-<div class="file-navigation">
-  
-
-<div class="select-menu js-menu-container js-select-menu" >
-  <span class="minibutton select-menu-button js-menu-target" data-hotkey="w"
-    data-master-branch="master"
-    data-ref="master"
-    role="button" aria-label="Switch branches or tags" tabindex="0">
-    <span class="octicon octicon-git-branch"></span>
-    <i>branch:</i>
-    <span class="js-select-button">master</span>
-  </span>
-
-  <div class="select-menu-modal-holder js-menu-content js-navigation-container" data-pjax>
-
-    <div class="select-menu-modal">
-      <div class="select-menu-header">
-        <span class="select-menu-title">Switch branches/tags</span>
-        <span class="octicon octicon-remove-close js-menu-close"></span>
-      </div> <!-- /.select-menu-header -->
-
-      <div class="select-menu-filters">
-        <div class="select-menu-text-filter">
-          <input type="text" aria-label="Filter branches/tags" id="context-commitish-filter-field" class="js-filterable-field js-navigation-enable" placeholder="Filter branches/tags">
-        </div>
-        <div class="select-menu-tabs">
-          <ul>
-            <li class="select-menu-tab">
-              <a href="#" data-tab-filter="branches" class="js-select-menu-tab">Branches</a>
-            </li>
-            <li class="select-menu-tab">
-              <a href="#" data-tab-filter="tags" class="js-select-menu-tab">Tags</a>
-            </li>
-          </ul>
-        </div><!-- /.select-menu-tabs -->
-      </div><!-- /.select-menu-filters -->
-
-      <div class="select-menu-list select-menu-tab-bucket js-select-menu-tab-bucket" data-tab-filter="branches">
-
-        <div data-filterable-for="context-commitish-filter-field" data-filterable-type="substring">
-
-
-            <div class="select-menu-item js-navigation-item selected">
-              <span class="select-menu-item-icon octicon octicon-check"></span>
-              <a href="/kristianmandrup/gmaps-autocomplete-rails/blob/master/vendor/assets/javascripts/gmaps-auto-complete.js"
-                 data-name="master"
-                 data-skip-pjax="true"
-                 rel="nofollow"
-                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
-                 title="master">master</a>
-            </div> <!-- /.select-menu-item -->
-        </div>
-
-          <div class="select-menu-no-results">Nothing to show</div>
-      </div> <!-- /.select-menu-list -->
-
-      <div class="select-menu-list select-menu-tab-bucket js-select-menu-tab-bucket" data-tab-filter="tags">
-        <div data-filterable-for="context-commitish-filter-field" data-filterable-type="substring">
-
-
-            <div class="select-menu-item js-navigation-item ">
-              <span class="select-menu-item-icon octicon octicon-check"></span>
-              <a href="/kristianmandrup/gmaps-autocomplete-rails/tree/v0.1.2.1/vendor/assets/javascripts/gmaps-auto-complete.js"
-                 data-name="v0.1.2.1"
-                 data-skip-pjax="true"
-                 rel="nofollow"
-                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
-                 title="v0.1.2.1">v0.1.2.1</a>
-            </div> <!-- /.select-menu-item -->
-            <div class="select-menu-item js-navigation-item ">
-              <span class="select-menu-item-icon octicon octicon-check"></span>
-              <a href="/kristianmandrup/gmaps-autocomplete-rails/tree/v0.1.2/vendor/assets/javascripts/gmaps-auto-complete.js"
-                 data-name="v0.1.2"
-                 data-skip-pjax="true"
-                 rel="nofollow"
-                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
-                 title="v0.1.2">v0.1.2</a>
-            </div> <!-- /.select-menu-item -->
-            <div class="select-menu-item js-navigation-item ">
-              <span class="select-menu-item-icon octicon octicon-check"></span>
-              <a href="/kristianmandrup/gmaps-autocomplete-rails/tree/v0.1.1/vendor/assets/javascripts/gmaps-auto-complete.js"
-                 data-name="v0.1.1"
-                 data-skip-pjax="true"
-                 rel="nofollow"
-                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
-                 title="v0.1.1">v0.1.1</a>
-            </div> <!-- /.select-menu-item -->
-            <div class="select-menu-item js-navigation-item ">
-              <span class="select-menu-item-icon octicon octicon-check"></span>
-              <a href="/kristianmandrup/gmaps-autocomplete-rails/tree/v0.1.0/vendor/assets/javascripts/gmaps-auto-complete.js"
-                 data-name="v0.1.0"
-                 data-skip-pjax="true"
-                 rel="nofollow"
-                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
-                 title="v0.1.0">v0.1.0</a>
-            </div> <!-- /.select-menu-item -->
-        </div>
-
-        <div class="select-menu-no-results">Nothing to show</div>
-      </div> <!-- /.select-menu-list -->
-
-    </div> <!-- /.select-menu-modal -->
-  </div> <!-- /.select-menu-modal-holder -->
-</div> <!-- /.select-menu -->
-
-  <div class="breadcrumb">
-    <span class='repo-root js-repo-root'><span itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb"><a href="/kristianmandrup/gmaps-autocomplete-rails" data-branch="master" data-direction="back" data-pjax="true" itemscope="url"><span itemprop="title">gmaps-autocomplete-rails</span></a></span></span><span class="separator"> / </span><span itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb"><a href="/kristianmandrup/gmaps-autocomplete-rails/tree/master/vendor" data-branch="master" data-direction="back" data-pjax="true" itemscope="url"><span itemprop="title">vendor</span></a></span><span class="separator"> / </span><span itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb"><a href="/kristianmandrup/gmaps-autocomplete-rails/tree/master/vendor/assets" data-branch="master" data-direction="back" data-pjax="true" itemscope="url"><span itemprop="title">assets</span></a></span><span class="separator"> / </span><span itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb"><a href="/kristianmandrup/gmaps-autocomplete-rails/tree/master/vendor/assets/javascripts" data-branch="master" data-direction="back" data-pjax="true" itemscope="url"><span itemprop="title">javascripts</span></a></span><span class="separator"> / </span><strong class="final-path">gmaps-auto-complete.js</strong> <span class="js-zeroclipboard minibutton zeroclipboard-button" data-clipboard-text="vendor/assets/javascripts/gmaps-auto-complete.js" data-copied-hint="copied!" title="copy to clipboard"><span class="octicon octicon-clippy"></span></span>
-  </div>
-</div>
-
-
-
-  <div class="commit file-history-tease">
-    <img class="main-avatar" height="24" src="https://1.gravatar.com/avatar/2a018f8b16a3fe7273afde907c2e1bec?d=https%3A%2F%2Fidenticons.github.com%2Fee7d0a95c98df729c5ab7c93d1df3aa9.png&amp;r=x&amp;s=140" width="24" />
-    <span class="author"><a href="/kristianmandrup" rel="author">kristianmandrup</a></span>
-    <time class="js-relative-date" datetime="2013-08-27T03:53:02-07:00" title="2013-08-27 03:53:02">August 27, 2013</time>
-    <div class="commit-title">
-        <a href="/kristianmandrup/gmaps-autocomplete-rails/commit/115c5215251239285d7870b5d9e88d223d0a7053" class="message" data-pjax="true" title="merged and more fixes">merged and more fixes</a>
-    </div>
-
-    <div class="participation">
-      <p class="quickstat"><a href="#blob_contributors_box" rel="facebox"><strong>2</strong> contributors</a></p>
-          <a class="avatar tooltipped downwards" title="kristianmandrup" href="/kristianmandrup/gmaps-autocomplete-rails/commits/master/vendor/assets/javascripts/gmaps-auto-complete.js?author=kristianmandrup"><img height="20" src="https://1.gravatar.com/avatar/2a018f8b16a3fe7273afde907c2e1bec?d=https%3A%2F%2Fidenticons.github.com%2Fee7d0a95c98df729c5ab7c93d1df3aa9.png&amp;r=x&amp;s=140" width="20" /></a>
-    <a class="avatar tooltipped downwards" title="pdsteele" href="/kristianmandrup/gmaps-autocomplete-rails/commits/master/vendor/assets/javascripts/gmaps-auto-complete.js?author=pdsteele"><img height="20" src="https://1.gravatar.com/avatar/068d84d57f09079ee7569ffa43e89d16?d=https%3A%2F%2Fidenticons.github.com%2F2dd6471275c9f9a42eb0a3463ef195ce.png&amp;r=x&amp;s=140" width="20" /></a>
-
-
-    </div>
-    <div id="blob_contributors_box" style="display:none">
-      <h2 class="facebox-header">Users who have contributed to this file</h2>
-      <ul class="facebox-user-list">
-          <li class="facebox-user-list-item">
-            <img height="24" src="https://1.gravatar.com/avatar/2a018f8b16a3fe7273afde907c2e1bec?d=https%3A%2F%2Fidenticons.github.com%2Fee7d0a95c98df729c5ab7c93d1df3aa9.png&amp;r=x&amp;s=140" width="24" />
-            <a href="/kristianmandrup">kristianmandrup</a>
-          </li>
-          <li class="facebox-user-list-item">
-            <img height="24" src="https://1.gravatar.com/avatar/068d84d57f09079ee7569ffa43e89d16?d=https%3A%2F%2Fidenticons.github.com%2F2dd6471275c9f9a42eb0a3463ef195ce.png&amp;r=x&amp;s=140" width="24" />
-            <a href="/pdsteele">pdsteele</a>
-          </li>
-      </ul>
-    </div>
-  </div>
-
-<div id="files" class="bubble">
-  <div class="file">
-    <div class="meta">
-      <div class="info">
-        <span class="icon"><b class="octicon octicon-file-text"></b></span>
-        <span class="mode" title="File Mode">file</span>
-          <span>297 lines (246 sloc)</span>
-        <span>8.942 kb</span>
-      </div>
-      <div class="actions">
-        <div class="button-group">
-            <a class="minibutton tooltipped leftwards js-conduit-openfile-check"
-               href="http://mac.github.com"
-               data-url="github-mac://openRepo/https://github.com/kristianmandrup/gmaps-autocomplete-rails?branch=master&amp;filepath=vendor%2Fassets%2Fjavascripts%2Fgmaps-auto-complete.js"
-               title="Open this file in GitHub for Mac"
-               data-failed-title="Your version of GitHub for Mac is too old to open this file. Try checking for updates.">
-                <span class="octicon octicon-device-desktop"></span> Open
-            </a>
-                <a class="minibutton tooltipped upwards"
-                   title="Clicking this button will automatically fork this project so you can edit the file"
-                   href="/kristianmandrup/gmaps-autocomplete-rails/edit/master/vendor/assets/javascripts/gmaps-auto-complete.js"
-                   data-method="post" rel="nofollow">Edit</a>
-          <a href="/kristianmandrup/gmaps-autocomplete-rails/raw/master/vendor/assets/javascripts/gmaps-auto-complete.js" class="button minibutton " id="raw-url">Raw</a>
-            <a href="/kristianmandrup/gmaps-autocomplete-rails/blame/master/vendor/assets/javascripts/gmaps-auto-complete.js" class="button minibutton ">Blame</a>
-          <a href="/kristianmandrup/gmaps-autocomplete-rails/commits/master/vendor/assets/javascripts/gmaps-auto-complete.js" class="button minibutton " rel="nofollow">History</a>
-        </div><!-- /.button-group -->
-          <a class="minibutton danger empty-icon tooltipped downwards"
-             href="/kristianmandrup/gmaps-autocomplete-rails/delete/master/vendor/assets/javascripts/gmaps-auto-complete.js"
-             title="Fork this project and delete file"
-             data-method="post" data-test-id="delete-blob-file" rel="nofollow">
-          Delete
-        </a>
-      </div><!-- /.actions -->
-
-    </div>
-        <div class="blob-wrapper data type-javascript js-blob-data">
-        <table class="file-code file-diff">
-          <tr class="file-code-line">
-            <td class="blob-line-nums">
-              <span id="L1" rel="#L1">1</span>
-<span id="L2" rel="#L2">2</span>
-<span id="L3" rel="#L3">3</span>
-<span id="L4" rel="#L4">4</span>
-<span id="L5" rel="#L5">5</span>
-<span id="L6" rel="#L6">6</span>
-<span id="L7" rel="#L7">7</span>
-<span id="L8" rel="#L8">8</span>
-<span id="L9" rel="#L9">9</span>
-<span id="L10" rel="#L10">10</span>
-<span id="L11" rel="#L11">11</span>
-<span id="L12" rel="#L12">12</span>
-<span id="L13" rel="#L13">13</span>
-<span id="L14" rel="#L14">14</span>
-<span id="L15" rel="#L15">15</span>
-<span id="L16" rel="#L16">16</span>
-<span id="L17" rel="#L17">17</span>
-<span id="L18" rel="#L18">18</span>
-<span id="L19" rel="#L19">19</span>
-<span id="L20" rel="#L20">20</span>
-<span id="L21" rel="#L21">21</span>
-<span id="L22" rel="#L22">22</span>
-<span id="L23" rel="#L23">23</span>
-<span id="L24" rel="#L24">24</span>
-<span id="L25" rel="#L25">25</span>
-<span id="L26" rel="#L26">26</span>
-<span id="L27" rel="#L27">27</span>
-<span id="L28" rel="#L28">28</span>
-<span id="L29" rel="#L29">29</span>
-<span id="L30" rel="#L30">30</span>
-<span id="L31" rel="#L31">31</span>
-<span id="L32" rel="#L32">32</span>
-<span id="L33" rel="#L33">33</span>
-<span id="L34" rel="#L34">34</span>
-<span id="L35" rel="#L35">35</span>
-<span id="L36" rel="#L36">36</span>
-<span id="L37" rel="#L37">37</span>
-<span id="L38" rel="#L38">38</span>
-<span id="L39" rel="#L39">39</span>
-<span id="L40" rel="#L40">40</span>
-<span id="L41" rel="#L41">41</span>
-<span id="L42" rel="#L42">42</span>
-<span id="L43" rel="#L43">43</span>
-<span id="L44" rel="#L44">44</span>
-<span id="L45" rel="#L45">45</span>
-<span id="L46" rel="#L46">46</span>
-<span id="L47" rel="#L47">47</span>
-<span id="L48" rel="#L48">48</span>
-<span id="L49" rel="#L49">49</span>
-<span id="L50" rel="#L50">50</span>
-<span id="L51" rel="#L51">51</span>
-<span id="L52" rel="#L52">52</span>
-<span id="L53" rel="#L53">53</span>
-<span id="L54" rel="#L54">54</span>
-<span id="L55" rel="#L55">55</span>
-<span id="L56" rel="#L56">56</span>
-<span id="L57" rel="#L57">57</span>
-<span id="L58" rel="#L58">58</span>
-<span id="L59" rel="#L59">59</span>
-<span id="L60" rel="#L60">60</span>
-<span id="L61" rel="#L61">61</span>
-<span id="L62" rel="#L62">62</span>
-<span id="L63" rel="#L63">63</span>
-<span id="L64" rel="#L64">64</span>
-<span id="L65" rel="#L65">65</span>
-<span id="L66" rel="#L66">66</span>
-<span id="L67" rel="#L67">67</span>
-<span id="L68" rel="#L68">68</span>
-<span id="L69" rel="#L69">69</span>
-<span id="L70" rel="#L70">70</span>
-<span id="L71" rel="#L71">71</span>
-<span id="L72" rel="#L72">72</span>
-<span id="L73" rel="#L73">73</span>
-<span id="L74" rel="#L74">74</span>
-<span id="L75" rel="#L75">75</span>
-<span id="L76" rel="#L76">76</span>
-<span id="L77" rel="#L77">77</span>
-<span id="L78" rel="#L78">78</span>
-<span id="L79" rel="#L79">79</span>
-<span id="L80" rel="#L80">80</span>
-<span id="L81" rel="#L81">81</span>
-<span id="L82" rel="#L82">82</span>
-<span id="L83" rel="#L83">83</span>
-<span id="L84" rel="#L84">84</span>
-<span id="L85" rel="#L85">85</span>
-<span id="L86" rel="#L86">86</span>
-<span id="L87" rel="#L87">87</span>
-<span id="L88" rel="#L88">88</span>
-<span id="L89" rel="#L89">89</span>
-<span id="L90" rel="#L90">90</span>
-<span id="L91" rel="#L91">91</span>
-<span id="L92" rel="#L92">92</span>
-<span id="L93" rel="#L93">93</span>
-<span id="L94" rel="#L94">94</span>
-<span id="L95" rel="#L95">95</span>
-<span id="L96" rel="#L96">96</span>
-<span id="L97" rel="#L97">97</span>
-<span id="L98" rel="#L98">98</span>
-<span id="L99" rel="#L99">99</span>
-<span id="L100" rel="#L100">100</span>
-<span id="L101" rel="#L101">101</span>
-<span id="L102" rel="#L102">102</span>
-<span id="L103" rel="#L103">103</span>
-<span id="L104" rel="#L104">104</span>
-<span id="L105" rel="#L105">105</span>
-<span id="L106" rel="#L106">106</span>
-<span id="L107" rel="#L107">107</span>
-<span id="L108" rel="#L108">108</span>
-<span id="L109" rel="#L109">109</span>
-<span id="L110" rel="#L110">110</span>
-<span id="L111" rel="#L111">111</span>
-<span id="L112" rel="#L112">112</span>
-<span id="L113" rel="#L113">113</span>
-<span id="L114" rel="#L114">114</span>
-<span id="L115" rel="#L115">115</span>
-<span id="L116" rel="#L116">116</span>
-<span id="L117" rel="#L117">117</span>
-<span id="L118" rel="#L118">118</span>
-<span id="L119" rel="#L119">119</span>
-<span id="L120" rel="#L120">120</span>
-<span id="L121" rel="#L121">121</span>
-<span id="L122" rel="#L122">122</span>
-<span id="L123" rel="#L123">123</span>
-<span id="L124" rel="#L124">124</span>
-<span id="L125" rel="#L125">125</span>
-<span id="L126" rel="#L126">126</span>
-<span id="L127" rel="#L127">127</span>
-<span id="L128" rel="#L128">128</span>
-<span id="L129" rel="#L129">129</span>
-<span id="L130" rel="#L130">130</span>
-<span id="L131" rel="#L131">131</span>
-<span id="L132" rel="#L132">132</span>
-<span id="L133" rel="#L133">133</span>
-<span id="L134" rel="#L134">134</span>
-<span id="L135" rel="#L135">135</span>
-<span id="L136" rel="#L136">136</span>
-<span id="L137" rel="#L137">137</span>
-<span id="L138" rel="#L138">138</span>
-<span id="L139" rel="#L139">139</span>
-<span id="L140" rel="#L140">140</span>
-<span id="L141" rel="#L141">141</span>
-<span id="L142" rel="#L142">142</span>
-<span id="L143" rel="#L143">143</span>
-<span id="L144" rel="#L144">144</span>
-<span id="L145" rel="#L145">145</span>
-<span id="L146" rel="#L146">146</span>
-<span id="L147" rel="#L147">147</span>
-<span id="L148" rel="#L148">148</span>
-<span id="L149" rel="#L149">149</span>
-<span id="L150" rel="#L150">150</span>
-<span id="L151" rel="#L151">151</span>
-<span id="L152" rel="#L152">152</span>
-<span id="L153" rel="#L153">153</span>
-<span id="L154" rel="#L154">154</span>
-<span id="L155" rel="#L155">155</span>
-<span id="L156" rel="#L156">156</span>
-<span id="L157" rel="#L157">157</span>
-<span id="L158" rel="#L158">158</span>
-<span id="L159" rel="#L159">159</span>
-<span id="L160" rel="#L160">160</span>
-<span id="L161" rel="#L161">161</span>
-<span id="L162" rel="#L162">162</span>
-<span id="L163" rel="#L163">163</span>
-<span id="L164" rel="#L164">164</span>
-<span id="L165" rel="#L165">165</span>
-<span id="L166" rel="#L166">166</span>
-<span id="L167" rel="#L167">167</span>
-<span id="L168" rel="#L168">168</span>
-<span id="L169" rel="#L169">169</span>
-<span id="L170" rel="#L170">170</span>
-<span id="L171" rel="#L171">171</span>
-<span id="L172" rel="#L172">172</span>
-<span id="L173" rel="#L173">173</span>
-<span id="L174" rel="#L174">174</span>
-<span id="L175" rel="#L175">175</span>
-<span id="L176" rel="#L176">176</span>
-<span id="L177" rel="#L177">177</span>
-<span id="L178" rel="#L178">178</span>
-<span id="L179" rel="#L179">179</span>
-<span id="L180" rel="#L180">180</span>
-<span id="L181" rel="#L181">181</span>
-<span id="L182" rel="#L182">182</span>
-<span id="L183" rel="#L183">183</span>
-<span id="L184" rel="#L184">184</span>
-<span id="L185" rel="#L185">185</span>
-<span id="L186" rel="#L186">186</span>
-<span id="L187" rel="#L187">187</span>
-<span id="L188" rel="#L188">188</span>
-<span id="L189" rel="#L189">189</span>
-<span id="L190" rel="#L190">190</span>
-<span id="L191" rel="#L191">191</span>
-<span id="L192" rel="#L192">192</span>
-<span id="L193" rel="#L193">193</span>
-<span id="L194" rel="#L194">194</span>
-<span id="L195" rel="#L195">195</span>
-<span id="L196" rel="#L196">196</span>
-<span id="L197" rel="#L197">197</span>
-<span id="L198" rel="#L198">198</span>
-<span id="L199" rel="#L199">199</span>
-<span id="L200" rel="#L200">200</span>
-<span id="L201" rel="#L201">201</span>
-<span id="L202" rel="#L202">202</span>
-<span id="L203" rel="#L203">203</span>
-<span id="L204" rel="#L204">204</span>
-<span id="L205" rel="#L205">205</span>
-<span id="L206" rel="#L206">206</span>
-<span id="L207" rel="#L207">207</span>
-<span id="L208" rel="#L208">208</span>
-<span id="L209" rel="#L209">209</span>
-<span id="L210" rel="#L210">210</span>
-<span id="L211" rel="#L211">211</span>
-<span id="L212" rel="#L212">212</span>
-<span id="L213" rel="#L213">213</span>
-<span id="L214" rel="#L214">214</span>
-<span id="L215" rel="#L215">215</span>
-<span id="L216" rel="#L216">216</span>
-<span id="L217" rel="#L217">217</span>
-<span id="L218" rel="#L218">218</span>
-<span id="L219" rel="#L219">219</span>
-<span id="L220" rel="#L220">220</span>
-<span id="L221" rel="#L221">221</span>
-<span id="L222" rel="#L222">222</span>
-<span id="L223" rel="#L223">223</span>
-<span id="L224" rel="#L224">224</span>
-<span id="L225" rel="#L225">225</span>
-<span id="L226" rel="#L226">226</span>
-<span id="L227" rel="#L227">227</span>
-<span id="L228" rel="#L228">228</span>
-<span id="L229" rel="#L229">229</span>
-<span id="L230" rel="#L230">230</span>
-<span id="L231" rel="#L231">231</span>
-<span id="L232" rel="#L232">232</span>
-<span id="L233" rel="#L233">233</span>
-<span id="L234" rel="#L234">234</span>
-<span id="L235" rel="#L235">235</span>
-<span id="L236" rel="#L236">236</span>
-<span id="L237" rel="#L237">237</span>
-<span id="L238" rel="#L238">238</span>
-<span id="L239" rel="#L239">239</span>
-<span id="L240" rel="#L240">240</span>
-<span id="L241" rel="#L241">241</span>
-<span id="L242" rel="#L242">242</span>
-<span id="L243" rel="#L243">243</span>
-<span id="L244" rel="#L244">244</span>
-<span id="L245" rel="#L245">245</span>
-<span id="L246" rel="#L246">246</span>
-<span id="L247" rel="#L247">247</span>
-<span id="L248" rel="#L248">248</span>
-<span id="L249" rel="#L249">249</span>
-<span id="L250" rel="#L250">250</span>
-<span id="L251" rel="#L251">251</span>
-<span id="L252" rel="#L252">252</span>
-<span id="L253" rel="#L253">253</span>
-<span id="L254" rel="#L254">254</span>
-<span id="L255" rel="#L255">255</span>
-<span id="L256" rel="#L256">256</span>
-<span id="L257" rel="#L257">257</span>
-<span id="L258" rel="#L258">258</span>
-<span id="L259" rel="#L259">259</span>
-<span id="L260" rel="#L260">260</span>
-<span id="L261" rel="#L261">261</span>
-<span id="L262" rel="#L262">262</span>
-<span id="L263" rel="#L263">263</span>
-<span id="L264" rel="#L264">264</span>
-<span id="L265" rel="#L265">265</span>
-<span id="L266" rel="#L266">266</span>
-<span id="L267" rel="#L267">267</span>
-<span id="L268" rel="#L268">268</span>
-<span id="L269" rel="#L269">269</span>
-<span id="L270" rel="#L270">270</span>
-<span id="L271" rel="#L271">271</span>
-<span id="L272" rel="#L272">272</span>
-<span id="L273" rel="#L273">273</span>
-<span id="L274" rel="#L274">274</span>
-<span id="L275" rel="#L275">275</span>
-<span id="L276" rel="#L276">276</span>
-<span id="L277" rel="#L277">277</span>
-<span id="L278" rel="#L278">278</span>
-<span id="L279" rel="#L279">279</span>
-<span id="L280" rel="#L280">280</span>
-<span id="L281" rel="#L281">281</span>
-<span id="L282" rel="#L282">282</span>
-<span id="L283" rel="#L283">283</span>
-<span id="L284" rel="#L284">284</span>
-<span id="L285" rel="#L285">285</span>
-<span id="L286" rel="#L286">286</span>
-<span id="L287" rel="#L287">287</span>
-<span id="L288" rel="#L288">288</span>
-<span id="L289" rel="#L289">289</span>
-<span id="L290" rel="#L290">290</span>
-<span id="L291" rel="#L291">291</span>
-<span id="L292" rel="#L292">292</span>
-<span id="L293" rel="#L293">293</span>
-<span id="L294" rel="#L294">294</span>
-<span id="L295" rel="#L295">295</span>
-<span id="L296" rel="#L296">296</span>
-
-            </td>
-            <td class="blob-line-code">
-                    <div class="code-body highlight"><pre><div class='line' id='LC1'><span class="kd">var</span> <span class="nx">GmapsCompleter</span><span class="p">,</span> <span class="nx">GmapsCompleterDefaultAssist</span><span class="p">;</span></div><div class='line' id='LC2'><br/></div><div class='line' id='LC3'><span class="nx">GmapsCompleter</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span></div><div class='line' id='LC4'>&nbsp;&nbsp;<span class="nx">GmapsCompleter</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">geocoder</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span></div><div class='line' id='LC5'><br/></div><div class='line' id='LC6'>&nbsp;&nbsp;<span class="nx">GmapsCompleter</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">map</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span></div><div class='line' id='LC7'><br/></div><div class='line' id='LC8'>&nbsp;&nbsp;<span class="nx">GmapsCompleter</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">marker</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span></div><div class='line' id='LC9'><br/></div><div class='line' id='LC10'>&nbsp;&nbsp;<span class="nx">GmapsCompleter</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">inputField</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span></div><div class='line' id='LC11'><br/></div><div class='line' id='LC12'>&nbsp;&nbsp;<span class="nx">GmapsCompleter</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">errorField</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span></div><div class='line' id='LC13'><br/></div><div class='line' id='LC14'>&nbsp;&nbsp;<span class="nx">GmapsCompleter</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">positionOutputter</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span></div><div class='line' id='LC15'><br/></div><div class='line' id='LC16'>&nbsp;&nbsp;<span class="nx">GmapsCompleter</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">updateUI</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span></div><div class='line' id='LC17'><br/></div><div class='line' id='LC18'>&nbsp;&nbsp;<span class="nx">GmapsCompleter</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">updateMap</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span></div><div class='line' id='LC19'><br/></div><div class='line' id='LC20'>&nbsp;&nbsp;<span class="nx">GmapsCompleter</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">region</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span></div><div class='line' id='LC21'><br/></div><div class='line' id='LC22'>&nbsp;&nbsp;<span class="nx">GmapsCompleter</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">country</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span></div><div class='line' id='LC23'><br/></div><div class='line' id='LC24'>&nbsp;&nbsp;<span class="nx">GmapsCompleter</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">debugOn</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span></div><div class='line' id='LC25'><br/></div><div class='line' id='LC26'>&nbsp;&nbsp;<span class="nx">GmapsCompleter</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">mapElem</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span></div><div class='line' id='LC27'><br/></div><div class='line' id='LC28'>&nbsp;&nbsp;<span class="nx">GmapsCompleter</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">zoomLevel</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span></div><div class='line' id='LC29'><br/></div><div class='line' id='LC30'>&nbsp;&nbsp;<span class="nx">GmapsCompleter</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">mapType</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span></div><div class='line' id='LC31'><br/></div><div class='line' id='LC32'>&nbsp;&nbsp;<span class="nx">GmapsCompleter</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">pos</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">];</span></div><div class='line' id='LC33'><br/></div><div class='line' id='LC34'>&nbsp;&nbsp;<span class="nx">GmapsCompleter</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">inputField</span> <span class="o">=</span> <span class="s1">&#39;#gmaps-input-address&#39;</span><span class="p">;</span></div><div class='line' id='LC35'><br/></div><div class='line' id='LC36'>&nbsp;&nbsp;<span class="nx">GmapsCompleter</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">errorField</span> <span class="o">=</span> <span class="s1">&#39;#gmaps-error&#39;</span><span class="p">;</span></div><div class='line' id='LC37'><br/></div><div class='line' id='LC38'>&nbsp;&nbsp;<span class="kd">function</span> <span class="nx">GmapsCompleter</span><span class="p">(</span><span class="nx">opts</span><span class="p">)</span> <span class="p">{</span></div><div class='line' id='LC39'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">this</span><span class="p">.</span><span class="nx">init</span><span class="p">(</span><span class="nx">opts</span><span class="p">);</span></div><div class='line' id='LC40'>&nbsp;&nbsp;<span class="p">}</span></div><div class='line' id='LC41'><br/></div><div class='line' id='LC42'>&nbsp;&nbsp;<span class="nx">GmapsCompleter</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">init</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">opts</span><span class="p">)</span> <span class="p">{</span></div><div class='line' id='LC43'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="kd">var</span> <span class="nx">callOpts</span><span class="p">,</span> <span class="nx">completerAssistClass</span><span class="p">,</span> <span class="nx">error</span><span class="p">,</span> <span class="nx">lat</span><span class="p">,</span> <span class="nx">latlng</span><span class="p">,</span> <span class="nx">lng</span><span class="p">,</span> <span class="nx">mapElem</span><span class="p">,</span> <span class="nx">mapOptions</span><span class="p">,</span> <span class="nx">mapType</span><span class="p">,</span> <span class="nx">pos</span><span class="p">,</span> <span class="nx">self</span><span class="p">,</span> <span class="nx">zoomLevel</span><span class="p">;</span></div><div class='line' id='LC44'><br/></div><div class='line' id='LC45'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">opts</span> <span class="o">=</span> <span class="nx">opts</span> <span class="o">||</span> <span class="p">{};</span></div><div class='line' id='LC46'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">callOpts</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="kc">true</span><span class="p">,</span> <span class="p">{},</span> <span class="nx">opts</span><span class="p">);</span></div><div class='line' id='LC47'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">this</span><span class="p">.</span><span class="nx">debugOn</span> <span class="o">=</span> <span class="nx">opts</span><span class="p">[</span><span class="s1">&#39;debugOn&#39;</span><span class="p">];</span></div><div class='line' id='LC48'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">this</span><span class="p">.</span><span class="nx">debug</span><span class="p">(</span><span class="s1">&#39;init(opts)&#39;</span><span class="p">,</span> <span class="nx">opts</span><span class="p">);</span></div><div class='line' id='LC49'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">completerAssistClass</span> <span class="o">=</span> <span class="nx">opts</span><span class="p">[</span><span class="s1">&#39;assist&#39;</span><span class="p">];</span></div><div class='line' id='LC50'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">try</span> <span class="p">{</span></div><div class='line' id='LC51'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">this</span><span class="p">.</span><span class="nx">assist</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">completerAssistClass</span><span class="p">;</span></div><div class='line' id='LC52'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">_error</span><span class="p">)</span> <span class="p">{</span></div><div class='line' id='LC53'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">error</span> <span class="o">=</span> <span class="nx">_error</span><span class="p">;</span></div><div class='line' id='LC54'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">this</span><span class="p">.</span><span class="nx">debug</span><span class="p">(</span><span class="s1">&#39;assist error&#39;</span><span class="p">,</span> <span class="nx">error</span><span class="p">,</span> <span class="nx">opts</span><span class="p">[</span><span class="s1">&#39;assist&#39;</span><span class="p">]);</span></div><div class='line' id='LC55'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="p">}</span></div><div class='line' id='LC56'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">this</span><span class="p">.</span><span class="nx">assist</span> <span class="o">||</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">assist</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">GmapsCompleterDefaultAssist</span><span class="p">);</span></div><div class='line' id='LC57'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">this</span><span class="p">.</span><span class="nx">defaultOptions</span> <span class="o">=</span> <span class="nx">opts</span><span class="p">[</span><span class="s1">&#39;defaultOptions&#39;</span><span class="p">]</span> <span class="o">||</span> <span class="k">this</span><span class="p">.</span><span class="nx">assist</span><span class="p">.</span><span class="nx">options</span><span class="p">;</span></div><div class='line' id='LC58'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">opts</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="kc">true</span><span class="p">,</span> <span class="p">{},</span> <span class="k">this</span><span class="p">.</span><span class="nx">defaultOptions</span><span class="p">,</span> <span class="nx">opts</span><span class="p">);</span></div><div class='line' id='LC59'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">this</span><span class="p">.</span><span class="nx">positionOutputter</span> <span class="o">=</span> <span class="nx">opts</span><span class="p">[</span><span class="s1">&#39;positionOutputter&#39;</span><span class="p">]</span> <span class="o">||</span> <span class="k">this</span><span class="p">.</span><span class="nx">assist</span><span class="p">.</span><span class="nx">positionOutputter</span><span class="p">;</span></div><div class='line' id='LC60'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">this</span><span class="p">.</span><span class="nx">updateUI</span> <span class="o">=</span> <span class="nx">opts</span><span class="p">[</span><span class="s1">&#39;updateUI&#39;</span><span class="p">]</span> <span class="o">||</span> <span class="k">this</span><span class="p">.</span><span class="nx">assist</span><span class="p">.</span><span class="nx">updateUI</span><span class="p">;</span></div><div class='line' id='LC61'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">this</span><span class="p">.</span><span class="nx">updateMap</span> <span class="o">=</span> <span class="nx">opts</span><span class="p">[</span><span class="s1">&#39;updateMap&#39;</span><span class="p">]</span> <span class="o">||</span> <span class="k">this</span><span class="p">.</span><span class="nx">assist</span><span class="p">.</span><span class="nx">updateMap</span><span class="p">;</span></div><div class='line' id='LC62'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">pos</span> <span class="o">=</span> <span class="nx">opts</span><span class="p">[</span><span class="s1">&#39;pos&#39;</span><span class="p">];</span></div><div class='line' id='LC63'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">lat</span> <span class="o">=</span> <span class="nx">pos</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span></div><div class='line' id='LC64'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">lng</span> <span class="o">=</span> <span class="nx">pos</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span></div><div class='line' id='LC65'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">mapType</span> <span class="o">=</span> <span class="nx">opts</span><span class="p">[</span><span class="s1">&#39;mapType&#39;</span><span class="p">];</span></div><div class='line' id='LC66'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">mapElem</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span></div><div class='line' id='LC67'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">this</span><span class="p">.</span><span class="nx">mapElem</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;gmaps-canvas&quot;</span><span class="p">);</span></div><div class='line' id='LC68'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">if</span> <span class="p">(</span><span class="nx">opts</span><span class="p">[</span><span class="s1">&#39;mapElem&#39;</span><span class="p">])</span> <span class="p">{</span></div><div class='line' id='LC69'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">this</span><span class="p">.</span><span class="nx">mapElem</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="nx">opts</span><span class="p">[</span><span class="s1">&#39;mapElem&#39;</span><span class="p">]).</span><span class="nx">get</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span></div><div class='line' id='LC70'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="p">}</span></div><div class='line' id='LC71'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">this</span><span class="p">.</span><span class="nx">mapType</span> <span class="o">=</span> <span class="nx">google</span><span class="p">.</span><span class="nx">maps</span><span class="p">.</span><span class="nx">MapTypeId</span><span class="p">.</span><span class="nx">ROADMAP</span><span class="p">;</span></div><div class='line' id='LC72'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">zoomLevel</span> <span class="o">=</span> <span class="nx">opts</span><span class="p">[</span><span class="s1">&#39;zoomLevel&#39;</span><span class="p">];</span></div><div class='line' id='LC73'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">this</span><span class="p">.</span><span class="nx">inputField</span> <span class="o">=</span> <span class="nx">opts</span><span class="p">[</span><span class="s1">&#39;inputField&#39;</span><span class="p">];</span></div><div class='line' id='LC74'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">this</span><span class="p">.</span><span class="nx">errorField</span> <span class="o">=</span> <span class="nx">opts</span><span class="p">[</span><span class="s1">&#39;#gmaps-error&#39;</span><span class="p">];</span></div><div class='line' id='LC75'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">this</span><span class="p">.</span><span class="nx">debugOn</span> <span class="o">=</span> <span class="nx">opts</span><span class="p">[</span><span class="s1">&#39;debugOn&#39;</span><span class="p">];</span></div><div class='line' id='LC76'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">this</span><span class="p">.</span><span class="nx">debug</span><span class="p">(</span><span class="s1">&#39;called with opts&#39;</span><span class="p">,</span> <span class="nx">callOpts</span><span class="p">);</span></div><div class='line' id='LC77'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">this</span><span class="p">.</span><span class="nx">debug</span><span class="p">(</span><span class="s1">&#39;final completerAssist&#39;</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">completerAssist</span><span class="p">);</span></div><div class='line' id='LC78'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">this</span><span class="p">.</span><span class="nx">debug</span><span class="p">(</span><span class="s1">&#39;defaultOptions&#39;</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">defaultOptions</span><span class="p">);</span></div><div class='line' id='LC79'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">this</span><span class="p">.</span><span class="nx">debug</span><span class="p">(</span><span class="s1">&#39;options after merge with defaults&#39;</span><span class="p">,</span> <span class="nx">opts</span><span class="p">);</span></div><div class='line' id='LC80'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">latlng</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">google</span><span class="p">.</span><span class="nx">maps</span><span class="p">.</span><span class="nx">LatLng</span><span class="p">(</span><span class="nx">lat</span><span class="p">,</span> <span class="nx">lng</span><span class="p">);</span></div><div class='line' id='LC81'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">this</span><span class="p">.</span><span class="nx">debug</span><span class="p">(</span><span class="s1">&#39;lat,lng&#39;</span><span class="p">,</span> <span class="nx">latlng</span><span class="p">);</span></div><div class='line' id='LC82'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">mapOptions</span> <span class="o">=</span> <span class="p">{</span></div><div class='line' id='LC83'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">zoom</span><span class="o">:</span> <span class="nx">zoomLevel</span><span class="p">,</span></div><div class='line' id='LC84'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">center</span><span class="o">:</span> <span class="nx">latlng</span><span class="p">,</span></div><div class='line' id='LC85'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">mapTypeId</span><span class="o">:</span> <span class="nx">mapType</span></div><div class='line' id='LC86'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="p">};</span></div><div class='line' id='LC87'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">this</span><span class="p">.</span><span class="nx">debug</span><span class="p">(</span><span class="s1">&#39;map options&#39;</span><span class="p">,</span> <span class="nx">mapOptions</span><span class="p">);</span></div><div class='line' id='LC88'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">this</span><span class="p">.</span><span class="nx">geocoder</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">google</span><span class="p">.</span><span class="nx">maps</span><span class="p">.</span><span class="nx">Geocoder</span><span class="p">();</span></div><div class='line' id='LC89'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">self</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span></div><div class='line' id='LC90'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="k">this</span><span class="p">.</span><span class="nx">mapElem</span> <span class="o">===</span> <span class="s1">&#39;undefined&#39;</span><span class="p">)</span> <span class="p">{</span></div><div class='line' id='LC91'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">this</span><span class="p">.</span><span class="nx">showError</span><span class="p">(</span><span class="s2">&quot;Map element &quot;</span> <span class="o">+</span> <span class="nx">opts</span><span class="p">[</span><span class="s1">&#39;mapElem&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot; could not be resolved!&quot;</span><span class="p">);</span></div><div class='line' id='LC92'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="p">}</span></div><div class='line' id='LC93'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">this</span><span class="p">.</span><span class="nx">debug</span><span class="p">(</span><span class="s1">&#39;mapElem&#39;</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">mapElem</span><span class="p">);</span></div><div class='line' id='LC94'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">mapElem</span><span class="p">)</span> <span class="p">{</span></div><div class='line' id='LC95'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">return</span><span class="p">;</span></div><div class='line' id='LC96'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="p">}</span></div><div class='line' id='LC97'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">this</span><span class="p">.</span><span class="nx">map</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">google</span><span class="p">.</span><span class="nx">maps</span><span class="p">.</span><span class="nx">Map</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">mapElem</span><span class="p">,</span> <span class="nx">mapOptions</span><span class="p">);</span></div><div class='line' id='LC98'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">map</span><span class="p">)</span> <span class="p">{</span></div><div class='line' id='LC99'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">return</span><span class="p">;</span></div><div class='line' id='LC100'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="p">}</span></div><div class='line' id='LC101'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">this</span><span class="p">.</span><span class="nx">marker</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">google</span><span class="p">.</span><span class="nx">maps</span><span class="p">.</span><span class="nx">Marker</span><span class="p">({</span></div><div class='line' id='LC102'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">map</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">map</span><span class="p">,</span></div><div class='line' id='LC103'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">draggable</span><span class="o">:</span> <span class="kc">true</span></div><div class='line' id='LC104'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="p">});</span></div><div class='line' id='LC105'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">return</span> <span class="nx">self</span><span class="p">.</span><span class="nx">addMapListeners</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">marker</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">map</span><span class="p">);</span></div><div class='line' id='LC106'>&nbsp;&nbsp;<span class="p">};</span></div><div class='line' id='LC107'><br/></div><div class='line' id='LC108'>&nbsp;&nbsp;<span class="nx">GmapsCompleter</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">debug</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">label</span><span class="p">,</span> <span class="nx">obj</span><span class="p">)</span> <span class="p">{</span></div><div class='line' id='LC109'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">debugOn</span><span class="p">)</span> <span class="p">{</span></div><div class='line' id='LC110'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">return</span><span class="p">;</span></div><div class='line' id='LC111'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="p">}</span></div><div class='line' id='LC112'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">return</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">label</span><span class="p">,</span> <span class="nx">obj</span><span class="p">);</span></div><div class='line' id='LC113'>&nbsp;&nbsp;<span class="p">};</span></div><div class='line' id='LC114'><br/></div><div class='line' id='LC115'>&nbsp;&nbsp;<span class="nx">GmapsCompleter</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">addMapListeners</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">marker</span><span class="p">,</span> <span class="nx">map</span><span class="p">)</span> <span class="p">{</span></div><div class='line' id='LC116'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="kd">var</span> <span class="nx">self</span><span class="p">;</span></div><div class='line' id='LC117'><br/></div><div class='line' id='LC118'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">self</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span></div><div class='line' id='LC119'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">google</span><span class="p">.</span><span class="nx">maps</span><span class="p">.</span><span class="nx">event</span><span class="p">.</span><span class="nx">addListener</span><span class="p">(</span><span class="nx">marker</span><span class="p">,</span> <span class="s1">&#39;dragend&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span></div><div class='line' id='LC120'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">return</span> <span class="nx">self</span><span class="p">.</span><span class="nx">geocodeLookup</span><span class="p">(</span><span class="s1">&#39;latLng&#39;</span><span class="p">,</span> <span class="nx">marker</span><span class="p">.</span><span class="nx">getPosition</span><span class="p">());</span></div><div class='line' id='LC121'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="p">});</span></div><div class='line' id='LC122'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">return</span> <span class="nx">google</span><span class="p">.</span><span class="nx">maps</span><span class="p">.</span><span class="nx">event</span><span class="p">.</span><span class="nx">addListener</span><span class="p">(</span><span class="nx">map</span><span class="p">,</span> <span class="s1">&#39;click&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="p">{</span></div><div class='line' id='LC123'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">marker</span><span class="p">.</span><span class="nx">setPosition</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">latLng</span><span class="p">);</span></div><div class='line' id='LC124'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">return</span> <span class="nx">self</span><span class="p">.</span><span class="nx">geocodeLookup</span><span class="p">(</span><span class="s1">&#39;latLng&#39;</span><span class="p">,</span> <span class="nx">event</span><span class="p">.</span><span class="nx">latLng</span><span class="p">);</span></div><div class='line' id='LC125'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="p">});</span></div><div class='line' id='LC126'>&nbsp;&nbsp;<span class="p">};</span></div><div class='line' id='LC127'><br/></div><div class='line' id='LC128'>&nbsp;&nbsp;<span class="nx">GmapsCompleter</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">geocodeLookup</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">type</span><span class="p">,</span> <span class="nx">value</span><span class="p">,</span> <span class="nx">update</span><span class="p">)</span> <span class="p">{</span></div><div class='line' id='LC129'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="kd">var</span> <span class="nx">request</span><span class="p">;</span></div><div class='line' id='LC130'><br/></div><div class='line' id='LC131'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">update</span> <span class="o">||</span> <span class="p">(</span><span class="nx">update</span> <span class="o">=</span> <span class="kc">false</span><span class="p">);</span></div><div class='line' id='LC132'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">request</span> <span class="o">=</span> <span class="p">{};</span></div><div class='line' id='LC133'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">request</span><span class="p">[</span><span class="nx">type</span><span class="p">]</span> <span class="o">=</span> <span class="nx">value</span><span class="p">;</span></div><div class='line' id='LC134'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">geocoder</span><span class="p">.</span><span class="nx">geocode</span><span class="p">(</span><span class="nx">request</span><span class="p">,</span> <span class="nx">performGeocode</span><span class="p">);</span></div><div class='line' id='LC135'>&nbsp;&nbsp;<span class="p">};</span></div><div class='line' id='LC136'><br/></div><div class='line' id='LC137'>&nbsp;&nbsp;<span class="nx">GmapsCompleter</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">performGeocode</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">results</span><span class="p">,</span> <span class="nx">status</span><span class="p">)</span> <span class="p">{</span></div><div class='line' id='LC138'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">this</span><span class="p">.</span><span class="nx">debug</span><span class="p">(</span><span class="s1">&#39;performGeocode&#39;</span><span class="p">,</span> <span class="nx">status</span><span class="p">);</span></div><div class='line' id='LC139'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">errorField</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">);</span></div><div class='line' id='LC140'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">if</span> <span class="p">(</span><span class="nx">status</span> <span class="o">===</span> <span class="nx">google</span><span class="p">.</span><span class="nx">maps</span><span class="p">.</span><span class="nx">GeocoderStatus</span><span class="p">.</span><span class="nx">OK</span><span class="p">)</span> <span class="p">{</span></div><div class='line' id='LC141'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">geocodeSuccess</span><span class="p">(</span><span class="nx">results</span><span class="p">);</span></div><div class='line' id='LC142'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="p">}</span> <span class="k">else</span> <span class="p">{</span></div><div class='line' id='LC143'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">geocodeFailure</span><span class="p">(</span><span class="nx">type</span><span class="p">,</span> <span class="nx">value</span><span class="p">);</span></div><div class='line' id='LC144'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="p">}</span></div><div class='line' id='LC145'>&nbsp;&nbsp;<span class="p">};</span></div><div class='line' id='LC146'><br/></div><div class='line' id='LC147'>&nbsp;&nbsp;<span class="nx">GmapsCompleter</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">geocodeSuccess</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">results</span><span class="p">)</span> <span class="p">{</span></div><div class='line' id='LC148'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">this</span><span class="p">.</span><span class="nx">debug</span><span class="p">(</span><span class="s1">&#39;geocodeSuccess&#39;</span><span class="p">,</span> <span class="nx">results</span><span class="p">);</span></div><div class='line' id='LC149'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">if</span> <span class="p">(</span><span class="nx">results</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="p">{</span></div><div class='line' id='LC150'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">this</span><span class="p">.</span><span class="nx">updateUI</span><span class="p">(</span><span class="nx">results</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">formatted_address</span><span class="p">,</span> <span class="nx">results</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">geometry</span><span class="p">.</span><span class="nx">location</span><span class="p">);</span></div><div class='line' id='LC151'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">if</span> <span class="p">(</span><span class="nx">update</span><span class="p">)</span> <span class="p">{</span></div><div class='line' id='LC152'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">updateMap</span><span class="p">(</span><span class="nx">results</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">geometry</span><span class="p">);</span></div><div class='line' id='LC153'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="p">}</span></div><div class='line' id='LC154'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="p">}</span> <span class="k">else</span> <span class="p">{</span></div><div class='line' id='LC155'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">showError</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">geocodeErrorMsg</span><span class="p">());</span></div><div class='line' id='LC156'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="p">}</span></div><div class='line' id='LC157'>&nbsp;&nbsp;<span class="p">};</span></div><div class='line' id='LC158'><br/></div><div class='line' id='LC159'>&nbsp;&nbsp;<span class="nx">GmapsCompleter</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">geocodeFailure</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">type</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span> <span class="p">{</span></div><div class='line' id='LC160'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">this</span><span class="p">.</span><span class="nx">debug</span><span class="p">(</span><span class="s1">&#39;geocodeFailure&#39;</span><span class="p">,</span> <span class="nx">type</span><span class="p">);</span></div><div class='line' id='LC161'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">if</span> <span class="p">(</span><span class="nx">type</span> <span class="o">===</span> <span class="s1">&#39;address&#39;</span><span class="p">)</span> <span class="p">{</span></div><div class='line' id='LC162'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">showError</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">invalidAddressMsg</span><span class="p">(</span><span class="nx">value</span><span class="p">));</span></div><div class='line' id='LC163'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="p">}</span> <span class="k">else</span> <span class="p">{</span></div><div class='line' id='LC164'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">this</span><span class="p">.</span><span class="nx">showError</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">noAddressFoundMsg</span><span class="p">());</span></div><div class='line' id='LC165'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">updateUI</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="nx">value</span><span class="p">);</span></div><div class='line' id='LC166'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="p">}</span></div><div class='line' id='LC167'>&nbsp;&nbsp;<span class="p">};</span></div><div class='line' id='LC168'><br/></div><div class='line' id='LC169'>&nbsp;&nbsp;<span class="nx">GmapsCompleter</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">geocodeErrorMsg</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span></div><div class='line' id='LC170'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">return</span> <span class="s2">&quot;Sorry, something went wrong. Try again!&quot;</span><span class="p">;</span></div><div class='line' id='LC171'>&nbsp;&nbsp;<span class="p">};</span></div><div class='line' id='LC172'><br/></div><div class='line' id='LC173'>&nbsp;&nbsp;<span class="nx">GmapsCompleter</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">invalidAddressMsg</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span></div><div class='line' id='LC174'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">return</span> <span class="s2">&quot;Sorry! We couldn&#39;t find &quot;</span> <span class="o">+</span> <span class="nx">value</span> <span class="o">+</span> <span class="s2">&quot;. Try a different search term, or click the map.&quot;</span><span class="p">;</span></div><div class='line' id='LC175'>&nbsp;&nbsp;<span class="p">};</span></div><div class='line' id='LC176'><br/></div><div class='line' id='LC177'>&nbsp;&nbsp;<span class="nx">GmapsCompleter</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">noAddressFoundMsg</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span></div><div class='line' id='LC178'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">return</span> <span class="s2">&quot;Woah... that&#39;s pretty remote! You&#39;re going to have to manually enter a place name.&quot;</span><span class="p">;</span></div><div class='line' id='LC179'>&nbsp;&nbsp;<span class="p">};</span></div><div class='line' id='LC180'><br/></div><div class='line' id='LC181'>&nbsp;&nbsp;<span class="nx">GmapsCompleter</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">showError</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">msg</span><span class="p">)</span> <span class="p">{</span></div><div class='line' id='LC182'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">errorField</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="nx">msg</span><span class="p">);</span></div><div class='line' id='LC183'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">errorField</span><span class="p">).</span><span class="nx">show</span><span class="p">();</span></div><div class='line' id='LC184'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">return</span> <span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span></div><div class='line' id='LC185'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">return</span> <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">errorField</span><span class="p">).</span><span class="nx">hide</span><span class="p">();</span></div><div class='line' id='LC186'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="p">},</span> <span class="mi">1000</span><span class="p">);</span></div><div class='line' id='LC187'>&nbsp;&nbsp;<span class="p">};</span></div><div class='line' id='LC188'><br/></div><div class='line' id='LC189'>&nbsp;&nbsp;<span class="nx">GmapsCompleter</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">autoCompleteInit</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">opts</span><span class="p">)</span> <span class="p">{</span></div><div class='line' id='LC190'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="kd">var</span> <span class="nx">self</span><span class="p">;</span></div><div class='line' id='LC191'><br/></div><div class='line' id='LC192'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">opts</span> <span class="o">=</span> <span class="nx">opts</span> <span class="o">||</span> <span class="p">{};</span></div><div class='line' id='LC193'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">this</span><span class="p">.</span><span class="nx">region</span> <span class="o">=</span> <span class="nx">opts</span><span class="p">[</span><span class="s1">&#39;region&#39;</span><span class="p">]</span> <span class="o">||</span> <span class="k">this</span><span class="p">.</span><span class="nx">defaultOptions</span><span class="p">[</span><span class="s1">&#39;region&#39;</span><span class="p">];</span></div><div class='line' id='LC194'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">this</span><span class="p">.</span><span class="nx">country</span> <span class="o">=</span> <span class="nx">opts</span><span class="p">[</span><span class="s1">&#39;country&#39;</span><span class="p">]</span> <span class="o">||</span> <span class="k">this</span><span class="p">.</span><span class="nx">defaultOptions</span><span class="p">[</span><span class="s1">&#39;country&#39;</span><span class="p">];</span></div><div class='line' id='LC195'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">this</span><span class="p">.</span><span class="nx">debug</span><span class="p">(</span><span class="s1">&#39;region&#39;</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">region</span><span class="p">);</span></div><div class='line' id='LC196'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">self</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span></div><div class='line' id='LC197'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">inputField</span><span class="p">).</span><span class="nx">autocomplete</span><span class="p">({</span></div><div class='line' id='LC198'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">select</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">event</span><span class="p">,</span> <span class="nx">ui</span><span class="p">)</span> <span class="p">{</span></div><div class='line' id='LC199'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">self</span><span class="p">.</span><span class="nx">updateUI</span><span class="p">(</span><span class="nx">ui</span><span class="p">.</span><span class="nx">item</span><span class="p">.</span><span class="nx">value</span><span class="p">,</span> <span class="nx">ui</span><span class="p">.</span><span class="nx">item</span><span class="p">.</span><span class="nx">geocode</span><span class="p">.</span><span class="nx">geometry</span><span class="p">.</span><span class="nx">location</span><span class="p">);</span></div><div class='line' id='LC200'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">return</span> <span class="nx">self</span><span class="p">.</span><span class="nx">updateMap</span><span class="p">(</span><span class="nx">ui</span><span class="p">.</span><span class="nx">item</span><span class="p">.</span><span class="nx">geocode</span><span class="p">.</span><span class="nx">geometry</span><span class="p">);</span></div><div class='line' id='LC201'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="p">},</span></div><div class='line' id='LC202'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">source</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">request</span><span class="p">,</span> <span class="nx">response</span><span class="p">)</span> <span class="p">{</span></div><div class='line' id='LC203'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kd">var</span> <span class="nx">address</span><span class="p">,</span> <span class="nx">geocodeOpts</span><span class="p">,</span> <span class="nx">region</span><span class="p">,</span> <span class="nx">region_postfix</span><span class="p">;</span></div><div class='line' id='LC204'><br/></div><div class='line' id='LC205'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">region_postfix</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span></div><div class='line' id='LC206'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">region</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">region</span><span class="p">;</span></div><div class='line' id='LC207'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">if</span> <span class="p">(</span><span class="nx">region</span><span class="p">)</span> <span class="p">{</span></div><div class='line' id='LC208'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">region_postfix</span> <span class="o">=</span> <span class="s1">&#39;, &#39;</span> <span class="o">+</span> <span class="nx">region</span><span class="p">;</span></div><div class='line' id='LC209'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="p">}</span></div><div class='line' id='LC210'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">address</span> <span class="o">=</span> <span class="nx">request</span><span class="p">.</span><span class="nx">term</span> <span class="o">+</span> <span class="nx">region_postfix</span><span class="p">;</span></div><div class='line' id='LC211'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">self</span><span class="p">.</span><span class="nx">debug</span><span class="p">(</span><span class="s1">&#39;geocode address&#39;</span><span class="p">,</span> <span class="nx">address</span><span class="p">);</span></div><div class='line' id='LC212'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">geocodeOpts</span> <span class="o">=</span> <span class="p">{</span></div><div class='line' id='LC213'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s1">&#39;address&#39;</span><span class="o">:</span> <span class="nx">address</span></div><div class='line' id='LC214'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="p">};</span></div><div class='line' id='LC215'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">return</span> <span class="nx">self</span><span class="p">.</span><span class="nx">geocoder</span><span class="p">.</span><span class="nx">geocode</span><span class="p">(</span><span class="nx">geocodeOpts</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">results</span><span class="p">,</span> <span class="nx">status</span><span class="p">)</span> <span class="p">{</span></div><div class='line' id='LC216'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">return</span> <span class="nx">response</span><span class="p">(</span><span class="nx">$</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">results</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">item</span><span class="p">)</span> <span class="p">{</span></div><div class='line' id='LC217'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kd">var</span> <span class="nx">uiAddress</span><span class="p">;</span></div><div class='line' id='LC218'><br/></div><div class='line' id='LC219'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">uiAddress</span> <span class="o">=</span> <span class="nx">item</span><span class="p">.</span><span class="nx">formatted_address</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="s2">&quot;, &quot;</span> <span class="o">+</span> <span class="nx">self</span><span class="p">.</span><span class="nx">country</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">);</span></div><div class='line' id='LC220'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">return</span> <span class="p">{</span></div><div class='line' id='LC221'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">label</span><span class="o">:</span> <span class="nx">uiAddress</span><span class="p">,</span></div><div class='line' id='LC222'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">value</span><span class="o">:</span> <span class="nx">uiAddress</span><span class="p">,</span></div><div class='line' id='LC223'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">geocode</span><span class="o">:</span> <span class="nx">item</span></div><div class='line' id='LC224'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="p">};</span></div><div class='line' id='LC225'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="p">}));</span></div><div class='line' id='LC226'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="p">});</span></div><div class='line' id='LC227'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="p">}</span></div><div class='line' id='LC228'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="p">});</span></div><div class='line' id='LC229'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">return</span> <span class="nx">$</span><span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">inputField</span><span class="p">).</span><span class="nx">bind</span><span class="p">(</span><span class="s1">&#39;keydown&#39;</span><span class="p">,</span> <span class="k">this</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">keyDownHandler</span><span class="p">);</span></div><div class='line' id='LC230'>&nbsp;&nbsp;<span class="p">};</span></div><div class='line' id='LC231'><br/></div><div class='line' id='LC232'>&nbsp;&nbsp;<span class="nx">GmapsCompleter</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">keyDownHandler</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">event</span><span class="p">,</span> <span class="nx">completer</span><span class="p">)</span> <span class="p">{</span></div><div class='line' id='LC233'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">if</span> <span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">keyCode</span> <span class="o">===</span> <span class="mi">13</span><span class="p">)</span> <span class="p">{</span></div><div class='line' id='LC234'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">completer</span><span class="p">.</span><span class="nx">geocodeLookup</span><span class="p">(</span><span class="s1">&#39;address&#39;</span><span class="p">,</span> <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">inputField</span><span class="p">).</span><span class="nx">val</span><span class="p">(),</span> <span class="kc">true</span><span class="p">);</span></div><div class='line' id='LC235'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">return</span> <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">inputField</span><span class="p">).</span><span class="nx">autocomplete</span><span class="p">(</span><span class="s2">&quot;disable&quot;</span><span class="p">);</span></div><div class='line' id='LC236'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="p">}</span> <span class="k">else</span> <span class="p">{</span></div><div class='line' id='LC237'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">return</span> <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">inputField</span><span class="p">).</span><span class="nx">autocomplete</span><span class="p">(</span><span class="s2">&quot;enable&quot;</span><span class="p">);</span></div><div class='line' id='LC238'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="p">}</span></div><div class='line' id='LC239'>&nbsp;&nbsp;<span class="p">};</span></div><div class='line' id='LC240'><br/></div><div class='line' id='LC241'>&nbsp;&nbsp;<span class="k">return</span> <span class="nx">GmapsCompleter</span><span class="p">;</span></div><div class='line' id='LC242'><br/></div><div class='line' id='LC243'><span class="p">})();</span></div><div class='line' id='LC244'><br/></div><div class='line' id='LC245'><span class="nx">GmapsCompleterDefaultAssist</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span></div><div class='line' id='LC246'>&nbsp;&nbsp;<span class="kd">function</span> <span class="nx">GmapsCompleterDefaultAssist</span><span class="p">()</span> <span class="p">{}</span></div><div class='line' id='LC247'><br/></div><div class='line' id='LC248'>&nbsp;&nbsp;<span class="nx">GmapsCompleterDefaultAssist</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">options</span> <span class="o">=</span> <span class="p">{</span></div><div class='line' id='LC249'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">mapElem</span><span class="o">:</span> <span class="s1">&#39;#gmaps-canvas&#39;</span><span class="p">,</span></div><div class='line' id='LC250'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">zoomLevel</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span></div><div class='line' id='LC251'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">mapType</span><span class="o">:</span> <span class="nx">google</span><span class="p">.</span><span class="nx">maps</span><span class="p">.</span><span class="nx">MapTypeId</span><span class="p">.</span><span class="nx">ROADMAP</span><span class="p">,</span></div><div class='line' id='LC252'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">pos</span><span class="o">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span></div><div class='line' id='LC253'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">inputField</span><span class="o">:</span> <span class="s1">&#39;#gmaps-input-address&#39;</span><span class="p">,</span></div><div class='line' id='LC254'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">errorField</span><span class="o">:</span> <span class="s1">&#39;#gmaps-error&#39;</span><span class="p">,</span></div><div class='line' id='LC255'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">debugOn</span><span class="o">:</span> <span class="kc">true</span></div><div class='line' id='LC256'>&nbsp;&nbsp;<span class="p">};</span></div><div class='line' id='LC257'><br/></div><div class='line' id='LC258'>&nbsp;&nbsp;<span class="nx">GmapsCompleterDefaultAssist</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">updateMap</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">geometry</span><span class="p">)</span> <span class="p">{</span></div><div class='line' id='LC259'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="kd">var</span> <span class="nx">map</span><span class="p">,</span> <span class="nx">marker</span><span class="p">;</span></div><div class='line' id='LC260'><br/></div><div class='line' id='LC261'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">map</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">map</span><span class="p">;</span></div><div class='line' id='LC262'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">marker</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">marker</span><span class="p">;</span></div><div class='line' id='LC263'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">if</span> <span class="p">(</span><span class="nx">map</span><span class="p">)</span> <span class="p">{</span></div><div class='line' id='LC264'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">map</span><span class="p">.</span><span class="nx">fitBounds</span><span class="p">(</span><span class="nx">geometry</span><span class="p">.</span><span class="nx">viewport</span><span class="p">);</span></div><div class='line' id='LC265'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="p">}</span></div><div class='line' id='LC266'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">if</span> <span class="p">(</span><span class="nx">marker</span><span class="p">)</span> <span class="p">{</span></div><div class='line' id='LC267'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">return</span> <span class="nx">marker</span><span class="p">.</span><span class="nx">setPosition</span><span class="p">(</span><span class="nx">geometry</span><span class="p">.</span><span class="nx">location</span><span class="p">);</span></div><div class='line' id='LC268'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="p">}</span></div><div class='line' id='LC269'>&nbsp;&nbsp;<span class="p">};</span></div><div class='line' id='LC270'><br/></div><div class='line' id='LC271'>&nbsp;&nbsp;<span class="nx">GmapsCompleterDefaultAssist</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">updateUI</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">address</span><span class="p">,</span> <span class="nx">latLng</span><span class="p">)</span> <span class="p">{</span></div><div class='line' id='LC272'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="kd">var</span> <span class="nx">country</span><span class="p">,</span> <span class="nx">inputField</span><span class="p">,</span> <span class="nx">updateAdr</span><span class="p">;</span></div><div class='line' id='LC273'><br/></div><div class='line' id='LC274'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">inputField</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">inputField</span><span class="p">;</span></div><div class='line' id='LC275'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">country</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">country</span><span class="p">;</span></div><div class='line' id='LC276'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">$</span><span class="p">(</span><span class="nx">inputField</span><span class="p">).</span><span class="nx">autocomplete</span><span class="p">(</span><span class="s1">&#39;close&#39;</span><span class="p">);</span></div><div class='line' id='LC277'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">this</span><span class="p">.</span><span class="nx">debug</span><span class="p">(</span><span class="s1">&#39;country&#39;</span><span class="p">,</span> <span class="nx">country</span><span class="p">);</span></div><div class='line' id='LC278'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">updateAdr</span> <span class="o">=</span> <span class="nx">address</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="s1">&#39;, &#39;</span> <span class="o">+</span> <span class="nx">country</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">);</span></div><div class='line' id='LC279'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">updateAdr</span> <span class="o">=</span> <span class="nx">address</span><span class="p">;</span></div><div class='line' id='LC280'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">this</span><span class="p">.</span><span class="nx">debug</span><span class="p">(</span><span class="s1">&#39;updateAdr&#39;</span><span class="p">,</span> <span class="nx">updateAdr</span><span class="p">);</span></div><div class='line' id='LC281'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">$</span><span class="p">(</span><span class="nx">inputField</span><span class="p">).</span><span class="nx">val</span><span class="p">(</span><span class="nx">updateAdr</span><span class="p">);</span></div><div class='line' id='LC282'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">positionOutputter</span><span class="p">(</span><span class="nx">latLng</span><span class="p">);</span></div><div class='line' id='LC283'>&nbsp;&nbsp;<span class="p">};</span></div><div class='line' id='LC284'><br/></div><div class='line' id='LC285'>&nbsp;&nbsp;<span class="nx">GmapsCompleterDefaultAssist</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">positionOutputter</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">latLng</span><span class="p">)</span> <span class="p">{</span></div><div class='line' id='LC286'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#gmaps-output-latitude&#39;</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="nx">latLng</span><span class="p">.</span><span class="nx">lat</span><span class="p">());</span></div><div class='line' id='LC287'>&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">return</span> <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#gmaps-output-longitude&#39;</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="nx">latLng</span><span class="p">.</span><span class="nx">lng</span><span class="p">());</span></div><div class='line' id='LC288'>&nbsp;&nbsp;<span class="p">};</span></div><div class='line' id='LC289'><br/></div><div class='line' id='LC290'>&nbsp;&nbsp;<span class="k">return</span> <span class="nx">GmapsCompleterDefaultAssist</span><span class="p">;</span></div><div class='line' id='LC291'><br/></div><div class='line' id='LC292'><span class="p">})();</span></div><div class='line' id='LC293'><br/></div><div class='line' id='LC294'><span class="nb">window</span><span class="p">.</span><span class="nx">GmapsCompleter</span> <span class="o">=</span> <span class="nx">GmapsCompleter</span><span class="p">;</span></div><div class='line' id='LC295'><br/></div><div class='line' id='LC296'><span class="nb">window</span><span class="p">.</span><span class="nx">GmapsCompleterDefaultAssist</span> <span class="o">=</span> <span class="nx">GmapsCompleterDefaultAssist</span><span class="p">;</span></div></pre></div>
-            </td>
-          </tr>
-        </table>
-  </div>
-
-  </div>
-</div>
-
-<a href="#jump-to-line" rel="facebox[.linejump]" data-hotkey="l" class="js-jump-to-line" style="display:none">Jump to Line</a>
-<div id="jump-to-line" style="display:none">
-  <form accept-charset="UTF-8" class="js-jump-to-line-form">
-    <input class="linejump-input js-jump-to-line-field" type="text" placeholder="Jump to line&hellip;" autofocus>
-    <button type="submit" class="button">Go</button>
-  </form>
-</div>
-
-        </div>
-
-      </div><!-- /.repo-container -->
-      <div class="modal-backdrop"></div>
-    </div><!-- /.container -->
-  </div><!-- /.site -->
-
-
-    </div><!-- /.wrapper -->
-
-      <div class="container">
-  <div class="site-footer">
-    <ul class="site-footer-links right">
-      <li><a href="https://status.github.com/">Status</a></li>
-      <li><a href="http://developer.github.com">API</a></li>
-      <li><a href="http://training.github.com">Training</a></li>
-      <li><a href="http://shop.github.com">Shop</a></li>
-      <li><a href="/blog">Blog</a></li>
-      <li><a href="/about">About</a></li>
-
-    </ul>
-
-    <a href="/">
-      <span class="mega-octicon octicon-mark-github"></span>
-    </a>
-
-    <ul class="site-footer-links">
-      <li>&copy; 2013 <span title="0.04125s from github-fe129-cp1-prd.iad.github.net">GitHub</span>, Inc.</li>
-        <li><a href="/site/terms">Terms</a></li>
-        <li><a href="/site/privacy">Privacy</a></li>
-        <li><a href="/security">Security</a></li>
-        <li><a href="/contact">Contact</a></li>
-    </ul>
-  </div><!-- /.site-footer -->
-</div><!-- /.container -->
-
-
-    <div class="fullscreen-overlay js-fullscreen-overlay" id="fullscreen_overlay">
-  <div class="fullscreen-container js-fullscreen-container">
-    <div class="textarea-wrap">
-      <textarea name="fullscreen-contents" id="fullscreen-contents" class="js-fullscreen-contents" placeholder="" data-suggester="fullscreen_suggester"></textarea>
-          <div class="suggester-container">
-              <div class="suggester fullscreen-suggester js-navigation-container" id="fullscreen_suggester"
-                 data-url="/kristianmandrup/gmaps-autocomplete-rails/suggestions/commit">
-              </div>
-          </div>
-    </div>
-  </div>
-  <div class="fullscreen-sidebar">
-    <a href="#" class="exit-fullscreen js-exit-fullscreen tooltipped leftwards" title="Exit Zen Mode">
-      <span class="mega-octicon octicon-screen-normal"></span>
-    </a>
-    <a href="#" class="theme-switcher js-theme-switcher tooltipped leftwards"
-      title="Switch themes">
-      <span class="octicon octicon-color-mode"></span>
-    </a>
-  </div>
-</div>
-
-
-
-    <div id="ajax-error-message" class="flash flash-error">
-      <span class="octicon octicon-alert"></span>
-      <a href="#" class="octicon octicon-remove-close close ajax-error-dismiss"></a>
-      Something went wrong with that request. Please try again.
-    </div>
-
-  </body>
-</html>
-
-;
 (function() {
 
 
 }).call(this);
 (function() {
 
-
-}).call(this);
-//     Underscore.js 1.5.2
-//     http://underscorejs.org
-//     (c) 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
-//     Underscore may be freely distributed under the MIT license.
-
-(function() {
-
-  // Baseline setup
-  // --------------
-
-  // Establish the root object, `window` in the browser, or `exports` on the server.
-  var root = this;
-
-  // Save the previous value of the `_` variable.
-  var previousUnderscore = root._;
-
-  // Establish the object that gets returned to break out of a loop iteration.
-  var breaker = {};
-
-  // Save bytes in the minified (but not gzipped) version:
-  var ArrayProto = Array.prototype, ObjProto = Object.prototype, FuncProto = Function.prototype;
-
-  // Create quick reference variables for speed access to core prototypes.
-  var
-    push             = ArrayProto.push,
-    slice            = ArrayProto.slice,
-    concat           = ArrayProto.concat,
-    toString         = ObjProto.toString,
-    hasOwnProperty   = ObjProto.hasOwnProperty;
-
-  // All **ECMAScript 5** native function implementations that we hope to use
-  // are declared here.
-  var
-    nativeForEach      = ArrayProto.forEach,
-    nativeMap          = ArrayProto.map,
-    nativeReduce       = ArrayProto.reduce,
-    nativeReduceRight  = ArrayProto.reduceRight,
-    nativeFilter       = ArrayProto.filter,
-    nativeEvery        = ArrayProto.every,
-    nativeSome         = ArrayProto.some,
-    nativeIndexOf      = ArrayProto.indexOf,
-    nativeLastIndexOf  = ArrayProto.lastIndexOf,
-    nativeIsArray      = Array.isArray,
-    nativeKeys         = Object.keys,
-    nativeBind         = FuncProto.bind;
-
-  // Create a safe reference to the Underscore object for use below.
-  var _ = function(obj) {
-    if (obj instanceof _) return obj;
-    if (!(this instanceof _)) return new _(obj);
-    this._wrapped = obj;
-  };
-
-  // Export the Underscore object for **Node.js**, with
-  // backwards-compatibility for the old `require()` API. If we're in
-  // the browser, add `_` as a global object via a string identifier,
-  // for Closure Compiler "advanced" mode.
-  if (typeof exports !== 'undefined') {
-    if (typeof module !== 'undefined' && module.exports) {
-      exports = module.exports = _;
-    }
-    exports._ = _;
-  } else {
-    root._ = _;
-  }
-
-  // Current version.
-  _.VERSION = '1.5.2';
-
-  // Collection Functions
-  // --------------------
-
-  // The cornerstone, an `each` implementation, aka `forEach`.
-  // Handles objects with the built-in `forEach`, arrays, and raw objects.
-  // Delegates to **ECMAScript 5**'s native `forEach` if available.
-  var each = _.each = _.forEach = function(obj, iterator, context) {
-    if (obj == null) return;
-    if (nativeForEach && obj.forEach === nativeForEach) {
-      obj.forEach(iterator, context);
-    } else if (obj.length === +obj.length) {
-      for (var i = 0, length = obj.length; i < length; i++) {
-        if (iterator.call(context, obj[i], i, obj) === breaker) return;
-      }
-    } else {
-      var keys = _.keys(obj);
-      for (var i = 0, length = keys.length; i < length; i++) {
-        if (iterator.call(context, obj[keys[i]], keys[i], obj) === breaker) return;
-      }
-    }
-  };
-
-  // Return the results of applying the iterator to each element.
-  // Delegates to **ECMAScript 5**'s native `map` if available.
-  _.map = _.collect = function(obj, iterator, context) {
-    var results = [];
-    if (obj == null) return results;
-    if (nativeMap && obj.map === nativeMap) return obj.map(iterator, context);
-    each(obj, function(value, index, list) {
-      results.push(iterator.call(context, value, index, list));
-    });
-    return results;
-  };
-
-  var reduceError = 'Reduce of empty array with no initial value';
-
-  // **Reduce** builds up a single result from a list of values, aka `inject`,
-  // or `foldl`. Delegates to **ECMAScript 5**'s native `reduce` if available.
-  _.reduce = _.foldl = _.inject = function(obj, iterator, memo, context) {
-    var initial = arguments.length > 2;
-    if (obj == null) obj = [];
-    if (nativeReduce && obj.reduce === nativeReduce) {
-      if (context) iterator = _.bind(iterator, context);
-      return initial ? obj.reduce(iterator, memo) : obj.reduce(iterator);
-    }
-    each(obj, function(value, index, list) {
-      if (!initial) {
-        memo = value;
-        initial = true;
-      } else {
-        memo = iterator.call(context, memo, value, index, list);
-      }
-    });
-    if (!initial) throw new TypeError(reduceError);
-    return memo;
-  };
-
-  // The right-associative version of reduce, also known as `foldr`.
-  // Delegates to **ECMAScript 5**'s native `reduceRight` if available.
-  _.reduceRight = _.foldr = function(obj, iterator, memo, context) {
-    var initial = arguments.length > 2;
-    if (obj == null) obj = [];
-    if (nativeReduceRight && obj.reduceRight === nativeReduceRight) {
-      if (context) iterator = _.bind(iterator, context);
-      return initial ? obj.reduceRight(iterator, memo) : obj.reduceRight(iterator);
-    }
-    var length = obj.length;
-    if (length !== +length) {
-      var keys = _.keys(obj);
-      length = keys.length;
-    }
-    each(obj, function(value, index, list) {
-      index = keys ? keys[--length] : --length;
-      if (!initial) {
-        memo = obj[index];
-        initial = true;
-      } else {
-        memo = iterator.call(context, memo, obj[index], index, list);
-      }
-    });
-    if (!initial) throw new TypeError(reduceError);
-    return memo;
-  };
-
-  // Return the first value which passes a truth test. Aliased as `detect`.
-  _.find = _.detect = function(obj, iterator, context) {
-    var result;
-    any(obj, function(value, index, list) {
-      if (iterator.call(context, value, index, list)) {
-        result = value;
-        return true;
-      }
-    });
-    return result;
-  };
-
-  // Return all the elements that pass a truth test.
-  // Delegates to **ECMAScript 5**'s native `filter` if available.
-  // Aliased as `select`.
-  _.filter = _.select = function(obj, iterator, context) {
-    var results = [];
-    if (obj == null) return results;
-    if (nativeFilter && obj.filter === nativeFilter) return obj.filter(iterator, context);
-    each(obj, function(value, index, list) {
-      if (iterator.call(context, value, index, list)) results.push(value);
-    });
-    return results;
-  };
-
-  // Return all the elements for which a truth test fails.
-  _.reject = function(obj, iterator, context) {
-    return _.filter(obj, function(value, index, list) {
-      return !iterator.call(context, value, index, list);
-    }, context);
-  };
-
-  // Determine whether all of the elements match a truth test.
-  // Delegates to **ECMAScript 5**'s native `every` if available.
-  // Aliased as `all`.
-  _.every = _.all = function(obj, iterator, context) {
-    iterator || (iterator = _.identity);
-    var result = true;
-    if (obj == null) return result;
-    if (nativeEvery && obj.every === nativeEvery) return obj.every(iterator, context);
-    each(obj, function(value, index, list) {
-      if (!(result = result && iterator.call(context, value, index, list))) return breaker;
-    });
-    return !!result;
-  };
-
-  // Determine if at least one element in the object matches a truth test.
-  // Delegates to **ECMAScript 5**'s native `some` if available.
-  // Aliased as `any`.
-  var any = _.some = _.any = function(obj, iterator, context) {
-    iterator || (iterator = _.identity);
-    var result = false;
-    if (obj == null) return result;
-    if (nativeSome && obj.some === nativeSome) return obj.some(iterator, context);
-    each(obj, function(value, index, list) {
-      if (result || (result = iterator.call(context, value, index, list))) return breaker;
-    });
-    return !!result;
-  };
-
-  // Determine if the array or object contains a given value (using `===`).
-  // Aliased as `include`.
-  _.contains = _.include = function(obj, target) {
-    if (obj == null) return false;
-    if (nativeIndexOf && obj.indexOf === nativeIndexOf) return obj.indexOf(target) != -1;
-    return any(obj, function(value) {
-      return value === target;
-    });
-  };
-
-  // Invoke a method (with arguments) on every item in a collection.
-  _.invoke = function(obj, method) {
-    var args = slice.call(arguments, 2);
-    var isFunc = _.isFunction(method);
-    return _.map(obj, function(value) {
-      return (isFunc ? method : value[method]).apply(value, args);
-    });
-  };
-
-  // Convenience version of a common use case of `map`: fetching a property.
-  _.pluck = function(obj, key) {
-    return _.map(obj, function(value){ return value[key]; });
-  };
-
-  // Convenience version of a common use case of `filter`: selecting only objects
-  // containing specific `key:value` pairs.
-  _.where = function(obj, attrs, first) {
-    if (_.isEmpty(attrs)) return first ? void 0 : [];
-    return _[first ? 'find' : 'filter'](obj, function(value) {
-      for (var key in attrs) {
-        if (attrs[key] !== value[key]) return false;
-      }
-      return true;
-    });
-  };
-
-  // Convenience version of a common use case of `find`: getting the first object
-  // containing specific `key:value` pairs.
-  _.findWhere = function(obj, attrs) {
-    return _.where(obj, attrs, true);
-  };
-
-  // Return the maximum element or (element-based computation).
-  // Can't optimize arrays of integers longer than 65,535 elements.
-  // See [WebKit Bug 80797](https://bugs.webkit.org/show_bug.cgi?id=80797)
-  _.max = function(obj, iterator, context) {
-    if (!iterator && _.isArray(obj) && obj[0] === +obj[0] && obj.length < 65535) {
-      return Math.max.apply(Math, obj);
-    }
-    if (!iterator && _.isEmpty(obj)) return -Infinity;
-    var result = {computed : -Infinity, value: -Infinity};
-    each(obj, function(value, index, list) {
-      var computed = iterator ? iterator.call(context, value, index, list) : value;
-      computed > result.computed && (result = {value : value, computed : computed});
-    });
-    return result.value;
-  };
-
-  // Return the minimum element (or element-based computation).
-  _.min = function(obj, iterator, context) {
-    if (!iterator && _.isArray(obj) && obj[0] === +obj[0] && obj.length < 65535) {
-      return Math.min.apply(Math, obj);
-    }
-    if (!iterator && _.isEmpty(obj)) return Infinity;
-    var result = {computed : Infinity, value: Infinity};
-    each(obj, function(value, index, list) {
-      var computed = iterator ? iterator.call(context, value, index, list) : value;
-      computed < result.computed && (result = {value : value, computed : computed});
-    });
-    return result.value;
-  };
-
-  // Shuffle an array, using the modern version of the 
-  // [Fisher-Yates shuffle](http://en.wikipedia.org/wiki/Fisher–Yates_shuffle).
-  _.shuffle = function(obj) {
-    var rand;
-    var index = 0;
-    var shuffled = [];
-    each(obj, function(value) {
-      rand = _.random(index++);
-      shuffled[index - 1] = shuffled[rand];
-      shuffled[rand] = value;
-    });
-    return shuffled;
-  };
-
-  // Sample **n** random values from an array.
-  // If **n** is not specified, returns a single random element from the array.
-  // The internal `guard` argument allows it to work with `map`.
-  _.sample = function(obj, n, guard) {
-    if (arguments.length < 2 || guard) {
-      return obj[_.random(obj.length - 1)];
-    }
-    return _.shuffle(obj).slice(0, Math.max(0, n));
-  };
-
-  // An internal function to generate lookup iterators.
-  var lookupIterator = function(value) {
-    return _.isFunction(value) ? value : function(obj){ return obj[value]; };
-  };
-
-  // Sort the object's values by a criterion produced by an iterator.
-  _.sortBy = function(obj, value, context) {
-    var iterator = lookupIterator(value);
-    return _.pluck(_.map(obj, function(value, index, list) {
-      return {
-        value: value,
-        index: index,
-        criteria: iterator.call(context, value, index, list)
-      };
-    }).sort(function(left, right) {
-      var a = left.criteria;
-      var b = right.criteria;
-      if (a !== b) {
-        if (a > b || a === void 0) return 1;
-        if (a < b || b === void 0) return -1;
-      }
-      return left.index - right.index;
-    }), 'value');
-  };
-
-  // An internal function used for aggregate "group by" operations.
-  var group = function(behavior) {
-    return function(obj, value, context) {
-      var result = {};
-      var iterator = value == null ? _.identity : lookupIterator(value);
-      each(obj, function(value, index) {
-        var key = iterator.call(context, value, index, obj);
-        behavior(result, key, value);
-      });
-      return result;
-    };
-  };
-
-  // Groups the object's values by a criterion. Pass either a string attribute
-  // to group by, or a function that returns the criterion.
-  _.groupBy = group(function(result, key, value) {
-    (_.has(result, key) ? result[key] : (result[key] = [])).push(value);
-  });
-
-  // Indexes the object's values by a criterion, similar to `groupBy`, but for
-  // when you know that your index values will be unique.
-  _.indexBy = group(function(result, key, value) {
-    result[key] = value;
-  });
-
-  // Counts instances of an object that group by a certain criterion. Pass
-  // either a string attribute to count by, or a function that returns the
-  // criterion.
-  _.countBy = group(function(result, key) {
-    _.has(result, key) ? result[key]++ : result[key] = 1;
-  });
-
-  // Use a comparator function to figure out the smallest index at which
-  // an object should be inserted so as to maintain order. Uses binary search.
-  _.sortedIndex = function(array, obj, iterator, context) {
-    iterator = iterator == null ? _.identity : lookupIterator(iterator);
-    var value = iterator.call(context, obj);
-    var low = 0, high = array.length;
-    while (low < high) {
-      var mid = (low + high) >>> 1;
-      iterator.call(context, array[mid]) < value ? low = mid + 1 : high = mid;
-    }
-    return low;
-  };
-
-  // Safely create a real, live array from anything iterable.
-  _.toArray = function(obj) {
-    if (!obj) return [];
-    if (_.isArray(obj)) return slice.call(obj);
-    if (obj.length === +obj.length) return _.map(obj, _.identity);
-    return _.values(obj);
-  };
-
-  // Return the number of elements in an object.
-  _.size = function(obj) {
-    if (obj == null) return 0;
-    return (obj.length === +obj.length) ? obj.length : _.keys(obj).length;
-  };
-
-  // Array Functions
-  // ---------------
-
-  // Get the first element of an array. Passing **n** will return the first N
-  // values in the array. Aliased as `head` and `take`. The **guard** check
-  // allows it to work with `_.map`.
-  _.first = _.head = _.take = function(array, n, guard) {
-    if (array == null) return void 0;
-    return (n == null) || guard ? array[0] : slice.call(array, 0, n);
-  };
-
-  // Returns everything but the last entry of the array. Especially useful on
-  // the arguments object. Passing **n** will return all the values in
-  // the array, excluding the last N. The **guard** check allows it to work with
-  // `_.map`.
-  _.initial = function(array, n, guard) {
-    return slice.call(array, 0, array.length - ((n == null) || guard ? 1 : n));
-  };
-
-  // Get the last element of an array. Passing **n** will return the last N
-  // values in the array. The **guard** check allows it to work with `_.map`.
-  _.last = function(array, n, guard) {
-    if (array == null) return void 0;
-    if ((n == null) || guard) {
-      return array[array.length - 1];
-    } else {
-      return slice.call(array, Math.max(array.length - n, 0));
-    }
-  };
-
-  // Returns everything but the first entry of the array. Aliased as `tail` and `drop`.
-  // Especially useful on the arguments object. Passing an **n** will return
-  // the rest N values in the array. The **guard**
-  // check allows it to work with `_.map`.
-  _.rest = _.tail = _.drop = function(array, n, guard) {
-    return slice.call(array, (n == null) || guard ? 1 : n);
-  };
-
-  // Trim out all falsy values from an array.
-  _.compact = function(array) {
-    return _.filter(array, _.identity);
-  };
-
-  // Internal implementation of a recursive `flatten` function.
-  var flatten = function(input, shallow, output) {
-    if (shallow && _.every(input, _.isArray)) {
-      return concat.apply(output, input);
-    }
-    each(input, function(value) {
-      if (_.isArray(value) || _.isArguments(value)) {
-        shallow ? push.apply(output, value) : flatten(value, shallow, output);
-      } else {
-        output.push(value);
-      }
-    });
-    return output;
-  };
-
-  // Flatten out an array, either recursively (by default), or just one level.
-  _.flatten = function(array, shallow) {
-    return flatten(array, shallow, []);
-  };
-
-  // Return a version of the array that does not contain the specified value(s).
-  _.without = function(array) {
-    return _.difference(array, slice.call(arguments, 1));
-  };
-
-  // Produce a duplicate-free version of the array. If the array has already
-  // been sorted, you have the option of using a faster algorithm.
-  // Aliased as `unique`.
-  _.uniq = _.unique = function(array, isSorted, iterator, context) {
-    if (_.isFunction(isSorted)) {
-      context = iterator;
-      iterator = isSorted;
-      isSorted = false;
-    }
-    var initial = iterator ? _.map(array, iterator, context) : array;
-    var results = [];
-    var seen = [];
-    each(initial, function(value, index) {
-      if (isSorted ? (!index || seen[seen.length - 1] !== value) : !_.contains(seen, value)) {
-        seen.push(value);
-        results.push(array[index]);
-      }
-    });
-    return results;
-  };
-
-  // Produce an array that contains the union: each distinct element from all of
-  // the passed-in arrays.
-  _.union = function() {
-    return _.uniq(_.flatten(arguments, true));
-  };
-
-  // Produce an array that contains every item shared between all the
-  // passed-in arrays.
-  _.intersection = function(array) {
-    var rest = slice.call(arguments, 1);
-    return _.filter(_.uniq(array), function(item) {
-      return _.every(rest, function(other) {
-        return _.indexOf(other, item) >= 0;
-      });
-    });
-  };
-
-  // Take the difference between one array and a number of other arrays.
-  // Only the elements present in just the first array will remain.
-  _.difference = function(array) {
-    var rest = concat.apply(ArrayProto, slice.call(arguments, 1));
-    return _.filter(array, function(value){ return !_.contains(rest, value); });
-  };
-
-  // Zip together multiple lists into a single array -- elements that share
-  // an index go together.
-  _.zip = function() {
-    var length = _.max(_.pluck(arguments, "length").concat(0));
-    var results = new Array(length);
-    for (var i = 0; i < length; i++) {
-      results[i] = _.pluck(arguments, '' + i);
-    }
-    return results;
-  };
-
-  // Converts lists into objects. Pass either a single array of `[key, value]`
-  // pairs, or two parallel arrays of the same length -- one of keys, and one of
-  // the corresponding values.
-  _.object = function(list, values) {
-    if (list == null) return {};
-    var result = {};
-    for (var i = 0, length = list.length; i < length; i++) {
-      if (values) {
-        result[list[i]] = values[i];
-      } else {
-        result[list[i][0]] = list[i][1];
-      }
-    }
-    return result;
-  };
-
-  // If the browser doesn't supply us with indexOf (I'm looking at you, **MSIE**),
-  // we need this function. Return the position of the first occurrence of an
-  // item in an array, or -1 if the item is not included in the array.
-  // Delegates to **ECMAScript 5**'s native `indexOf` if available.
-  // If the array is large and already in sort order, pass `true`
-  // for **isSorted** to use binary search.
-  _.indexOf = function(array, item, isSorted) {
-    if (array == null) return -1;
-    var i = 0, length = array.length;
-    if (isSorted) {
-      if (typeof isSorted == 'number') {
-        i = (isSorted < 0 ? Math.max(0, length + isSorted) : isSorted);
-      } else {
-        i = _.sortedIndex(array, item);
-        return array[i] === item ? i : -1;
-      }
-    }
-    if (nativeIndexOf && array.indexOf === nativeIndexOf) return array.indexOf(item, isSorted);
-    for (; i < length; i++) if (array[i] === item) return i;
-    return -1;
-  };
-
-  // Delegates to **ECMAScript 5**'s native `lastIndexOf` if available.
-  _.lastIndexOf = function(array, item, from) {
-    if (array == null) return -1;
-    var hasIndex = from != null;
-    if (nativeLastIndexOf && array.lastIndexOf === nativeLastIndexOf) {
-      return hasIndex ? array.lastIndexOf(item, from) : array.lastIndexOf(item);
-    }
-    var i = (hasIndex ? from : array.length);
-    while (i--) if (array[i] === item) return i;
-    return -1;
-  };
-
-  // Generate an integer Array containing an arithmetic progression. A port of
-  // the native Python `range()` function. See
-  // [the Python documentation](http://docs.python.org/library/functions.html#range).
-  _.range = function(start, stop, step) {
-    if (arguments.length <= 1) {
-      stop = start || 0;
-      start = 0;
-    }
-    step = arguments[2] || 1;
-
-    var length = Math.max(Math.ceil((stop - start) / step), 0);
-    var idx = 0;
-    var range = new Array(length);
-
-    while(idx < length) {
-      range[idx++] = start;
-      start += step;
-    }
-
-    return range;
-  };
-
-  // Function (ahem) Functions
-  // ------------------
-
-  // Reusable constructor function for prototype setting.
-  var ctor = function(){};
-
-  // Create a function bound to a given object (assigning `this`, and arguments,
-  // optionally). Delegates to **ECMAScript 5**'s native `Function.bind` if
-  // available.
-  _.bind = function(func, context) {
-    var args, bound;
-    if (nativeBind && func.bind === nativeBind) return nativeBind.apply(func, slice.call(arguments, 1));
-    if (!_.isFunction(func)) throw new TypeError;
-    args = slice.call(arguments, 2);
-    return bound = function() {
-      if (!(this instanceof bound)) return func.apply(context, args.concat(slice.call(arguments)));
-      ctor.prototype = func.prototype;
-      var self = new ctor;
-      ctor.prototype = null;
-      var result = func.apply(self, args.concat(slice.call(arguments)));
-      if (Object(result) === result) return result;
-      return self;
-    };
-  };
-
-  // Partially apply a function by creating a version that has had some of its
-  // arguments pre-filled, without changing its dynamic `this` context.
-  _.partial = function(func) {
-    var args = slice.call(arguments, 1);
-    return function() {
-      return func.apply(this, args.concat(slice.call(arguments)));
-    };
-  };
-
-  // Bind all of an object's methods to that object. Useful for ensuring that
-  // all callbacks defined on an object belong to it.
-  _.bindAll = function(obj) {
-    var funcs = slice.call(arguments, 1);
-    if (funcs.length === 0) throw new Error("bindAll must be passed function names");
-    each(funcs, function(f) { obj[f] = _.bind(obj[f], obj); });
-    return obj;
-  };
-
-  // Memoize an expensive function by storing its results.
-  _.memoize = function(func, hasher) {
-    var memo = {};
-    hasher || (hasher = _.identity);
-    return function() {
-      var key = hasher.apply(this, arguments);
-      return _.has(memo, key) ? memo[key] : (memo[key] = func.apply(this, arguments));
-    };
-  };
-
-  // Delays a function for the given number of milliseconds, and then calls
-  // it with the arguments supplied.
-  _.delay = function(func, wait) {
-    var args = slice.call(arguments, 2);
-    return setTimeout(function(){ return func.apply(null, args); }, wait);
-  };
-
-  // Defers a function, scheduling it to run after the current call stack has
-  // cleared.
-  _.defer = function(func) {
-    return _.delay.apply(_, [func, 1].concat(slice.call(arguments, 1)));
-  };
-
-  // Returns a function, that, when invoked, will only be triggered at most once
-  // during a given window of time. Normally, the throttled function will run
-  // as much as it can, without ever going more than once per `wait` duration;
-  // but if you'd like to disable the execution on the leading edge, pass
-  // `{leading: false}`. To disable execution on the trailing edge, ditto.
-  _.throttle = function(func, wait, options) {
-    var context, args, result;
-    var timeout = null;
-    var previous = 0;
-    options || (options = {});
-    var later = function() {
-      previous = options.leading === false ? 0 : new Date;
-      timeout = null;
-      result = func.apply(context, args);
-    };
-    return function() {
-      var now = new Date;
-      if (!previous && options.leading === false) previous = now;
-      var remaining = wait - (now - previous);
-      context = this;
-      args = arguments;
-      if (remaining <= 0) {
-        clearTimeout(timeout);
-        timeout = null;
-        previous = now;
-        result = func.apply(context, args);
-      } else if (!timeout && options.trailing !== false) {
-        timeout = setTimeout(later, remaining);
-      }
-      return result;
-    };
-  };
-
-  // Returns a function, that, as long as it continues to be invoked, will not
-  // be triggered. The function will be called after it stops being called for
-  // N milliseconds. If `immediate` is passed, trigger the function on the
-  // leading edge, instead of the trailing.
-  _.debounce = function(func, wait, immediate) {
-    var timeout, args, context, timestamp, result;
-    return function() {
-      context = this;
-      args = arguments;
-      timestamp = new Date();
-      var later = function() {
-        var last = (new Date()) - timestamp;
-        if (last < wait) {
-          timeout = setTimeout(later, wait - last);
-        } else {
-          timeout = null;
-          if (!immediate) result = func.apply(context, args);
-        }
-      };
-      var callNow = immediate && !timeout;
-      if (!timeout) {
-        timeout = setTimeout(later, wait);
-      }
-      if (callNow) result = func.apply(context, args);
-      return result;
-    };
-  };
-
-  // Returns a function that will be executed at most one time, no matter how
-  // often you call it. Useful for lazy initialization.
-  _.once = function(func) {
-    var ran = false, memo;
-    return function() {
-      if (ran) return memo;
-      ran = true;
-      memo = func.apply(this, arguments);
-      func = null;
-      return memo;
-    };
-  };
-
-  // Returns the first function passed as an argument to the second,
-  // allowing you to adjust arguments, run code before and after, and
-  // conditionally execute the original function.
-  _.wrap = function(func, wrapper) {
-    return function() {
-      var args = [func];
-      push.apply(args, arguments);
-      return wrapper.apply(this, args);
-    };
-  };
-
-  // Returns a function that is the composition of a list of functions, each
-  // consuming the return value of the function that follows.
-  _.compose = function() {
-    var funcs = arguments;
-    return function() {
-      var args = arguments;
-      for (var i = funcs.length - 1; i >= 0; i--) {
-        args = [funcs[i].apply(this, args)];
-      }
-      return args[0];
-    };
-  };
-
-  // Returns a function that will only be executed after being called N times.
-  _.after = function(times, func) {
-    return function() {
-      if (--times < 1) {
-        return func.apply(this, arguments);
-      }
-    };
-  };
-
-  // Object Functions
-  // ----------------
-
-  // Retrieve the names of an object's properties.
-  // Delegates to **ECMAScript 5**'s native `Object.keys`
-  _.keys = nativeKeys || function(obj) {
-    if (obj !== Object(obj)) throw new TypeError('Invalid object');
-    var keys = [];
-    for (var key in obj) if (_.has(obj, key)) keys.push(key);
-    return keys;
-  };
-
-  // Retrieve the values of an object's properties.
-  _.values = function(obj) {
-    var keys = _.keys(obj);
-    var length = keys.length;
-    var values = new Array(length);
-    for (var i = 0; i < length; i++) {
-      values[i] = obj[keys[i]];
-    }
-    return values;
-  };
-
-  // Convert an object into a list of `[key, value]` pairs.
-  _.pairs = function(obj) {
-    var keys = _.keys(obj);
-    var length = keys.length;
-    var pairs = new Array(length);
-    for (var i = 0; i < length; i++) {
-      pairs[i] = [keys[i], obj[keys[i]]];
-    }
-    return pairs;
-  };
-
-  // Invert the keys and values of an object. The values must be serializable.
-  _.invert = function(obj) {
-    var result = {};
-    var keys = _.keys(obj);
-    for (var i = 0, length = keys.length; i < length; i++) {
-      result[obj[keys[i]]] = keys[i];
-    }
-    return result;
-  };
-
-  // Return a sorted list of the function names available on the object.
-  // Aliased as `methods`
-  _.functions = _.methods = function(obj) {
-    var names = [];
-    for (var key in obj) {
-      if (_.isFunction(obj[key])) names.push(key);
-    }
-    return names.sort();
-  };
-
-  // Extend a given object with all the properties in passed-in object(s).
-  _.extend = function(obj) {
-    each(slice.call(arguments, 1), function(source) {
-      if (source) {
-        for (var prop in source) {
-          obj[prop] = source[prop];
-        }
-      }
-    });
-    return obj;
-  };
-
-  // Return a copy of the object only containing the whitelisted properties.
-  _.pick = function(obj) {
-    var copy = {};
-    var keys = concat.apply(ArrayProto, slice.call(arguments, 1));
-    each(keys, function(key) {
-      if (key in obj) copy[key] = obj[key];
-    });
-    return copy;
-  };
-
-   // Return a copy of the object without the blacklisted properties.
-  _.omit = function(obj) {
-    var copy = {};
-    var keys = concat.apply(ArrayProto, slice.call(arguments, 1));
-    for (var key in obj) {
-      if (!_.contains(keys, key)) copy[key] = obj[key];
-    }
-    return copy;
-  };
-
-  // Fill in a given object with default properties.
-  _.defaults = function(obj) {
-    each(slice.call(arguments, 1), function(source) {
-      if (source) {
-        for (var prop in source) {
-          if (obj[prop] === void 0) obj[prop] = source[prop];
-        }
-      }
-    });
-    return obj;
-  };
-
-  // Create a (shallow-cloned) duplicate of an object.
-  _.clone = function(obj) {
-    if (!_.isObject(obj)) return obj;
-    return _.isArray(obj) ? obj.slice() : _.extend({}, obj);
-  };
-
-  // Invokes interceptor with the obj, and then returns obj.
-  // The primary purpose of this method is to "tap into" a method chain, in
-  // order to perform operations on intermediate results within the chain.
-  _.tap = function(obj, interceptor) {
-    interceptor(obj);
-    return obj;
-  };
-
-  // Internal recursive comparison function for `isEqual`.
-  var eq = function(a, b, aStack, bStack) {
-    // Identical objects are equal. `0 === -0`, but they aren't identical.
-    // See the [Harmony `egal` proposal](http://wiki.ecmascript.org/doku.php?id=harmony:egal).
-    if (a === b) return a !== 0 || 1 / a == 1 / b;
-    // A strict comparison is necessary because `null == undefined`.
-    if (a == null || b == null) return a === b;
-    // Unwrap any wrapped objects.
-    if (a instanceof _) a = a._wrapped;
-    if (b instanceof _) b = b._wrapped;
-    // Compare `[[Class]]` names.
-    var className = toString.call(a);
-    if (className != toString.call(b)) return false;
-    switch (className) {
-      // Strings, numbers, dates, and booleans are compared by value.
-      case '[object String]':
-        // Primitives and their corresponding object wrappers are equivalent; thus, `"5"` is
-        // equivalent to `new String("5")`.
-        return a == String(b);
-      case '[object Number]':
-        // `NaN`s are equivalent, but non-reflexive. An `egal` comparison is performed for
-        // other numeric values.
-        return a != +a ? b != +b : (a == 0 ? 1 / a == 1 / b : a == +b);
-      case '[object Date]':
-      case '[object Boolean]':
-        // Coerce dates and booleans to numeric primitive values. Dates are compared by their
-        // millisecond representations. Note that invalid dates with millisecond representations
-        // of `NaN` are not equivalent.
-        return +a == +b;
-      // RegExps are compared by their source patterns and flags.
-      case '[object RegExp]':
-        return a.source == b.source &&
-               a.global == b.global &&
-               a.multiline == b.multiline &&
-               a.ignoreCase == b.ignoreCase;
-    }
-    if (typeof a != 'object' || typeof b != 'object') return false;
-    // Assume equality for cyclic structures. The algorithm for detecting cyclic
-    // structures is adapted from ES 5.1 section 15.12.3, abstract operation `JO`.
-    var length = aStack.length;
-    while (length--) {
-      // Linear search. Performance is inversely proportional to the number of
-      // unique nested structures.
-      if (aStack[length] == a) return bStack[length] == b;
-    }
-    // Objects with different constructors are not equivalent, but `Object`s
-    // from different frames are.
-    var aCtor = a.constructor, bCtor = b.constructor;
-    if (aCtor !== bCtor && !(_.isFunction(aCtor) && (aCtor instanceof aCtor) &&
-                             _.isFunction(bCtor) && (bCtor instanceof bCtor))) {
-      return false;
-    }
-    // Add the first object to the stack of traversed objects.
-    aStack.push(a);
-    bStack.push(b);
-    var size = 0, result = true;
-    // Recursively compare objects and arrays.
-    if (className == '[object Array]') {
-      // Compare array lengths to determine if a deep comparison is necessary.
-      size = a.length;
-      result = size == b.length;
-      if (result) {
-        // Deep compare the contents, ignoring non-numeric properties.
-        while (size--) {
-          if (!(result = eq(a[size], b[size], aStack, bStack))) break;
-        }
-      }
-    } else {
-      // Deep compare objects.
-      for (var key in a) {
-        if (_.has(a, key)) {
-          // Count the expected number of properties.
-          size++;
-          // Deep compare each member.
-          if (!(result = _.has(b, key) && eq(a[key], b[key], aStack, bStack))) break;
-        }
-      }
-      // Ensure that both objects contain the same number of properties.
-      if (result) {
-        for (key in b) {
-          if (_.has(b, key) && !(size--)) break;
-        }
-        result = !size;
-      }
-    }
-    // Remove the first object from the stack of traversed objects.
-    aStack.pop();
-    bStack.pop();
-    return result;
-  };
-
-  // Perform a deep comparison to check if two objects are equal.
-  _.isEqual = function(a, b) {
-    return eq(a, b, [], []);
-  };
-
-  // Is a given array, string, or object empty?
-  // An "empty" object has no enumerable own-properties.
-  _.isEmpty = function(obj) {
-    if (obj == null) return true;
-    if (_.isArray(obj) || _.isString(obj)) return obj.length === 0;
-    for (var key in obj) if (_.has(obj, key)) return false;
-    return true;
-  };
-
-  // Is a given value a DOM element?
-  _.isElement = function(obj) {
-    return !!(obj && obj.nodeType === 1);
-  };
-
-  // Is a given value an array?
-  // Delegates to ECMA5's native Array.isArray
-  _.isArray = nativeIsArray || function(obj) {
-    return toString.call(obj) == '[object Array]';
-  };
-
-  // Is a given variable an object?
-  _.isObject = function(obj) {
-    return obj === Object(obj);
-  };
-
-  // Add some isType methods: isArguments, isFunction, isString, isNumber, isDate, isRegExp.
-  each(['Arguments', 'Function', 'String', 'Number', 'Date', 'RegExp'], function(name) {
-    _['is' + name] = function(obj) {
-      return toString.call(obj) == '[object ' + name + ']';
-    };
-  });
-
-  // Define a fallback version of the method in browsers (ahem, IE), where
-  // there isn't any inspectable "Arguments" type.
-  if (!_.isArguments(arguments)) {
-    _.isArguments = function(obj) {
-      return !!(obj && _.has(obj, 'callee'));
-    };
-  }
-
-  // Optimize `isFunction` if appropriate.
-  if (typeof (/./) !== 'function') {
-    _.isFunction = function(obj) {
-      return typeof obj === 'function';
-    };
-  }
-
-  // Is a given object a finite number?
-  _.isFinite = function(obj) {
-    return isFinite(obj) && !isNaN(parseFloat(obj));
-  };
-
-  // Is the given value `NaN`? (NaN is the only number which does not equal itself).
-  _.isNaN = function(obj) {
-    return _.isNumber(obj) && obj != +obj;
-  };
-
-  // Is a given value a boolean?
-  _.isBoolean = function(obj) {
-    return obj === true || obj === false || toString.call(obj) == '[object Boolean]';
-  };
-
-  // Is a given value equal to null?
-  _.isNull = function(obj) {
-    return obj === null;
-  };
-
-  // Is a given variable undefined?
-  _.isUndefined = function(obj) {
-    return obj === void 0;
-  };
-
-  // Shortcut function for checking if an object has a given property directly
-  // on itself (in other words, not on a prototype).
-  _.has = function(obj, key) {
-    return hasOwnProperty.call(obj, key);
-  };
-
-  // Utility Functions
-  // -----------------
-
-  // Run Underscore.js in *noConflict* mode, returning the `_` variable to its
-  // previous owner. Returns a reference to the Underscore object.
-  _.noConflict = function() {
-    root._ = previousUnderscore;
-    return this;
-  };
-
-  // Keep the identity function around for default iterators.
-  _.identity = function(value) {
-    return value;
-  };
-
-  // Run a function **n** times.
-  _.times = function(n, iterator, context) {
-    var accum = Array(Math.max(0, n));
-    for (var i = 0; i < n; i++) accum[i] = iterator.call(context, i);
-    return accum;
-  };
-
-  // Return a random integer between min and max (inclusive).
-  _.random = function(min, max) {
-    if (max == null) {
-      max = min;
-      min = 0;
-    }
-    return min + Math.floor(Math.random() * (max - min + 1));
-  };
-
-  // List of HTML entities for escaping.
-  var entityMap = {
-    escape: {
-      '&': '&amp;',
-      '<': '&lt;',
-      '>': '&gt;',
-      '"': '&quot;',
-      "'": '&#x27;'
-    }
-  };
-  entityMap.unescape = _.invert(entityMap.escape);
-
-  // Regexes containing the keys and values listed immediately above.
-  var entityRegexes = {
-    escape:   new RegExp('[' + _.keys(entityMap.escape).join('') + ']', 'g'),
-    unescape: new RegExp('(' + _.keys(entityMap.unescape).join('|') + ')', 'g')
-  };
-
-  // Functions for escaping and unescaping strings to/from HTML interpolation.
-  _.each(['escape', 'unescape'], function(method) {
-    _[method] = function(string) {
-      if (string == null) return '';
-      return ('' + string).replace(entityRegexes[method], function(match) {
-        return entityMap[method][match];
-      });
-    };
-  });
-
-  // If the value of the named `property` is a function then invoke it with the
-  // `object` as context; otherwise, return it.
-  _.result = function(object, property) {
-    if (object == null) return void 0;
-    var value = object[property];
-    return _.isFunction(value) ? value.call(object) : value;
-  };
-
-  // Add your own custom functions to the Underscore object.
-  _.mixin = function(obj) {
-    each(_.functions(obj), function(name) {
-      var func = _[name] = obj[name];
-      _.prototype[name] = function() {
-        var args = [this._wrapped];
-        push.apply(args, arguments);
-        return result.call(this, func.apply(_, args));
-      };
-    });
-  };
-
-  // Generate a unique integer id (unique within the entire client session).
-  // Useful for temporary DOM ids.
-  var idCounter = 0;
-  _.uniqueId = function(prefix) {
-    var id = ++idCounter + '';
-    return prefix ? prefix + id : id;
-  };
-
-  // By default, Underscore uses ERB-style template delimiters, change the
-  // following template settings to use alternative delimiters.
-  _.templateSettings = {
-    evaluate    : /<%([\s\S]+?)%>/g,
-    interpolate : /<%=([\s\S]+?)%>/g,
-    escape      : /<%-([\s\S]+?)%>/g
-  };
-
-  // When customizing `templateSettings`, if you don't want to define an
-  // interpolation, evaluation or escaping regex, we need one that is
-  // guaranteed not to match.
-  var noMatch = /(.)^/;
-
-  // Certain characters need to be escaped so that they can be put into a
-  // string literal.
-  var escapes = {
-    "'":      "'",
-    '\\':     '\\',
-    '\r':     'r',
-    '\n':     'n',
-    '\t':     't',
-    '\u2028': 'u2028',
-    '\u2029': 'u2029'
-  };
-
-  var escaper = /\\|'|\r|\n|\t|\u2028|\u2029/g;
-
-  // JavaScript micro-templating, similar to John Resig's implementation.
-  // Underscore templating handles arbitrary delimiters, preserves whitespace,
-  // and correctly escapes quotes within interpolated code.
-  _.template = function(text, data, settings) {
-    var render;
-    settings = _.defaults({}, settings, _.templateSettings);
-
-    // Combine delimiters into one regular expression via alternation.
-    var matcher = new RegExp([
-      (settings.escape || noMatch).source,
-      (settings.interpolate || noMatch).source,
-      (settings.evaluate || noMatch).source
-    ].join('|') + '|$', 'g');
-
-    // Compile the template source, escaping string literals appropriately.
-    var index = 0;
-    var source = "__p+='";
-    text.replace(matcher, function(match, escape, interpolate, evaluate, offset) {
-      source += text.slice(index, offset)
-        .replace(escaper, function(match) { return '\\' + escapes[match]; });
-
-      if (escape) {
-        source += "'+\n((__t=(" + escape + "))==null?'':_.escape(__t))+\n'";
-      }
-      if (interpolate) {
-        source += "'+\n((__t=(" + interpolate + "))==null?'':__t)+\n'";
-      }
-      if (evaluate) {
-        source += "';\n" + evaluate + "\n__p+='";
-      }
-      index = offset + match.length;
-      return match;
-    });
-    source += "';\n";
-
-    // If a variable is not specified, place data values in local scope.
-    if (!settings.variable) source = 'with(obj||{}){\n' + source + '}\n';
-
-    source = "var __t,__p='',__j=Array.prototype.join," +
-      "print=function(){__p+=__j.call(arguments,'');};\n" +
-      source + "return __p;\n";
-
-    try {
-      render = new Function(settings.variable || 'obj', '_', source);
-    } catch (e) {
-      e.source = source;
-      throw e;
-    }
-
-    if (data) return render(data, _);
-    var template = function(data) {
-      return render.call(this, data, _);
-    };
-
-    // Provide the compiled function source as a convenience for precompilation.
-    template.source = 'function(' + (settings.variable || 'obj') + '){\n' + source + '}';
-
-    return template;
-  };
-
-  // Add a "chain" function, which will delegate to the wrapper.
-  _.chain = function(obj) {
-    return _(obj).chain();
-  };
-
-  // OOP
-  // ---------------
-  // If Underscore is called as a function, it returns a wrapped object that
-  // can be used OO-style. This wrapper holds altered versions of all the
-  // underscore functions. Wrapped objects may be chained.
-
-  // Helper function to continue chaining intermediate results.
-  var result = function(obj) {
-    return this._chain ? _(obj).chain() : obj;
-  };
-
-  // Add all of the Underscore functions to the wrapper object.
-  _.mixin(_);
-
-  // Add all mutator Array functions to the wrapper.
-  each(['pop', 'push', 'reverse', 'shift', 'sort', 'splice', 'unshift'], function(name) {
-    var method = ArrayProto[name];
-    _.prototype[name] = function() {
-      var obj = this._wrapped;
-      method.apply(obj, arguments);
-      if ((name == 'shift' || name == 'splice') && obj.length === 0) delete obj[0];
-      return result.call(this, obj);
-    };
-  });
-
-  // Add all accessor Array functions to the wrapper.
-  each(['concat', 'join', 'slice'], function(name) {
-    var method = ArrayProto[name];
-    _.prototype[name] = function() {
-      return result.call(this, method.apply(this._wrapped, arguments));
-    };
-  });
-
-  _.extend(_.prototype, {
-
-    // Start chaining a wrapped Underscore object.
-    chain: function() {
-      this._chain = true;
-      return this;
-    },
-
-    // Extracts the result from a wrapped and chained object.
-    value: function() {
-      return this._wrapped;
-    }
-
-  });
 
 }).call(this);
