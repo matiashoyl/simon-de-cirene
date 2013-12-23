@@ -1,5 +1,5 @@
 <div class="span2"></div>
-<div class="span10">
+<div class="span8">
 	<h3><%= @curso.nombre %></h3>
 	<p>
 	  <b>Codigo:</b>
@@ -11,7 +11,41 @@
 	  <%= @curso.comuna %>
 	</p>
 	<br />
-	<h4>Sesiones</h4>
+	<% if @sesiones.any? %>
+  <h4>Sesiones</h4>
+    <table class="table table-condensed table-striped">
+      <thead>
+        <tr>
+          <th>Tema</th>
+          <th>Relator</th>
+          <th>Horario</th>
+          <th>Fecha</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @sesiones.each do |sesion| %>
+          <tr>
+            <td><%= sesion.tema %></td>
+            <td><%= User.find(sesion.user_id).name %></td>
+            <td><%= sesion.hora_inicio.strftime("%I:%M %p") %> a <%= sesion.hora_termino.strftime("%I:%M %p") %></td>
+            <td><%= sesion.fecha.strftime("%B %d, %Y") %></td>
+            <td>
+              <div class="btn-group">
+                <%= link_to("Detalles", sesion, :class => 'btn btn-mini') %>
+                <a data-toggle="modal" href="#edit-sesion-<%= sesion.id %>" class="btn btn-mini" type="button">Editar</a>
+                <a data-toggle="modal" href="#delete-sesion-<%= sesion.id %>" class="btn btn-mini btn-inverse" type="button">Eliminar</a>
+              </div>
+            </td>
+          </tr>
+          <%= render :partial => 'sesion', :locals => {:sesion => sesion} %>
+          <%= render :partial => 'eliminar_sesion', :locals => {:sesion => sesion} %>
+        <% end %>
+      </tbody>
+    </table>
+  	<% else %>
+    <br />
+  	<% end %>
 	<a data-toggle="modal" href="#new-sesion" class="btn btn-mini btn-info" type="button">Agregar Sesión</a>
   	<%= render 'new_sesion' %>
 </div>

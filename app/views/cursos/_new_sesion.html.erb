@@ -1,7 +1,7 @@
 <div id="new-sesion" class="modal hide fade modal-register">
   <div class="modal-header">
   	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-    <h2>Nuevo Sesión</h2>
+    <h2>Nueva Sesión</h2>
   </div>
 	<div class="modal-body">
 		<%= simple_form_for(@sesion) do |f| %>
@@ -10,29 +10,29 @@
 		<%= f.input :tema, :autofocus => true, :label => false, :placeholder => 'Tema', :class => 'input-block-level' %>
 		<div class="input-append bootstrap-timepicker">
 			<p>De: </p>
-            <input id="sesion_hora_inicio" name="sesion[hora_inicio]" type="text" class="input-small">
-            <span class="add-on"><i class="icon-time"></i></span>
-        </div>
-        <div class="input-append bootstrap-timepicker">
-        	<p>Hasta: </p>
-            <input id="sesion_hora_termino" name="sesion[hora_termino]" type="text" class="input-small">
-            <span class="add-on"><i class="icon-time"></i></span>
-        </div>
-  		<div class="input-append date">
-  			<p>Fecha: </p>
-  			<input type="text" data-behaviour='datepicker' class="string date_picker required" name="sesion[fecha]" id="sesion_fecha">
+      		<input id="sesion_hora_inicio" name="sesion[hora_inicio]" type="text" class="input-small">
+      		<span class="add-on"><i class="icon-time"></i></span>
+    	</div>
+	    <div class="input-append bootstrap-timepicker">
+	    	<p>Hasta: </p>
+	        <input id="sesion_hora_termino" name="sesion[hora_termino]" type="text" class="input-small">
+	        <span class="add-on"><i class="icon-time"></i></span>
+	    </div>
+		<div class="input-append date">
+			<p>Fecha: </p>
+			<input type="text" data-behaviour='datepicker' class="string date_picker required" name="sesion[fecha]" id="sesion_fecha">
 		</div>
-  		<%= f.input :tipo, :collection => ['Exposición', 'Trabajo Práctico', 'Invitado', 'Dinámica', 'Otro'], :label => false, :prompt => "Tipo", :class => 'input-block-level' %>
-  		<%= f.input :direccion, :label => false, :placeholder => 'Direccion', :class => 'input-block-level'  %>
+		<p>Relator: </p>
+		<%= f.input :user_id, :collection => (User.with_role :relator).collect{ |p| [p.name, p.id] }, :label => false, :prompt => "", :class => 'input-block-level' %>
+  		<p>Tipo: </p>
+  		<%= f.input :tipo, :collection => ['Exposición', 'Trabajo Práctico', 'Invitado', 'Dinámica', 'Otro'], :label => false, :prompt => "", :class => 'input-block-level' %>
+      	<%= f.input :direccion, :label => false, :placeholder => 'Direccion', :class => 'input-block-level' %>
   		<%= f.input :comentario, :label => false, :placeholder => 'Comentario', :class => 'input-block-level'  %>
+  		<%= f.input :curso_id, :as => :hidden, :input_html => { :value => @curso.id } %>
 	</div>
 	<div class="modal-footer">
-		  <%= f.button :submit, "Crear", :class => 'btn-info' %>
+		<%= f.button :submit, "Crear", :class => 'btn-info' %>
 		<% end %>
 		<a href="#" class="btn" data-dismiss="modal">Cerrar</a>
 	</div>
 </div>
-
-<script type="text/javascript">
-    
-</script>

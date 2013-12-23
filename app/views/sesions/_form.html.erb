@@ -2,16 +2,32 @@
   <%= f.error_notification %>
 
   <div class="form-inputs">
-    <%= f.input :tema %>
-    <%= f.input :hora_inicio %>
-    <%= f.input :hora_termino %>
-    <%= f.input :fecha %>
-    <%= f.input :tipo %>
-    <%= f.input :direccion %>
-    <%= f.input :comentario %>
+    <%= f.input :tema, :autofocus => true, :label => false, :placeholder => 'Tema', :class => 'input-block-level' %>
+    <div class="input-append bootstrap-timepicker">
+      <p>De: </p>
+          <input id="sesion_hora_inicio" name="sesion[hora_inicio]" type="text" class="input-small">
+          <span class="add-on"><i class="icon-time"></i></span>
+      </div>
+      <div class="input-append bootstrap-timepicker">
+        <p>Hasta: </p>
+          <input id="sesion_hora_termino" name="sesion[hora_termino]" type="text" class="input-small">
+          <span class="add-on"><i class="icon-time"></i></span>
+      </div>
+    <div class="input-append date">
+      <p>Fecha: </p>
+      <input type="text" data-behaviour='datepicker' class="string date_picker required" name="sesion[fecha]" id="sesion_fecha">
+    </div>
+    <p>Relator: </p>
+    <%= f.collection_select(:user_id, (User.with_role :relator), :id, :name, {:include_blank => ""}) %>
+      <p>Tipo: </p>
+      <%= f.input :tipo, :collection => ['Exposición', 'Trabajo Práctico', 'Invitado', 'Dinámica', 'Otro'], :label => false, :prompt => "", :class => 'input-block-level' %>
+        <%= f.input :direccion, :label => false, :placeholder => 'Direccion', :class => 'input-block-level' %>
+      <%= f.input :comentario, :label => false, :placeholder => 'Comentario', :class => 'input-block-level'  %>
+      <%= f.input :curso_id, :as => :hidden, :input_html => { :value => @sesion.curso_id } %>
   </div>
 
   <div class="form-actions">
-    <%= f.button :submit %>
+    <%= f.button :submit, "Enviar", :class => 'btn-info' %>
+    <% end %>
+    <%= link_to("Atrás", curso_path(@sesion.curso_id), :class => 'btn') %>
   </div>
-<% end %>
