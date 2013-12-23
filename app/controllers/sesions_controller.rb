@@ -25,6 +25,7 @@ class SesionsController < ApplicationController
   # GET /sesions/new.json
   def new
     @sesion = Sesion.new
+    @curso_id = params[:curso_id]
 
     respond_to do |format|
       format.html # new.html.erb
@@ -44,7 +45,7 @@ class SesionsController < ApplicationController
 
     respond_to do |format|
       if @sesion.save
-        format.html { redirect_to @sesion, notice: 'Sesion was successfully created.' }
+        format.html { redirect_to curso_path(@sesion.curso_id) }
         format.json { render json: @sesion, status: :created, location: @sesion }
       else
         format.html { render action: "new" }
@@ -76,7 +77,7 @@ class SesionsController < ApplicationController
     @sesion.destroy
 
     respond_to do |format|
-      format.html { redirect_to sesions_url }
+      format.html { redirect_to curso_path(@sesion.curso_id) }
       format.json { head :no_content }
     end
   end

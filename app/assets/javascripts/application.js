@@ -12,8 +12,9 @@
 //
 //= require jquery
 //= require jquery_ujs
-//= require bootstrap-datepicker
+//= require jquery.ui.all
 //= require bootstrap-timepicker
+//= require bootstrap-datepicker
 //= require bootstrap
 //= require_self
 //= require_tree .

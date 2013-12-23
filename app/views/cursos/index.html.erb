@@ -24,7 +24,7 @@
                 <a data-toggle="modal" href="#delete-curso-<%= curso.id %>" class="btn btn-mini btn-inverse" type="button">Eliminar</a>
               </div>
               <%= render curso %>
-              <%= render :partial => 'eliminar', :locals => {:curso => curso} %>
+              <%= render :partial => 'eliminar_curso', :locals => {:curso => curso} %>
             </td>
           </tr>
         <% end %>
