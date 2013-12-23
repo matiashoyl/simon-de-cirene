@@ -1,0 +1,38 @@
+<div id="edit-sesion-<%= sesion.id %>" class="modal hide fade modal-register" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+  	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h2>Editar</h2>
+  </div>
+	<div class="modal-body">
+		<%= simple_form_for sesion, :url => sesion_path(sesion), :html => {:method => :put } do |f| %>
+		<%= f.error_notification %>
+		<%= display_base_errors resource %>
+		<%= f.input :tema, :autofocus => true, :label => false, :placeholder => 'Tema', :class => 'input-block-level' %>
+		<div class="input-append bootstrap-timepicker">
+			<p>De: </p>
+      		<input id="sesion_hora_inicio_edit" name="sesion[hora_inicio]" type="text" class="input-small">
+      		<span class="add-on"><i class="icon-time"></i></span>
+    	</div>
+		<div class="input-append bootstrap-timepicker">
+			<p>Hasta: </p>
+		    <input id="sesion_hora_termino_edit" name="sesion[hora_termino]" type="text" class="input-small">
+		    <span class="add-on"><i class="icon-time"></i></span>
+		</div>
+		<div class="input-append date">
+			<p>Fecha: </p>
+			<input type="text" data-behaviour='datepicker' class="string date_picker required" name="sesion[fecha]" id="sesion_fecha">
+		</div>
+  		<p>Relator: </p>
+		<%= f.collection_select(:user_id, (User.with_role :relator), :id, :name, {:include_blank => ""}) %>
+  		<p>Tipo: </p>
+  		<%= f.input :tipo, :collection => ['Exposición', 'Trabajo Práctico', 'Invitado', 'Dinámica', 'Otro'], :label => false, :prompt => "", :class => 'input-block-level' %>
+      	<%= f.input :direccion, :label => false, :placeholder => 'Direccion', :class => 'input-block-level' %>
+  		<%= f.input :comentario, :label => false, :placeholder => 'Comentario', :class => 'input-block-level'  %>
+  		<%= f.input :curso_id, :as => :hidden, :input_html => { :value => @sesion.curso_id } %>
+	</div>
+	<div class="modal-footer">
+		<%= f.button :submit, "Cambiar", :class => 'btn-info' %>
+		<% end %>
+		<a href="#" class="btn" data-dismiss="modal">Cerrar</a>
+	</div>
+</div>

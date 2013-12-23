@@ -1,40 +1,39 @@
-<p id="notice"><%= notice %></p>
+<div class="span3"></div>
+<div class="span6">
+  <div class="hero-unit">
+    <h1><%= @sesion.tema %></h1>
+    <br /><br />
 
-<p>
-  <b>Tema:</b>
-  <%= @sesion.tema %>
-</p>
+    <p>
+      El relator de esta sesión es <b><%= User.find(@sesion.user_id).name %></b>
+    </p>
 
-<p>
-  <b>Hora inicio:</b>
-  <%= @sesion.hora_inicio %>
-</p>
+    <p>
+      Se impartirá de <b><%= @sesion.hora_inicio.strftime("%I:%M %p") %></b> a <b><%= @sesion.hora_termino.strftime("%I:%M %p") %></b>
+    </p>
 
-<p>
-  <b>Hora termino:</b>
-  <%= @sesion.hora_termino %>
-</p>
+    <p>
+      El día <b><%= @sesion.fecha.strftime("%B %d, %Y") %></b>
+    </p>
 
-<p>
-  <b>Fecha:</b>
-  <%= @sesion.fecha %>
-</p>
+    <p>
+      Es una sesión del tipo <b><%= @sesion.tipo %></b>
+      
+    </p>
 
-<p>
-  <b>Tipo:</b>
-  <%= @sesion.tipo %>
-</p>
+    <p>
+      Se llevará a cabo en <b><%= @sesion.direccion %></b>
+    </p>
 
-<p>
-  <b>Direccion:</b>
-  <%= @sesion.direccion %>
-</p>
+    <p>
+      <%= @sesion.comentario %>
+    </p>
 
-<p>
-  <b>Comentario:</b>
-  <%= @sesion.comentario %>
-</p>
-
-
-<%= link_to 'Edit', edit_sesion_path(@sesion) %> |
-<%= link_to 'Back', sesions_path %>
+    <br />
+    <a data-toggle="modal" href="#edit-sesion-<%= @sesion.id %>" class="btn btn-info btn-large" type="button">Editar</a>
+    <%= link_to 'Atrás', curso_path(@sesion.curso_id), :class => 'btn btn-large' %>
+    <a data-toggle="modal" href="#delete-sesion-<%= @sesion.id %>" class="btn btn-large btn-inverse" type="button">Eliminar</a>
+    <%= render :partial => 'eliminar_sesion', :locals => {:sesion => @sesion} %>
+    <%= render :partial => 'edit', :locals => { :sesion => @sesion } %>
+  </div>
+</div>
