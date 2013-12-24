@@ -19,8 +19,9 @@
           <a data-toggle="modal" href="#role-options-<%= user.id %>" class="btn btn-mini btn-block" type="button"><%= user.roles.first.name.titleize unless user.roles.first.nil? %></a>
           <%= render user %>
         </td>
-        <td><%= link_to("Eliminar", user_path(user), :data => { :confirm => "Are you sure?" }, :method => :delete, :class => 'btn btn-mini btn-inverse') unless user == current_user %></td>
+        <td><a data-toggle="modal" href="#delete-user-<%= user.id %>" class="btn btn-mini btn-inverse" type="button">Eliminar</a></td>
       </tr>
+      <%= render :partial => 'eliminar_usuario', :locals => {:user => user} %>
     <% end %>
     </tbody>
   </table>

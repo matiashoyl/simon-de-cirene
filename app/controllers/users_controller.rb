@@ -3,7 +3,7 @@ class UsersController < ApplicationController
 
   def index
     authorize! :index, @user, :message => 'Not authorized as an administrator.'
-    @users = User.all
+    @users = User.order(:created_at)
     @user = User.new
   end
 
@@ -51,9 +51,9 @@ class UsersController < ApplicationController
     user = User.find(params[:id])
     unless user == current_user
       user.destroy
-      redirect_to users_path, :notice => "User deleted."
+      redirect_to users_path
     else
-      redirect_to users_path, :notice => "Can't delete yourself."
+      redirect_to users_path, :alert => "No te puedes eliminar a ti mismo"
     end
   end
 
