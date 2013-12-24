@@ -3,7 +3,7 @@ class SesionsController < ApplicationController
   # GET /sesions.json
   def index
     @sesion = Sesion.new
-    curso_ids = Sesion.where(:user_id => current_user).group(:curso_id).collect{|p| p.curso_id}
+    curso_ids = Sesion.where(:user_id => current_user).select(:curso_id).group(:curso_id).collect{|p| p.curso_id}
     @cursos = Array.new
     curso_ids.each do |curso_id|
       curso = Curso.find(curso_id)
