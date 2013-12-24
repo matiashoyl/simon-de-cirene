@@ -16,7 +16,7 @@ class CursosController < ApplicationController
   def show
     @curso = Curso.find(params[:id])
     @sesion = Sesion.new
-    @sesiones = Sesion.where(:curso_id => params[:id]).all
+    @sesiones = Sesion.where(:curso_id => params[:id]).order(:fecha)
 
     respond_to do |format|
       format.html # show.html.erb

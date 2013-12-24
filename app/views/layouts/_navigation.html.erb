@@ -19,6 +19,8 @@
                   <li><%= link_to 'Cursos', cursos_path %></li>
                 <% elsif current_user.has_role? :coordinador %>
                   <li><%= link_to 'Cursos', cursos_path %></li>
+                <% elsif current_user.has_role? :relator %>
+                  <li><%= link_to 'Sesiones', sesions_path %></li>
                 <% end %>
               <% end %>
             </ul>
