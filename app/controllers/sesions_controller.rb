@@ -2,7 +2,13 @@ class SesionsController < ApplicationController
   # GET /sesions
   # GET /sesions.json
   def index
-    @sesions = Sesion.all
+    @sesion = Sesion.new
+    curso_ids = Sesion.where(:user_id => current_user).group(:curso_id).collect{|p| p.curso_id}
+    @cursos = Array.new
+    curso_ids.each do |curso_id|
+      curso = Curso.find(curso_id)
+      @cursos.push curso
+    end
 
     respond_to do |format|
       format.html # index.html.erb
@@ -45,7 +51,11 @@ class SesionsController < ApplicationController
 
     respond_to do |format|
       if @sesion.save
-        format.html { redirect_to curso_path(@sesion.curso_id) }
+        if current_user.has_role? :relator
+          format.html { redirect_to sesions_path }
+        else
+          format.html { redirect_to curso_path(@sesion.curso_id) }
+        end
         format.json { render json: @sesion, status: :created, location: @sesion }
       else
         format.html { render action: "new" }

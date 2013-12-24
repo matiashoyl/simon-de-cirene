@@ -1,35 +1,38 @@
-<h1>Listing sesions</h1>
+<div class="span2"></div>
+<div class="span8">
+    <% if @cursos.any? %>
+        <% @cursos.each do |curso| %>
+            <div class="page-header">
+                <h1><%= curso.nombre %> <small><%= curso.codigo %>, <%= curso.comuna %></small></h1>
+            </div>
+            <table class="table table-condensed table-striped">
+              <thead>
+                  <tr>
+                    <th>Tema</th>
+                    <th>Horario</th>
+                    <th>Fecha</th>
+                    <th>Lugar</th>
+                    <th></th>
+                  </tr>
+              </thead>
+              <tbody>
+                  <% Sesion.where(:user_id => current_user).where(:curso_id => curso.id).order(:fecha).each do |sesion| %>
+                  <tr>
+                    <td><%= sesion.tema %></td>
+                    <td><%= sesion.hora_inicio.strftime("%I:%M %p") %> a <%= sesion.hora_termino.strftime("%I:%M %p") %></td>
+                    <td><%= sesion.fecha.strftime("%B %d, %Y") %></td>
+                    <td><%= sesion.direccion %></td>
+                  </tr>
+              <% end %>
+              </tbody>
+            </table>
+            <a data-toggle="modal" href="#new-sesion-<%= curso.id %>" class="btn btn-mini btn-info" type="button">Agregar Sesión</a>
+            <%= render :partial => 'new_sesion', :locals => {:curso => curso} %>
+            <br /><br /><br />
+        <% end %>
+        <br />
+    <% else %>
+        <p>No tienes ninguna sesión programada</p>
+    <% end %>
 
-<table>
-  <tr>
-    <th>Tema</th>
-    <th>Hora inicio</th>
-    <th>Hora termino</th>
-    <th>Fecha</th>
-    <th>Tipo</th>
-    <th>Direccion</th>
-    <th>Comentario</th>
-    <th></th>
-    <th></th>
-    <th></th>
-  </tr>
-
-<% @sesions.each do |sesion| %>
-  <tr>
-    <td><%= sesion.tema %></td>
-    <td><%= sesion.hora_inicio %></td>
-    <td><%= sesion.hora_termino %></td>
-    <td><%= sesion.fecha %></td>
-    <td><%= sesion.tipo %></td>
-    <td><%= sesion.direccion %></td>
-    <td><%= sesion.comentario %></td>
-    <td><%= link_to 'Show', sesion %></td>
-    <td><%= link_to 'Edit', edit_sesion_path(sesion) %></td>
-    <td><%= link_to 'Destroy', sesion, method: :delete, data: { confirm: 'Are you sure?' } %></td>
-  </tr>
-<% end %>
-</table>
-
-<br />
-
-<%= link_to 'New Sesion', new_sesion_path %>
+</div>
