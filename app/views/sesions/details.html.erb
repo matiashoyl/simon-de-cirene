@@ -31,7 +31,11 @@
 
     <br />
     <a data-toggle="modal" href="#edit-sesion-<%= @sesion.id %>" class="btn btn-info btn-large" type="button">Editar</a>
-    <%= link_to 'Atrás', curso_path(@sesion.curso_id), :class => 'btn btn-large' %>
+    <% if current_user.has_role? :relator %>
+      <%= link_to 'Atrás', sesion_path(@sesion), :class => 'btn btn-large' %>
+    <% else %>
+      <%= link_to 'Atrás', curso_path(@sesion.curso_id), :class => 'btn btn-large' %>
+    <% end %>
     <a data-toggle="modal" href="#delete-sesion-<%= @sesion.id %>" class="btn btn-large btn-inverse" type="button">Eliminar</a>
     <%= render :partial => 'eliminar_sesion', :locals => {:sesion => @sesion} %>
     <%= render :partial => 'edit', :locals => { :sesion => @sesion } %>

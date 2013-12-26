@@ -71,7 +71,11 @@ class SesionsController < ApplicationController
 
     respond_to do |format|
       if @sesion.update_attributes(params[:sesion])
-        format.html { redirect_to @sesion, notice: 'Sesion was successfully updated.' }
+        if current_user.has_role? :relator
+          format.html { redirect_to sesion_curso_path(@sesion.curso_id) }
+        else
+          format.html { redirect_to curso_path(@sesion.curso_id) }
+        end
         format.json { head :no_content }
       else
         format.html { render action: "edit" }

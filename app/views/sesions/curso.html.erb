@@ -48,6 +48,13 @@
           <td><%= sesion.hora_inicio.strftime("%I:%M %p") %> a <%= sesion.hora_termino.strftime("%I:%M %p") %></td>
           <td><%= sesion.fecha.strftime("%d %b, %Y") %></td>
           <td><%= sesion.direccion %></td>
+          <td>
+            <div class="btn-group">
+              <%= link_to 'Ver', sesion_path(sesion), :class => 'btn btn-mini' %>
+              <a data-toggle="modal" href="#edit-sesion-<%= sesion.id %>" class="btn btn-mini" type="button">Editar</a>
+            </div>
+          </td>
+          <%= render :partial => 'edit_sesion', :locals => {:sesion => sesion, :curso => @curso} %>
         </tr>
       <% end %>
     </tbody>
