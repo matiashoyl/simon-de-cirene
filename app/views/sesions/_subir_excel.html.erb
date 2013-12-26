@@ -1,4 +1,4 @@
-<div id="excel-alumno" class="modal hide fade modal-register">
+<div id="excel-alumno" class="modal hide fade modal-excel">
   <div class="modal-header">
   	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
     <h2>Subir Excel</h2>
@@ -9,8 +9,10 @@
     		<input class="hidden" id="alumno_curso_id" name="curso_id" type="hidden" value="<%= curso.id %>">
 	</div>
 	<div class="modal-footer">
+
 			<%= submit_tag "Importar", :class => "btn btn-success" %>
 		<% end %>
+		<%= link_to "Descargar Excel Tipo", "/download/excel_tipo", :class => "btn btn-info" %>
 		<a href="#" class="btn" data-dismiss="modal">Cerrar</a>
 	</div>
 </div>

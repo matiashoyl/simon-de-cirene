@@ -14,6 +14,7 @@ SimonDeCirene::Application.routes.draw do
   match "/cursos/:id", to: "cursos#update", :as => :update_curso, :via => :put
   match "/sesions/:id/details", to: "sesions#details", :as => :details, :via => :get
   match "/sesions/curso/:id", to: "sesions#curso", :as => :sesion_curso, :via => :get
+  match "/download/excel_tipo", to: "alumnos#download_excel"
 
   authenticated :user do
     root :to => 'home#index'

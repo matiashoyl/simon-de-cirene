@@ -40,7 +40,7 @@ class AlumnosController < ApplicationController
   # POST /alumnos
   # POST /alumnos.json
   def create
-    @alumno = Alumno.new(:nombre => params[:alumno][:nombre], :rut => params[:alumno][:rut])
+    @alumno = Alumno.new(:nombre => params[:alumno][:nombre], :apellido_paterno => params[:alumno][:apellido_paterno], :apellido_materno => params[:alumno][:apellido_materno], :rut => params[:alumno][:rut])
 
     respond_to do |format|
       if @alumno.save
@@ -60,7 +60,7 @@ class AlumnosController < ApplicationController
     @alumno = Alumno.find(params[:id])
 
     respond_to do |format|
-      if @alumno.update_attributes(:nombre => params[:alumno][:nombre], :rut => params[:alumno][:rut])
+      if @alumno.update_attributes(:nombre => params[:alumno][:nombre], :apellido_paterno => params[:alumno][:apellido_paterno], :apellido_materno => params[:alumno][:apellido_materno], :rut => params[:alumno][:rut])
         format.html { redirect_to sesion_curso_path(params[:alumno][:curso_id]) }
         format.json { head :no_content }
       else
@@ -87,5 +87,12 @@ class AlumnosController < ApplicationController
   def import
     Alumno.import(params[:file], params[:curso_id])
     redirect_to sesion_curso_path(params[:curso_id])
+  end
+
+  def download_excel
+    send_file("public/data/Excel Tipo.xlsx",
+      :filename=> "Excel Tipo.xlsx",
+      :type=>"application/xlsx",
+      :x_sendfile=>true)
   end
 end
