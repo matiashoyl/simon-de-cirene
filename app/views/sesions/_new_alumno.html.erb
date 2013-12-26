@@ -1,0 +1,25 @@
+<div id="new-alumno" class="modal hide fade modal-register">
+  <div class="modal-header">
+  	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h2>Nuevo Alumno</h2>
+  </div>
+	<div class="modal-body">
+		<%= simple_form_for(@alumno) do |f| %>
+		<%= f.error_notification %>
+		<%= display_base_errors resource %>
+		<%= f.input :nombre, :autofocus => true, :label => false, :placeholder => 'Nombre', :class => 'input-block-level' %>
+		<%= f.input :rut, :label => false, :placeholder => 'Rut', :input_html => {:id => "rut"} %>
+  		<%= f.input :curso_id, :as => :hidden, :input_html => { :value => @curso.id } %>
+	</div>
+	<div class="modal-footer">
+		<%= f.button :submit, "Crear", :class => 'btn-info' %>
+		<% end %>
+		<a href="#" class="btn" data-dismiss="modal">Cerrar</a>
+	</div>
+</div>
+
+<script type="text/javascript">
+	$('#rut').Rut({
+	  on_error: function(){ alert('Rut incorrecto'); }
+	});
+</script>

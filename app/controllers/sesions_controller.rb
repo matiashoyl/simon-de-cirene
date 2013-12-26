@@ -2,7 +2,6 @@ class SesionsController < ApplicationController
   # GET /sesions
   # GET /sesions.json
   def index
-    @sesion = Sesion.new
     curso_ids = Sesion.where(:user_id => current_user).select(:curso_id).group(:curso_id).collect{|p| p.curso_id}
     @cursos = Array.new
     curso_ids.each do |curso_id|
@@ -20,6 +19,7 @@ class SesionsController < ApplicationController
   # GET /sesions/1.json
   def show
     @sesion = Sesion.find(params[:id])
+    @curso = Curso.find(@sesion.curso_id)
 
     respond_to do |format|
       format.html # show.html.erb
@@ -89,6 +89,44 @@ class SesionsController < ApplicationController
     respond_to do |format|
       format.html { redirect_to curso_path(@sesion.curso_id) }
       format.json { head :no_content }
+    end
+  end
+
+  # GET /sesions/1/details
+  # GET /sesions/1/details.json
+  def details
+    @sesion = Sesion.find(params[:id])
+
+    respond_to do |format|
+      format.html # details.html.erb
+      format.json { render json: @sesion }
+    end
+  end
+
+  # GET /sesions/curso/1
+  # GET /sesions/curso/1.json
+  def curso
+    @sesion = Sesion.new
+    @alumno = Alumno.new
+    @curso = Curso.find(params[:id])
+
+    alumnos_ids = AlumnoCurso.where(:curso_id => @curso.id).select(:alumno_id).group(:alumno_id).collect{|p| p.alumno_id}
+    @alumnos = Array.new
+    alumnos_ids.each do |alumno_id|
+      alumno = Alumno.find(alumno_id)
+      @alumnos.push alumno
+    end
+
+    curso_ids = Sesion.where(:user_id => current_user).select(:curso_id).group(:curso_id).collect{|p| p.curso_id}
+    @cursos = Array.new
+    curso_ids.each do |curso_id|
+      curso = Curso.find(curso_id)
+      @cursos.push curso
+    end
+
+    respond_to do |format|
+      format.html # details.html.erb
+      format.json { render json: @sesion }
     end
   end
 end

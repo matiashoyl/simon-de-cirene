@@ -1,3 +1,9 @@
+function setRut(alumno_id){
+    $(alumno_id).Rut({
+      on_error: function(){ alert('Rut incorrecto'); }
+    });
+}
+
 function setTimers(id_inicio, id_termino){
     var hora = new Date();
     var horaInicio = hora.toLocaleTimeString();

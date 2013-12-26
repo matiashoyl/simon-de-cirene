@@ -14,6 +14,7 @@
 //= require jquery
 //= require jquery_ujs
 //= require jquery.ui.all
+//= require jquery.Rut
 //= require bootstrap-timepicker
 //= require bootstrap-datepicker
 //= require_self
