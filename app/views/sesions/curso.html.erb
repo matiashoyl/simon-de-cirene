@@ -1,0 +1,92 @@
+<div class="span3">
+  <ul class="nav nav-tabs nav-stacked sesions-sidenav affix">
+    <% @cursos.each do |curso| %>
+      <% if curso.id == @curso.id %>
+        <li class="active">
+          <a href="#">
+            <span class="badge badge-sidenav-active pull-right">
+              <%= Sesion.where(:user_id => current_user).where(:curso_id => curso.id).count %>
+            </span>
+            <%= curso.nombre %>
+          </a>
+        </li>
+      <% else %>
+        <li>
+          <a href="/sesions/curso/<%=curso.id%>">
+            <span class="badge badge-inverse pull-right">
+              <%= Sesion.where(:user_id => current_user).where(:curso_id => curso.id).count %>
+            </span>
+            <%= curso.nombre %>
+          </a>
+        </li>
+      <% end %>
+    <% end %>
+  </ul>
+</div>
+<div class="span1"></div>
+<div class="span8">
+  <%# ------------------------------ Header ------------------------------ %>  
+  <div class="page-header">
+      <h1><%= @curso.nombre %> <small><%= @curso.codigo %>, <%= @curso.comuna %></small></h1>
+  </div>
+  <%# ------------------------------ Sesiones ------------------------------ %> 
+  <h3>Sesiones</h3>
+  <table class="table table-condensed table-striped">
+    <thead>
+        <tr>
+          <th>Tema</th>
+          <th>Horario</th>
+          <th>Fecha</th>
+          <th>Lugar</th>
+          <th></th>
+        </tr>
+    </thead>
+    <tbody>
+      <% Sesion.where(:user_id => current_user).where(:curso_id => @curso.id).order(:fecha).each do |sesion| %>
+        <tr>
+          <td><%= sesion.tema %></td>
+          <td><%= sesion.hora_inicio.strftime("%I:%M %p") %> a <%= sesion.hora_termino.strftime("%I:%M %p") %></td>
+          <td><%= sesion.fecha.strftime("%d %b, %Y") %></td>
+          <td><%= sesion.direccion %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+  <a data-toggle="modal" href="#new-sesion-<%= @curso.id %>" class="btn btn-mini btn-info" type="button">Agregar Sesión</a>
+  <%= render :partial => 'new_sesion', :locals => {:curso => @curso} %>
+  <div class="page-header"></div>
+  <%# ------------------------------ Alumnos ------------------------------ %> 
+  <h3>Alumnos</h3>
+  <% if @alumnos.any? %>
+    <table class="table table-condensed table-striped">
+      <thead>
+          <tr>
+            <th>Rut</th>
+            <th>Nombre</th>
+            <th></th>
+          </tr>
+      </thead>
+      <tbody>
+        <% @alumnos.each do |alumno| %>
+          <tr>
+            <td><%= alumno.rut %></td>
+            <td><%= alumno.nombre %></td>
+            <td>
+              <div class="btn-group">
+                <a data-toggle="modal" href="#delete-alumno-<%= alumno.id %>" class="btn btn-mini btn-inverse" type="button">Eliminar</a>
+                <a data-toggle="modal" href="#edit-alumno-<%= alumno.id %>" class="btn btn-mini" type="button">Editar</a>
+              </div>
+            </td>
+            <%= render :partial => 'eliminar_alumno', :locals => {:alumno => alumno, :curso => @curso} %>
+            <%= render :partial => 'editar_alumno', :locals => {:alumno => alumno, :curso => @curso} %>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
+  <a data-toggle="modal" href="#new-alumno" class="btn btn-mini btn-info" type="button">Agregar Alumno</a>
+  <a data-toggle="modal" href="#excel-alumno" class="btn btn-mini btn-success" type="button">Subir Excel</a>
+
+  <%= render :partial => 'new_alumno', :locals => {:sesion => @sesion} %>
+  <%= render :partial => 'subir_excel', :locals => {:curso => @curso} %>
+</div>

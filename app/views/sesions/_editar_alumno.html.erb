@@ -1,0 +1,21 @@
+<div id="edit-alumno-<%= alumno.id %>" class="modal hide fade modal-register" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+  	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h2>Editar</h2>
+  </div>
+	<div class="modal-body">
+		<%= simple_form_for(alumno) do |f| %>
+		<%= f.error_notification %>
+		<%= display_base_errors resource %>
+		<%= f.input :nombre, :autofocus => true, :label => false, :placeholder => 'Nombre', :class => 'input-block-level' %>
+		<%= f.input :rut, :label => false, :placeholder => 'Rut', :input_html => {:id => "edit_rut_" + alumno.id.to_s} %>
+  		<%= f.input :curso_id, :as => :hidden, :input_html => { :value => curso.id } %>
+	</div>
+	<div class="modal-footer">
+		  <%= f.button :submit, "Cambiar", :class => 'btn-info' %>
+		<% end %>
+		<a href="#" class="btn" data-dismiss="modal">Cerrar</a>
+	</div>
+</div>
+
+<script type="text/javascript">setRut("#edit_rut_<%=alumno.id%>");</script>

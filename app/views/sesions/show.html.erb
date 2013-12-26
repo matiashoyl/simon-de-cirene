@@ -1,39 +1,6 @@
-<div class="span3"></div>
-<div class="span6">
-  <div class="hero-unit">
-    <h1><%= @sesion.tema %></h1>
-    <br /><br />
-
-    <p>
-      El relator de esta sesión es <b><%= User.find(@sesion.user_id).name %></b>
-    </p>
-
-    <p>
-      Se impartirá de <b><%= @sesion.hora_inicio.strftime("%I:%M %p") %></b> a <b><%= @sesion.hora_termino.strftime("%I:%M %p") %></b>
-    </p>
-
-    <p>
-      El día <b><%= @sesion.fecha.strftime("%B %d, %Y") %></b>
-    </p>
-
-    <p>
-      Es una sesión del tipo <b><%= @sesion.tipo %></b>
-      
-    </p>
-
-    <p>
-      Se llevará a cabo en <b><%= @sesion.direccion %></b>
-    </p>
-
-    <p>
-      <%= @sesion.comentario %>
-    </p>
-
-    <br />
-    <a data-toggle="modal" href="#edit-sesion-<%= @sesion.id %>" class="btn btn-info btn-large" type="button">Editar</a>
-    <%= link_to 'Atrás', curso_path(@sesion.curso_id), :class => 'btn btn-large' %>
-    <a data-toggle="modal" href="#delete-sesion-<%= @sesion.id %>" class="btn btn-large btn-inverse" type="button">Eliminar</a>
-    <%= render :partial => 'eliminar_sesion', :locals => {:sesion => @sesion} %>
-    <%= render :partial => 'edit', :locals => { :sesion => @sesion } %>
-  </div>
+<div class="span2"></div>
+<div class="span8">
+      <div class="page-header">
+          <h1><%= link_to(@sesion.tema, details_path(@sesion)) %> <small><%= @curso.nombre %>,  <%= @sesion.fecha.strftime("%d %b") %></small></h1>
+      </div>
 </div>

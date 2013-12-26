@@ -1,3 +1,19 @@
 // Place all the styles related to the Sesions controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
+
+.sesions-sidenav{
+	width: 300px;
+}
+
+.nav-tabs > li.active > a,
+.nav-tabs > li.active > a:hover,
+.nav-tabs > li.active > a:focus{
+    color: white;
+    background-color: black;  
+} 
+
+.badge-sidenav-active{
+	background-color: white;
+	color: black;
+}
