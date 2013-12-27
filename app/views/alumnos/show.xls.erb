@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+  xmlns:o="urn:schemas-microsoft-com:office:office"
+  xmlns:x="urn:schemas-microsoft-com:office:excel"
+  xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
+  xmlns:html="http://www.w3.org/TR/REC-html40">
+  <Worksheet ss:Name="Sheet1">
+    <Table>
+      <Row>
+        <Cell></Cell>
+        <Cell></Cell>
+        <Cell></Cell>
+        <Cell></Cell>
+        <% @sesiones.each do |sesion| %>
+          <Cell><Data ss:Type="String"><%= sesion.fecha.strftime("%d %b") %></Data></Cell>
+        <% end %>
+      </Row>
+      <Row>
+        <Cell><Data ss:Type="String">Rut</Data></Cell>
+        <Cell><Data ss:Type="String">Nombre</Data></Cell>
+        <Cell><Data ss:Type="String">Apellido Paterno</Data></Cell>
+        <Cell><Data ss:Type="String">Apellido Materno</Data></Cell>
+        <% @sesiones.each do |sesion| %>
+          <Cell><Data ss:Type="String"><%= sesion.tema %></Data></Cell>
+        <% end %>
+      </Row>
+    <% @alumnos.each do |alumno| %>
+      <Row>
+        <Cell><Data ss:Type="String"><%= alumno.rut %></Data></Cell>
+        <Cell><Data ss:Type="String"><%= alumno.nombre %></Data></Cell>
+        <Cell><Data ss:Type="String"><%= alumno.apellido_paterno %></Data></Cell>
+        <Cell><Data ss:Type="String"><%= alumno.apellido_materno %></Data></Cell>
+        <% @sesiones.each do |sesion| %>
+          <% if alumno_sesion = AlumnoSesion.where(:alumno_id => alumno, :sesion_id => sesion).first %>
+            <% if alumno_sesion.presente %>
+              <Cell><Data ss:Type="String">P</Data></Cell>
+            <% else %>
+              <Cell><Data ss:Type="String">A</Data></Cell>
+            <% end %>
+          <% else %>
+            <Cell><Data ss:Type="String">NA</Data></Cell>
+          <% end %>
+        <% end %>
+      </Row>
+    <% end %>
+    </Table>
+  </Worksheet>
+</Workbook>

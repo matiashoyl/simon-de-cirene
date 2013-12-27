@@ -2,7 +2,6 @@ class AlumnosController < ApplicationController
   # GET /alumnos
   # GET /alumnos.json
   def index
-    @alumnos = Alumno.all
 
     respond_to do |format|
       format.html # index.html.erb
@@ -13,11 +12,25 @@ class AlumnosController < ApplicationController
   # GET /alumnos/1
   # GET /alumnos/1.json
   def show
-    @alumno = Alumno.find(params[:id])
+    @curso = Curso.find(params[:id])
+
+    alumnos_ids = AlumnoCurso.where(:curso_id => @curso.id).select(:alumno_id).group(:alumno_id).collect{|p| p.alumno_id}
+    @alumnos = Array.new
+    alumnos_ids.each do |alumno_id|
+      alumno = Alumno.find(alumno_id)
+      @alumnos.push alumno
+    end
+    @alumnos.sort_by {|alumno| alumno.apellido_paterno}
+
+    @sesiones = Sesion.where(:user_id => current_user).where(:curso_id => @curso.id).order(:fecha).all
 
     respond_to do |format|
       format.html # show.html.erb
       format.json { render json: @alumno }
+      format.xls do
+        response.headers['Content-Disposition'] = 'attachment; filename="' + @curso.nombre + '.xls"'
+        render "show.xls.erb"
+      end
     end
   end
 
