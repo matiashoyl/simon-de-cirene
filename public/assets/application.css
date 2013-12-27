@@ -30,6 +30,11 @@ body .modal-register {
   margin-left: auto;
   margin-right: auto;
 }
+
+/* line 32, ../../app/assets/stylesheets/application.css.scss */
+.container {
+  margin-bottom: 30px;
+}
 /*!
  * Datepicker for Bootstrap
  *
@@ -554,10 +559,6 @@ body .modal-register {
  * file that was distributed with this source code.
  */
 .bootstrap-timepicker{position:relative}.bootstrap-timepicker.pull-right .bootstrap-timepicker-widget.dropdown-menu{left:auto;right:0}.bootstrap-timepicker.pull-right .bootstrap-timepicker-widget.dropdown-menu:before{left:auto;right:12px}.bootstrap-timepicker.pull-right .bootstrap-timepicker-widget.dropdown-menu:after{left:auto;right:13px}.bootstrap-timepicker .add-on{cursor:pointer}.bootstrap-timepicker .add-on i{display:inline-block;width:16px;height:16px}.bootstrap-timepicker-widget.dropdown-menu{padding:2px 3px 2px 2px}.bootstrap-timepicker-widget.dropdown-menu.open{display:inline-block}.bootstrap-timepicker-widget.dropdown-menu:before{border-bottom:7px solid rgba(0,0,0,0.2);border-left:7px solid transparent;border-right:7px solid transparent;content:"";display:inline-block;left:9px;position:absolute;top:-7px}.bootstrap-timepicker-widget.dropdown-menu:after{border-bottom:6px solid #fff;border-left:6px solid transparent;border-right:6px solid transparent;content:"";display:inline-block;left:10px;position:absolute;top:-6px}.bootstrap-timepicker-widget a.btn,.bootstrap-timepicker-widget input{border-radius:4px}.bootstrap-timepicker-widget table{width:100%;margin:0}.bootstrap-timepicker-widget table td{text-align:center;height:30px;margin:0;padding:2px}.bootstrap-timepicker-widget table td:not(.separator){min-width:30px}.bootstrap-timepicker-widget table td span{width:100%}.bootstrap-timepicker-widget table td a{border:1px transparent solid;width:100%;display:inline-block;margin:0;padding:8px 0;outline:0;color:#333}.bootstrap-timepicker-widget table td a:hover{text-decoration:none;background-color:#eee;-webkit-border-radius:4px;-moz-border-radius:4px;border-radius:4px;border-color:#ddd}.bootstrap-timepicker-widget table td a i{margin-top:2px}.bootstrap-timepicker-widget table td input{width:25px;margin:0;text-align:center}.bootstrap-timepicker-widget .modal-content{padding:4px}@media(min-width:767px){.bootstrap-timepicker-widget.modal{width:200px;margin-left:-100px}}@media(max-width:767px){.bootstrap-timepicker{width:100%}.bootstrap-timepicker .dropdown-menu{width:100%}}
-/* line 7, ../../app/assets/stylesheets/cursos.css.scss */
-body .input-prepend {
-  z-index: 9999;
-}
 /*!
  * Bootstrap v2.3.2
  *
@@ -8872,6 +8873,98 @@ body .modal-role {
   margin-left: auto;
   margin-right: auto;
 }
+/* line 1, ../../app/assets/stylesheets/panels.css.scss */
+.panel {
+  padding: 15px;
+  margin-bottom: 20px;
+  background-color: #ffffff;
+  border: 1px solid #dddddd;
+  border-radius: 4px;
+  -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+}
+
+/* line 11, ../../app/assets/stylesheets/panels.css.scss */
+.panel-heading {
+  padding: 10px 15px;
+  margin: -15px -15px 15px;
+  font-size: 17.5px;
+  font-weight: 500;
+  background-color: #f5f5f5;
+  border-bottom: 1px solid #dddddd;
+  border-top-right-radius: 3px;
+  border-top-left-radius: 3px;
+}
+
+/* line 22, ../../app/assets/stylesheets/panels.css.scss */
+.panel-footer {
+  padding: 10px 15px;
+  margin: 15px -15px -15px;
+  background-color: #f5f5f5;
+  border-top: 1px solid #dddddd;
+  border-bottom-right-radius: 3px;
+  border-bottom-left-radius: 3px;
+}
+
+/* line 31, ../../app/assets/stylesheets/panels.css.scss */
+.panel-primary {
+  border-color: #428bca;
+}
+
+/* line 35, ../../app/assets/stylesheets/panels.css.scss */
+.panel-primary .panel-heading {
+  color: #ffffff;
+  background-color: #428bca;
+  border-color: #428bca;
+}
+
+/* line 41, ../../app/assets/stylesheets/panels.css.scss */
+.panel-success {
+  border-color: #d6e9c6;
+}
+
+/* line 45, ../../app/assets/stylesheets/panels.css.scss */
+.panel-success .panel-heading {
+  color: #468847;
+  background-color: #dff0d8;
+  border-color: #d6e9c6;
+}
+
+/* line 51, ../../app/assets/stylesheets/panels.css.scss */
+.panel-warning {
+  border-color: #fbeed5;
+}
+
+/* line 55, ../../app/assets/stylesheets/panels.css.scss */
+.panel-warning .panel-heading {
+  color: #c09853;
+  background-color: #fcf8e3;
+  border-color: #fbeed5;
+}
+
+/* line 61, ../../app/assets/stylesheets/panels.css.scss */
+.panel-danger {
+  border-color: #eed3d7;
+}
+
+/* line 65, ../../app/assets/stylesheets/panels.css.scss */
+.panel-danger .panel-heading {
+  color: #b94a48;
+  background-color: #f2dede;
+  border-color: #eed3d7;
+}
+
+/* line 71, ../../app/assets/stylesheets/panels.css.scss */
+.panel-info {
+  border-color: #bce8f1;
+}
+
+/* line 75, ../../app/assets/stylesheets/panels.css.scss */
+.panel-info .panel-heading {
+  color: #3a87ad;
+  background-color: #d9edf7;
+  border-color: #bce8f1;
+}
 /* line 1, ../../app/assets/stylesheets/scaffolds.css.scss */
 body {
   background-color: #fff;
@@ -8950,4 +9043,31 @@ div.field, div.actions {
 #error_explanation ul li {
   font-size: 12px;
   list-style: square;
+}
+/* line 5, ../../app/assets/stylesheets/sesions.css.scss */
+.sesions-sidenav {
+  width: 300px;
+}
+
+/* line 11, ../../app/assets/stylesheets/sesions.css.scss */
+.nav-tabs > li.active > a,
+.nav-tabs > li.active > a:hover,
+.nav-tabs > li.active > a:focus {
+  color: white;
+  background-color: black;
+}
+
+/* line 16, ../../app/assets/stylesheets/sesions.css.scss */
+.badge-sidenav-active {
+  background-color: white;
+  color: black;
+}
+
+/* line 21, ../../app/assets/stylesheets/sesions.css.scss */
+body .modal-excel {
+  width: 30%;
+  left: 35%;
+  /* (100%-width)/2 */
+  margin-left: auto;
+  margin-right: auto;
 }
