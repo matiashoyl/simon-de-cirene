@@ -110,6 +110,7 @@ class AlumnosController < ApplicationController
   end
 
   def asistencia
-    AlumnoSesion.where(:alumno_id => params[:id], :sesion_id => params[:sesion]).first_or_create.update_attributes(:presente => params[:presente])
+    alumno_sesion = AlumnoSesion.where(:alumno_id => params[:id], :sesion_id => params[:sesion]).first_or_create
+    alumno_sesion.update_attributes(:presente => params[:presente])
   end
 end
