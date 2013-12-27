@@ -21,6 +21,16 @@ class SesionsController < ApplicationController
     @sesion = Sesion.find(params[:id])
     @curso = Curso.find(@sesion.curso_id)
 
+    alumnos_ids = AlumnoCurso.where(:curso_id => @curso.id).select(:alumno_id).group(:alumno_id).collect{|p| p.alumno_id}
+    @alumnos = Array.new
+    alumnos_ids.each do |alumno_id|
+      alumno = Alumno.find(alumno_id)
+      @alumnos.push alumno
+    end
+    @alumnos.sort_by{|alumno| alumno[:apellido_paterno]}
+
+    @sesiones = Sesion.where(:user_id => current_user).where(:curso_id => @curso.id).order(:fecha).all
+
     respond_to do |format|
       format.html # show.html.erb
       format.json { render json: @sesion }
@@ -120,6 +130,7 @@ class SesionsController < ApplicationController
       alumno = Alumno.find(alumno_id)
       @alumnos.push alumno
     end
+    @alumnos.sort_by {|alumno| alumno.apellido_paterno}
 
     curso_ids = Sesion.where(:user_id => current_user).select(:curso_id).group(:curso_id).collect{|p| p.curso_id}
     @cursos = Array.new
@@ -127,6 +138,8 @@ class SesionsController < ApplicationController
       curso = Curso.find(curso_id)
       @cursos.push curso
     end
+
+    @sesiones = Sesion.where(:user_id => current_user).where(:curso_id => @curso.id).order(:fecha).all
 
     respond_to do |format|
       format.html # details.html.erb
