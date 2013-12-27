@@ -4,9 +4,14 @@
     <h2>Subir Excel</h2>
   </div>
 	<div class="modal-body">
+		<p>Primero debe <strong>elegir el archivo</strong> que desea subir</p>
+		<p>Se recomienda seguir el formato del archivo tipo que se puede descargar apretando <strong>"Descargar Excel Tipo"</strong></p>
+		<br /><br />
 		<%= form_tag import_alumnos_path, multipart: true do %>
     		<%= file_field_tag :file %>
     		<input class="hidden" id="alumno_curso_id" name="curso_id" type="hidden" value="<%= curso.id %>">
+    	<br /><br /><br /><br />
+    	<p>Una vez elegido el archivo debe apretar <strong>"Importar"</strong></p>
 	</div>
 	<div class="modal-footer">
 
