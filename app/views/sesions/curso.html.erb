@@ -61,7 +61,7 @@
   </table>
   <a data-toggle="modal" href="#new-sesion-<%= @curso.id %>" class="btn btn-mini btn-info" type="button">Agregar Sesión</a>
   <%= render :partial => 'new_sesion', :locals => {:curso => @curso} %>
-  <div class="page-header"></div>
+  <hr>
   <%# ------------------------------ Alumnos ------------------------------ %> 
   <h3>Alumnos</h3>
   <% if @alumnos.any? %>
@@ -84,8 +84,8 @@
             <td><%= alumno.apellido_materno %></td>
             <td>
               <div class="btn-group">
-                <a data-toggle="modal" href="#delete-alumno-<%= alumno.id %>" class="btn btn-mini btn-inverse" type="button">Eliminar</a>
                 <a data-toggle="modal" href="#edit-alumno-<%= alumno.id %>" class="btn btn-mini" type="button">Editar</a>
+                <a data-toggle="modal" href="#delete-alumno-<%= alumno.id %>" class="btn btn-mini btn-inverse" type="button">Eliminar</a>
               </div>
             </td>
             <%= render :partial => 'eliminar_alumno', :locals => {:alumno => alumno, :curso => @curso} %>
@@ -97,7 +97,11 @@
   <% end %>
   <a data-toggle="modal" href="#new-alumno" class="btn btn-mini btn-info" type="button">Agregar Alumno</a>
   <a data-toggle="modal" href="#excel-alumno" class="btn btn-mini btn-success" type="button">Subir Excel</a>
+  <a data-toggle="modal" href="#asistencia" class="btn btn-mini" type="button">Asistencia</a>
 
   <%= render :partial => 'new_alumno', :locals => {:sesion => @sesion} %>
   <%= render :partial => 'subir_excel', :locals => {:curso => @curso} %>
+  <%= render :partial => 'asistencia', :locals => {:alumnos => @alumnos, :sesiones => @sesiones, :curso => @curso} %>
+
+  <br /><br /><br />
 </div>

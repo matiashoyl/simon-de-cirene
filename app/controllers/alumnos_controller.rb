@@ -95,4 +95,8 @@ class AlumnosController < ApplicationController
       :type=>"application/xlsx",
       :x_sendfile=>true)
   end
+
+  def asistencia
+    AlumnoSesion.where(:alumno_id => params[:id], :sesion_id => params[:sesion]).first_or_create.update_attributes(:presente => params[:presente])
+  end
 end

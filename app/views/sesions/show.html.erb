@@ -1,6 +1,121 @@
-<div class="span2"></div>
+<div class="span3">
+  <ul class="nav nav-tabs nav-stacked sesions-sidenav affix">
+    <% @sesiones.each do |sesion| %>
+      <% if sesion.id == @sesion.id %>
+        <li class="active">
+          <a href="#">
+          	<span class="badge badge-sidenav-active pull-right">
+              <%= sesion.fecha.strftime("%d %b") %>
+            </span>
+            <%= sesion.tema %>
+          </a>
+        </li>
+      <% else %>
+        <li>
+          <a href="/sesions/<%=sesion.id%>">
+            <span class="badge badge-inverse pull-right">
+              <%= sesion.fecha.strftime("%d %b") %>
+            </span>
+            <%= sesion.tema %>
+          </a>
+        </li>
+      <% end %>
+    <% end %>
+    <li>
+    	<a href="/sesions/curso/<%=@curso.id%>">
+    		<i class="icon-chevron-left"></i>
+            Volver a <%= @curso.nombre %>
+        </a>
+    </li>
+  </ul>
+</div>
+<div class="span1"></div>
 <div class="span8">
       <div class="page-header">
           <h1><%= link_to(@sesion.tema, details_path(@sesion)) %> <small><%= @curso.nombre %>,  <%= @sesion.fecha.strftime("%d %b") %></small></h1>
       </div>
+
+      <h3>Alumnos</h3>
+	  <% if @alumnos.any? %>
+	    <table class="table table-condensed table-striped">
+	      <thead>
+	          <tr>
+	            <th>Rut</th>
+	            <th>Nombre</th>
+	            <th>Apellido Paterno</th>
+	            <th>Apellido Materno</th>
+	            <th></th>
+	          </tr>
+	      </thead>
+	      <tbody>
+	        <% @alumnos.each do |alumno| %>
+	          <tr>
+	            <td><%= alumno.rut %></td>
+	            <td><%= alumno.nombre %></td>
+	            <td><%= alumno.apellido_paterno %></td>
+	            <td><%= alumno.apellido_materno %></td>
+	            <td>
+	            	<div class="btn-group" data-toggle="buttons-radio">
+					  <button type="button" id="presente-<%= alumno.id %>" class="btn btn-mini btn-info">Presente</button>
+					  <button type="button" id="ausente-<%= alumno.id %>" class="btn btn-mini btn-info">Ausente</button>
+					</div>
+					<% if alumno_sesion = AlumnoSesion.where(:alumno_id => alumno, :sesion_id => @sesion).first %>
+						<% if alumno_sesion.presente %>
+							<script type="text/javascript">
+								$("#presente-<%= alumno.id %>").button('toggle');
+							</script>
+						<% else %>
+							<script type="text/javascript">
+								$("#ausente-<%= alumno.id %>").button('toggle');
+							</script>
+						<% end %>
+					<% end %>
+					<script type="text/javascript">
+						$("#presente-<%= alumno.id %>").click(function() {
+							$.ajax({
+						      type: "POST",
+						      url: "/alumnos/asistencia/<%= alumno.id %>",
+						      data: {presente: 'true', sesion: '<%= @sesion.id %>'}
+						    });
+						});
+						$("#ausente-<%= alumno.id %>").click(function() {
+							$.ajax({
+						      type: "POST",
+						      url: "/alumnos/asistencia/<%= alumno.id %>",
+						      data: {presente: 'false', sesion: '<%= @sesion.id %>'}
+						    });
+						});
+					</script>
+	            </td>
+	          </tr>
+	        <% end %>
+	      </tbody>
+	    </table>
+	  <% end %>
+	  <div class="btn-group pull-right">
+		<button type="button" id="todos-presentes" class="btn btn-mini btn-info">Todos Presentes</button>
+		<button type="button" id="todos-ausentes" class="btn btn-mini btn-info">Todos Ausentes</button>
+	  </div>
+	<script type="text/javascript">
+		$("#todos-presentes").click(function() {
+			<% @alumnos.each do |alumno| %>
+				$("#presente-<%= alumno.id %>").button('toggle');
+				$.ajax({
+			      type: "POST",
+			      url: "/alumnos/asistencia/<%= alumno.id %>",
+			      data: {presente: 'true', sesion: '<%= @sesion.id %>'}
+			    });
+			<% end %>
+		});
+		$("#todos-ausentes").click(function() {
+			<% @alumnos.each do |alumno| %>
+				$("#ausente-<%= alumno.id %>").button('toggle');
+				$.ajax({
+			      type: "POST",
+			      url: "/alumnos/asistencia/<%= alumno.id %>",
+			      data: {presente: 'false', sesion: '<%= @sesion.id %>'}
+			    });
+			<% end %>
+		});
+	</script>
 </div>
