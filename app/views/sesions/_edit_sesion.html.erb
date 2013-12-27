@@ -10,19 +10,19 @@
 		<%= f.input :tema, :autofocus => true, :label => false, :placeholder => 'Tema', :class => 'input-block-level' %>
 		<div class="input-append bootstrap-timepicker">
 			<p>De: </p>
-      		<input id="sesion_hora_inicio_<%= sesion.id %>" name="sesion[hora_inicio]" type="text" class="input-small">
+      		<input id="sesion_hora_inicio_edit_<%= sesion.id %>" name="sesion[hora_inicio]" type="text" class="input-small">
       		<span class="add-on"><i class="icon-time"></i></span>
     	</div>
 	    <div class="input-append bootstrap-timepicker">
 	    	<p>Hasta: </p>
-	        <input id="sesion_hora_termino_<%= sesion.id %>" name="sesion[hora_termino]" type="text" class="input-small">
+	        <input id="sesion_hora_termino_edit_<%= sesion.id %>" name="sesion[hora_termino]" type="text" class="input-small">
 	        <span class="add-on"><i class="icon-time"></i></span>
 	    </div>
 		<div class="input-append date">
 			<p>Fecha: </p>
 			<input type="text" data-behaviour='datepicker' class="string date_picker required" name="sesion[fecha]" id="sesion_fecha">
 		</div>
-		<script type="text/javascript">setTimers("#sesion_hora_inicio_<%= sesion.id %>", "#sesion_hora_termino_<%= sesion.id %>");</script>
+		<script type="text/javascript">setTimers("#sesion_hora_inicio_edit_<%= sesion.id %>", "#sesion_hora_termino_edit_<%= sesion.id %>");</script>
 		<%= f.input :user_id, :as => :hidden, :input_html => { :value => current_user.id } %>
   		<p>Tipo: </p>
   		<%= f.input :tipo, :collection => ['Exposición', 'Trabajo Práctico', 'Invitado', 'Dinámica', 'Otro'], :label => false, :prompt => "", :class => 'input-block-level' %>
