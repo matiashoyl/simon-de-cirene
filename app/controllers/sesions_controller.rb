@@ -125,11 +125,7 @@ class SesionsController < ApplicationController
     @curso = Curso.find(params[:id])
 
     alumnos_ids = AlumnoCurso.where(:curso_id => @curso.id).select(:alumno_id).group(:alumno_id).collect{|p| p.alumno_id}
-    @alumnos = Array.new
-    alumnos_ids.each do |alumno_id|
-      alumno = Alumno.find(alumno_id)
-      @alumnos.push alumno
-    end
+    @alumnos = @curso.alumnos
     @alumnos.sort_by {|alumno| alumno.apellido_paterno}
 
     curso_ids = Sesion.where(:user_id => current_user).select(:curso_id).group(:curso_id).collect{|p| p.curso_id}
