@@ -30,4 +30,9 @@ class Sesion < ActiveRecord::Base
 
  		return porcentaje_asistentes
  	end
+
+ 	def relator
+ 		relator = User.find(self.user_id)
+ 		return relator
+ 	end
 end
