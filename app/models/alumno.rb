@@ -31,4 +31,25 @@ class Alumno < ActiveRecord::Base
 			end
 		end
 	end
+
+	def porcentaje_asistencia(curso)
+		sesiones = curso.sesions
+		asistencias = 0.0
+		sesiones_totales = 0.0
+		sesiones.each do |sesion|
+			if alumno_sesion = AlumnoSesion.where(:alumno_id => self, :sesion_id => sesion).first
+				if alumno_sesion.presente
+					asistencias = asistencias + 1
+				end
+				sesiones_totales = sesiones_totales + 1
+			end
+		end
+		porcentaje_asistencia = 0
+		begin
+			porcentaje_asistencia = ((asistencias/sesiones_totales).round(2)*100).to_i
+		rescue 
+			porcentaje_asistencia = 0
+		end
+		return porcentaje_asistencia
+	end
 end
