@@ -86,8 +86,6 @@ class AlumnosController < ApplicationController
   # DELETE /alumnos/1
   # DELETE /alumnos/1.json
   def destroy
-    @alumno = Alumno.find(params[:alumno_id])
-    @alumno.destroy
     @alumno_curso = AlumnoCurso.where(:alumno_id => params[:alumno_id], :curso_id => params[:curso_id]).first
     @alumno_curso.destroy
 
@@ -113,4 +111,14 @@ class AlumnosController < ApplicationController
     alumno_sesion = AlumnoSesion.where(:alumno_id => params[:id], :sesion_id => params[:sesion]).first_or_create
     alumno_sesion.update_attributes(:presente => params[:presente])
   end
+
+  def search
+    alumno = Alumno.where(:rut => params[:rut]).first
+    if alumno
+      AlumnoCurso.create(:alumno_id => alumno.id, :curso_id => params[:curso_id])
+      redirect_to sesion_curso_path(params[:curso_id]), :notice => "Se agrego el alumno" + alumno.nombre
+    else
+      redirect_to sesion_curso_path(params[:curso_id]), :alert => "No se encontró el alumno con rut" + params[:rut]
+    end
+  end 
 end

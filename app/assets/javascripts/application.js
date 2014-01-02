@@ -14,6 +14,9 @@
 //= require jquery_ujs
 //= require jquery.ui.all
 //= require jquery.Rut
+//= require jquery.tablecloth
+//= require jquery.tablesorter
+//= require jquery.metadata
 //= require bootstrap-timepicker
 //= require bootstrap-datepicker
 //= require bootstrap

@@ -1,9 +1,16 @@
-<div id="new-alumno" class="modal hide fade modal-register">
+<div id="new-alumno" class="modal hide fade modal-nuevo-alumno">
   <div class="modal-header">
   	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-    <h2>Nuevo Alumno</h2>
+    <h2>Agregar Alumno</h2>
   </div>
 	<div class="modal-body">
+		<p>Buscar alumno</p>
+		<%= form_for @alumno, :url => search_alumnos_path, :html => {:class => "form-inline"}, :method => :post do %>
+    		<input type="text" class="input" name="rut" placeholder="Rut Alumno">
+    		<input class="hidden" id="alumno_curso_id" name="curso_id" type="hidden" value="<%= @curso.id %>">
+			<button type="submit" class="btn btn-info">Buscar</button>
+		<% end %>
+		<p>O crear un alumno nuevo</p>
 		<%= simple_form_for(@alumno) do |f| %>
 		<%= f.error_notification %>
 		<%= display_base_errors resource %>

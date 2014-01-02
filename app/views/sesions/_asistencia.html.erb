@@ -12,11 +12,13 @@
 		          	<% sesiones.each do |sesion| %>
 		            	<th><%= sesion.fecha.strftime("%d %b") %></th>
 		            <% end %>
-		            <th></th>
+		            <th>%</th>
 		          </tr>
 		      </thead>
 		      <tbody>
 		        <% @alumnos.each do |alumno| %>
+		        <% @sesiones_con_asistencia = 0 %>
+		        <% @sesiones_asistidas = 0 %>
 		          <tr>
 		            <td><%= alumno.nombre %> <%= alumno.apellido_paterno %></td>
 		            <% @sesiones.each do |sesion| %>
@@ -30,11 +32,13 @@
 									<script type="text/javascript">
 										$("#presente-<%= alumno.id %>-<%= sesion.id %>").button('toggle');
 									</script>
+									<% @sesiones_asistidas = @sesiones_asistidas + 1 %>
 								<% else %>
 									<script type="text/javascript">
 										$("#ausente-<%= alumno.id %>-<%= sesion.id %>").button('toggle');
 									</script>
 								<% end %>
+								<% @sesiones_con_asistencia = @sesiones_con_asistencia + 1 %>
 							<% end %>
 							<script type="text/javascript">
 								$("#presente-<%= alumno.id %>-<%= sesion.id %>").click(function() {
@@ -54,6 +58,9 @@
 							</script>
 		            	</td>
 		            <% end %>
+		            <td>
+		            	<%= number_to_percentage((@sesiones_asistidas.to_f/@sesiones_con_asistencia.to_f)*100).to_i %>%
+		            </td>
 		          </tr>
 		        <% end %>
 		        <tr>
