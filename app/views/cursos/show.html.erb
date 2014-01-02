@@ -35,20 +35,32 @@
           <th>#</th>
           <th>Tema</th>
           <th>Relator</th>
-          <th>Horario</th>
           <th>Fecha</th>
+          <th>Asistentes</th>
           <th></th>
         </tr>
       </thead>
       <tbody>
         <% contador = 1 %>
         <% @sesiones.each do |sesion| %>
-          <tr>
+          <% if sesion.porcentaje_asistentes == "NA" %>
+            <tr class="warning">
+          <% elsif sesion.porcentaje_asistentes < 85 %>
+            <tr class="error">
+          <% else %>
+            <tr class="success">
+          <% end %>
             <td><%= contador %></td>
             <td><%= sesion.tema %></td>
             <td><%= User.find(sesion.user_id).name %></td>
-            <td><%= sesion.hora_inicio.strftime("%I:%M %p") %> a <%= sesion.hora_termino.strftime("%I:%M %p") %></td>
             <td><%= sesion.fecha.strftime("%d %b, %Y") %></td>
+            <td>
+              <% if sesion.porcentaje_asistentes == "NA" %>
+              NA
+              <% else %>
+                <%= sesion.porcentaje_asistentes %>%
+              <% end %>
+            </td>
             <td>
               <div class="btn-group">
                 <%= link_to("Detalles", details_path(sesion), :class => 'btn btn-mini') %>
@@ -75,17 +87,22 @@
       <table class="table table-condensed table-striped">
         <thead>
             <tr>
-              <th>Alumno</th>
+              <th></th>
               <% contador = 1 %>
               <% @sesiones.each do |sesion| %>
                 <th><%= contador %></th>
                 <% contador = contador +1 %>
               <% end %>
+              <th>Asistencia</th>
             </tr>
         </thead>
         <tbody>
           <% @alumnos.each do |alumno| %>
-            <tr>
+            <% if alumno.porcentaje_asistencia(@curso) < 75 %>
+              <tr class="error">
+            <% else %>
+              <tr class="success">
+            <% end %>
               <td><%= alumno.nombre %> <%= alumno.apellido_paterno %></td>
               <% @sesiones.each do |sesion| %>
                 <td>
@@ -100,11 +117,12 @@
                   <% end %>
                 </td>
               <% end %>
+              <td><%= alumno.porcentaje_asistencia(@curso) %>%</td>
             </tr>
           <% end %>
         </tbody>
       </table>
-      <%= link_to "Descargar Excel", alumno_path(@curso, format: "xls"), :class => 'btn btn-success' %>
+      <%= link_to "Descargar Excel", alumno_path(@curso, format: "xls"), :class => 'btn btn-mini btn-success' %>
     <% else %>
     <p>El curso todavía no tiene alumnos</p>
     <% end %>
