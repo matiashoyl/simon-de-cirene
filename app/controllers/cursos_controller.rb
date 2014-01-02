@@ -4,6 +4,7 @@ class CursosController < ApplicationController
   def index
     @cursos = Curso.all
     @curso = Curso.new
+    @programas = Programa.all
     
     respond_to do |format|
       format.html # index.html.erb
@@ -68,7 +69,11 @@ class CursosController < ApplicationController
 
     respond_to do |format|
       if @curso.update_attributes(params[:curso])
-        format.html { redirect_to cursos_path }
+        if params[:index] == "true"
+          format.html { redirect_to cursos_path }
+        else
+          format.html { redirect_to programa_path(@curso.programa_id) }
+        end
         format.json { head :no_content }
       else
         format.html { render action: "edit" }

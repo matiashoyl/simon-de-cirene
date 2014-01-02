@@ -23,7 +23,7 @@
 <div class="span8">
   <%= render 'layouts/messages' %>
   <div class="page-header">
-    <h1><%= @curso.nombre %> <small><%= @curso.codigo %>, <%= @curso.comuna %></small></h1>
+    <h1><%= @curso.nombre %> <small><%= @curso.codigo %>, Programa <%= Programa.find(@curso.programa_id).nombre %></small></h1>
   </div>
 	<br />
 	<% if @sesiones.any? %>

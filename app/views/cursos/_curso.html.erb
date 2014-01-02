@@ -11,6 +11,7 @@
 		<%= f.input :codigo, :autofocus => true, :label => false, :placeholder => curso.codigo, :class => 'input-block-level' %>
   		<%= f.input :nombre, :label => false, :placeholder => curso.nombre, :class => 'input-block-level' %>
   		<%= f.input :comuna, :collection => SimonDeCirene::Application::COMUNAS, :label => false, :selected => curso.comuna, :class => 'input-block-level' %>
+  		<input class="hidden" id="index" name="index" type="hidden" value="<%= index %>">
 	</div>
 	<div class="modal-footer">
 		  <%= f.button :submit, "Cambiar", :class => 'btn-info' %>
