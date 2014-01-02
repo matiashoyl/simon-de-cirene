@@ -2,6 +2,7 @@ class Alumno < ActiveRecord::Base
   attr_accessible :nombre, :apellido_paterno, :apellido_materno, :rut
 
   validates :nombre, :apellido_paterno, :rut, :presence => true
+  validates :rut, :uniqueness => true
 
 	def self.import(file, cursoId)
 		spreadsheet = open_spreadsheet(file)

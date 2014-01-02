@@ -34,5 +34,5 @@
     <br />
   <% end %>
   <a data-toggle="modal" href="#new-curso" class="btn btn-mini btn-info" type="button">Crear Curso</a>
-  <%= render 'new' %>
+  <%= render :partial => 'new', :locals => {:curso => @curso, :index => true} %>
 </div>

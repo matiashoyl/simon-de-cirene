@@ -64,7 +64,7 @@ class SesionsController < ApplicationController
         if current_user.has_role? :relator
           format.html { redirect_to sesion_curso_path(@sesion.curso_id) }
         else
-          format.html { redirect_to sesions_path }
+          format.html { redirect_to curso_path(@sesion.curso_id) }
         end
         format.json { render json: @sesion, status: :created, location: @sesion }
       else

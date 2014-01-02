@@ -1,7 +1,11 @@
 SimonDeCirene::Application.routes.draw do
+  resources :programas
+
+
   resources :alumnos do
     collection do
       post :import
+      post :search
     end
   end
 

@@ -15,8 +15,9 @@ class CursosController < ApplicationController
   # GET /cursos/1.json
   def show
     @curso = Curso.find(params[:id])
+    @cursos = Curso.all
     @sesion = Sesion.new
-    @sesiones = Sesion.where(:curso_id => params[:id]).order(:fecha)
+    @sesiones = @curso.sesions.order(:fecha)
 
     respond_to do |format|
       format.html # show.html.erb
@@ -47,7 +48,11 @@ class CursosController < ApplicationController
 
     respond_to do |format|
       if @curso.save
-        format.html { redirect_to cursos_path }
+        if params[:index] == "true"
+          format.html { redirect_to cursos_path }
+        else
+          format.html { redirect_to programa_path(@curso.programa_id) }
+        end
         format.json { render json: @curso, status: :created, location: @curso }
       else
         format.html { render action: "new" }
