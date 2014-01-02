@@ -22,8 +22,12 @@ class AlumnosController < ApplicationController
     end
     @alumnos.sort_by {|alumno| alumno.apellido_paterno}
 
-    @sesiones = Sesion.where(:user_id => current_user).where(:curso_id => @curso.id).order(:fecha).all
-
+    if current_user.has_role? :relator
+      @sesiones = Sesion.where(:user_id => current_user).where(:curso_id => @curso.id).order(:fecha).all
+    else
+      @sesiones = Sesion.where(:curso_id => @curso.id).order(:fecha).all
+    end
+    
     respond_to do |format|
       format.html # show.html.erb
       format.json { render json: @alumno }

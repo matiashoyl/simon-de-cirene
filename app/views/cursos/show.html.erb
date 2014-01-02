@@ -22,15 +22,17 @@
 <div class="span1"></div>
 <div class="span8">
   <%= render 'layouts/messages' %>
+  <%# ------------------------------ Header ------------------------------ %> 
   <div class="page-header">
     <h1><%= @curso.nombre %> <small><%= @curso.codigo %>, Programa <%= Programa.find(@curso.programa_id).nombre %></small></h1>
   </div>
-	<br />
+	<%# ------------------------------ Sesiones ------------------------------ %> 
 	<% if @sesiones.any? %>
-  <h4>Sesiones</h4>
+  <h3>Sesiones</h3>
     <table class="table table-condensed table-striped">
       <thead>
         <tr>
+          <th>#</th>
           <th>Tema</th>
           <th>Relator</th>
           <th>Horario</th>
@@ -39,8 +41,10 @@
         </tr>
       </thead>
       <tbody>
+        <% contador = 1 %>
         <% @sesiones.each do |sesion| %>
           <tr>
+            <td><%= contador %></td>
             <td><%= sesion.tema %></td>
             <td><%= User.find(sesion.user_id).name %></td>
             <td><%= sesion.hora_inicio.strftime("%I:%M %p") %> a <%= sesion.hora_termino.strftime("%I:%M %p") %></td>
@@ -55,6 +59,7 @@
           </tr>
           <%= render :partial => 'sesion', :locals => {:sesion => sesion} %>
           <%= render :partial => 'eliminar_sesion', :locals => {:sesion => sesion} %>
+          <% contador = contador + 1 %>
         <% end %>
       </tbody>
     </table>
@@ -63,4 +68,44 @@
   	<% end %>
 	  <a data-toggle="modal" href="#new-sesion" class="btn btn-mini btn-info" type="button">Agregar Sesión</a>
   	<%= render 'new_sesion' %>
+    <hr>
+    <%# ------------------------------ Alumnos ------------------------------ %> 
+    <h3>Alumnos</h3>
+    <% if @alumnos.any? %>
+      <table class="table table-condensed table-striped">
+        <thead>
+            <tr>
+              <th>Alumno</th>
+              <% contador = 1 %>
+              <% @sesiones.each do |sesion| %>
+                <th><%= contador %></th>
+                <% contador = contador +1 %>
+              <% end %>
+            </tr>
+        </thead>
+        <tbody>
+          <% @alumnos.each do |alumno| %>
+            <tr>
+              <td><%= alumno.nombre %> <%= alumno.apellido_paterno %></td>
+              <% @sesiones.each do |sesion| %>
+                <td>
+                  <% if alumno_sesion = AlumnoSesion.where(:alumno_id => alumno, :sesion_id => sesion).first %>
+                    <% if alumno_sesion.presente %>
+                      <p>P</p>
+                    <% else %>
+                      <p>A</p>
+                    <% end %>
+                  <% else %>
+                    <p>NA</p>
+                  <% end %>
+                </td>
+              <% end %>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+      <%= link_to "Descargar Excel", alumno_path(@curso, format: "xls"), :class => 'btn btn-success' %>
+    <% else %>
+    <p>El curso todavía no tiene alumnos</p>
+    <% end %>
 </div>
