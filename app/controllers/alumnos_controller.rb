@@ -42,7 +42,7 @@ class AlumnosController < ApplicationController
   # GET /alumnos/new.json
   def new
     @alumno = Alumno.new
-
+    @curso = Curso.find(params[:curso_id])
     respond_to do |format|
       format.html # new.html.erb
       format.json { render json: @alumno }
@@ -57,14 +57,24 @@ class AlumnosController < ApplicationController
   # POST /alumnos
   # POST /alumnos.json
   def create
-    @alumno = Alumno.new(:nombre => params[:alumno][:nombre], :apellido_paterno => params[:alumno][:apellido_paterno], :apellido_materno => params[:alumno][:apellido_materno], :rut => params[:alumno][:rut])
+    @alumno = Alumno.where(:rut => params[:alumno][:rut]).first_or_create
 
     respond_to do |format|
-      if @alumno.save
-        AlumnoCurso.create(:alumno_id => @alumno.id, :curso_id => params[:alumno][:curso_id])
-        format.html { redirect_to sesion_curso_path(params[:alumno][:curso_id]) }
+      if @alumno.update_attributes(params[:alumno])
+        profesion = Array.new
+        if params[:alumno][:profesion] != nil && params[:alumno][:profesion].kind_of?(Array)
+          params[:alumno][:profesion].each do |rubro|
+            if rubro != ""
+              profesion.push rubro
+            end
+          end
+          @alumno.update_attributes(:profesion => profesion.to_json)
+        end
+        AlumnoCurso.create(:alumno_id => @alumno.id, :curso_id => params[:curso_id])
+        format.html { redirect_to sesion_curso_path(params[:curso_id]) }
         format.json { render json: @alumno, status: :created, location: @alumno }
       else
+        @curso = Curso.find(params[:curso_id])
         format.html { render action: "new" }
         format.json { render json: @alumno.errors, status: :unprocessable_entity }
       end
@@ -77,10 +87,18 @@ class AlumnosController < ApplicationController
     @alumno = Alumno.find(params[:id])
 
     respond_to do |format|
-      if @alumno.update_attributes(:nombre => params[:alumno][:nombre], :apellido_paterno => params[:alumno][:apellido_paterno], :apellido_materno => params[:alumno][:apellido_materno], :rut => params[:alumno][:rut])
-        format.html { redirect_to sesion_curso_path(params[:alumno][:curso_id]) }
+      if @alumno.update_attributes(params[:alumno])
+        profesion = Array.new
+        @alumno.profesion.each do |rubro|
+          if rubro != ""
+            profesion.push rubro
+          end
+        end
+        @alumno.update_attributes(:profesion => profesion.to_json)
+        format.html { redirect_to sesion_curso_path(params[:curso_id]) }
         format.json { head :no_content }
       else
+        @curso = Curso.find(params[:curso_id])
         format.html { render action: "edit" }
         format.json { render json: @alumno.errors, status: :unprocessable_entity }
       end
@@ -96,6 +114,17 @@ class AlumnosController < ApplicationController
     respond_to do |format|
       format.html { redirect_to sesion_curso_path(params[:curso_id]) }
       format.json { head :no_content }
+    end
+  end
+
+  # GET /alumnos/1/details
+  # GET /alumnos/1/details.json
+  def details
+    @alumno = Alumno.find(params[:id])
+
+    respond_to do |format|
+      format.html # details.html.erb
+      format.json { render json: @sesion }
     end
   end
 

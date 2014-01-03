@@ -20,7 +20,7 @@
 	    </div>
 		<div class="input-append date">
 			<p>Fecha: </p>
-			<input type="text" data-behaviour='datepicker' class="string date_picker required" name="sesion[fecha]" id="sesion_fecha">
+			<input type="text" data-behaviour='datepicker' placeholder="dd/mm/aaaa" class="string date_picker required" name="sesion[fecha]" id="sesion_fecha">
 		</div>
 		<script type="text/javascript">setTimers("#sesion_hora_inicio_<%= curso.id %>", "#sesion_hora_termino_<%= curso.id %>");</script>
 		<%= f.input :user_id, :as => :hidden, :input_html => { :value => current_user.id } %>

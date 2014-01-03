@@ -1,0 +1,149 @@
+<div class="span3"></div>
+<div class="span6">
+  <div class="hero-unit">
+    <h2><%= @alumno.nombre %> <%= @alumno.apellido_paterno %> <%= @alumno.apellido_materno %></h2>
+    <br />
+    <h4>Datos Personales</h4>
+    <hr>
+    <p>
+      Rut: <b><%= @alumno.rut %></b>
+    </p>
+
+    <% unless @alumno.fecha_nacimiento == "" || @alumno.fecha_nacimiento == nil %>
+      <p>
+        Fecha de nacimiento: <b><%= @alumno.fecha_nacimiento %></b>
+      </p>
+    <% end %>
+
+    <% unless @alumno.sexo == "" || @alumno.sexo == nil %>
+      <p>
+        Sexo: <b><%= @alumno.sexo %></b>
+      </p>
+    <% end %>
+
+    <% unless @alumno.email == "" || @alumno.email == nil %>
+      <p>
+        Email: <b><%= @alumno.email %></b>
+      </p>
+    <% end %>
+
+    <% unless @alumno.num_telefono == "" || @alumno.num_telefono == nil %>
+      <p>
+        Número de Telefono: <b><%= @alumno.num_telefono.to_s %></b>
+      </p>
+    <% end %>
+
+    <% unless @alumno.num_celular == "" || @alumno.num_celular == nil %>
+      <p>
+        Celular: <b><%= @alumno.num_celular.to_s %></b>
+      </p>
+    <% end %>
+
+    <% unless @alumno.direccion == "" || @alumno.direccion == nil %>
+      <p>
+        Dirección: <b><%= @alumno.direccion %></b>
+      </p>
+    <% end %>
+
+    <% unless @alumno.comuna == "" || @alumno.comuna == nil %>
+      <p>
+        Comuna: <b><%= @alumno.comuna %></b>
+      </p>
+    <% end %>
+
+    <% unless @alumno.quintil == "" || @alumno.quintil == nil %>
+      <p>
+        Quintil: <b><%= @alumno.quintil %></b>
+      </p>
+    <% end %>
+
+    <% unless @alumno.escolaridad == "" || @alumno.escolaridad == nil %>
+      <p>
+        Escolaridad: <b><%= @alumno.escolaridad %></b>
+      </p>
+    <% end %>
+
+    <% unless @alumno.profesion == "[]" || @alumno.profesion == nil %>
+      <p>
+        <% rubros = "" %>
+        <% JSON.parse(@alumno.profesion).each do |rubro| %>
+          <% rubros = rubros + rubro.to_s + ", " %>
+        <% end %>
+        Rubro(s): <b><%= rubros[0..-3] %></b>
+      </p>
+    <% end %>
+
+    <% unless @alumno.actividad == "" || @alumno.actividad == nil %>
+      <p>
+        Actividad: <b><%= @alumno.actividad %></b>
+      </p>
+    <% end %>
+
+    <% unless @alumno.rut_institucion == "" || @alumno.rut_institucion == nil %>
+      <p>
+        Rut de la Institución: <b><%= @alumno.rut_institucion %></b>
+      </p>
+    <% end %>
+
+    <% unless @alumno.cargo == "" || @alumno.cargo == nil %>
+      <p>
+        Cargo en la Institutción: <b><%= @alumno.cargo %></b>
+      </p>
+    <% end %>
+    <% if @alumno.cursos.any? %>
+      <br />
+      <h4>Cursos Inscritos</h4>
+      <hr>
+      <table class="table table-condensed">
+        <thead>
+            <tr>
+              <td><strong>#</strong></td>
+              <td><strong>Curso</strong></td>
+              <td><strong>Asistencia</strong></td>
+            </tr>
+        </thead>
+        <tbody>
+          <% @alumno.cursos.each_with_index do |curso, index| %>
+            <tr>
+              <td><%= index + 1 %></td>
+              <td><%= curso.nombre %></td>
+              <td>
+                <% if @alumno.porcentaje_asistencia(curso) == "NA" %>
+                  NA
+                <% else %>
+                  <%= @alumno.porcentaje_asistencia(curso) %>%
+                <% end %>  
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% end %>
+
+    <% if @alumno.sesiones.any? %>
+      <br />
+      <h4>Sesiones Asistidas</h4>
+      <hr>
+      <table class="table table-condensed">
+        <thead>
+            <tr>
+              <td><strong>#</strong></td>
+              <td><strong>Sesion</strong></td>
+              <td><strong>Relator</strong></td>
+              <td><strong>Fecha</strong></td>
+            </tr>
+        </thead>
+        <tbody>
+          <% @alumno.sesiones.each_with_index do |sesion, index| %>
+            <tr>
+              <td><%= index + 1 %></td>
+              <td><%= sesion.tema %></td>
+              <td><%= sesion.user.name %></td>
+              <td><%= sesion.fecha.strftime("%d %b, %Y") %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% end %>
+  </div>
+</div>

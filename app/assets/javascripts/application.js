@@ -16,6 +16,7 @@
 //= require jquery.Rut
 //= require bootstrap-timepicker
 //= require bootstrap-datepicker
+//= require select2
 //= require bootstrap
 //= require_self
 //= require_tree .
