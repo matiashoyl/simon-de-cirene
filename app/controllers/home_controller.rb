@@ -23,11 +23,13 @@ class HomeController < ApplicationController
 
     @cursos.each do |curso|
     	curso.alumnos.each do |alumno|
-    		if alumno.porcentaje_asistencia(curso) < 75
-    			@alumnos_baja_asistencia.push alumno
-    			@bajas_asistencias.push alumno.porcentaje_asistencia(curso)
-    			@curso_alumno_baja_asistencia.push curso
-    		end
+            if alumno.porcentaje_asistencia(curso) != "NA"
+        		if alumno.porcentaje_asistencia(curso) < 75
+        			@alumnos_baja_asistencia.push alumno
+        			@bajas_asistencias.push alumno.porcentaje_asistencia(curso)
+        			@curso_alumno_baja_asistencia.push curso
+        		end
+            end
     	end
     end
 
