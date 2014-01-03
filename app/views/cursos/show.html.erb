@@ -27,8 +27,8 @@
     <h1><%= @curso.nombre %> <small><%= @curso.codigo %>, Programa <%= Programa.find(@curso.programa_id).nombre %></small></h1>
   </div>
 	<%# ------------------------------ Sesiones ------------------------------ %> 
-	<% if @sesiones.any? %>
-  <h3>Sesiones</h3>
+	<h3>Sesiones</h3>
+  <% if @sesiones.any? %>
     <table class="table table-condensed table-striped">
       <thead>
         <tr>
@@ -43,7 +43,9 @@
       <tbody>
         <% contador = 1 %>
         <% @sesiones.each do |sesion| %>
-          <% if sesion.porcentaje_asistentes == "NA" %>
+          <% if @curso.alumnos.empty? %>
+            <tr>
+          <% elsif sesion.porcentaje_asistentes == "NA" %>
             <tr class="warning">
           <% elsif sesion.porcentaje_asistentes < 85 %>
             <tr class="error">
@@ -76,7 +78,7 @@
       </tbody>
     </table>
   	<% else %>
-    <br />
+    <p>El curso todavía no tiene sesiones programadas</p>
   	<% end %>
 	  <a data-toggle="modal" href="#new-sesion" class="btn btn-mini btn-info" type="button">Agregar Sesión</a>
   	<%= render 'new_sesion' %>
@@ -98,7 +100,9 @@
         </thead>
         <tbody>
           <% @alumnos.each do |alumno| %>
-            <% if alumno.porcentaje_asistencia(@curso) < 75 %>
+            <% if alumno.porcentaje_asistencia(@curso) == "NA" %>
+              <tr class="warning">
+            <% elsif alumno.porcentaje_asistencia(@curso) < 75 %>
               <tr class="error">
             <% else %>
               <tr class="success">
@@ -117,7 +121,13 @@
                   <% end %>
                 </td>
               <% end %>
-              <td><%= alumno.porcentaje_asistencia(@curso) %>%</td>
+              <td>
+                <% if alumno.porcentaje_asistencia(@curso) == "NA" %>
+                  NA
+                <% else %>
+                  <%= alumno.porcentaje_asistencia(@curso) %>%
+                <% end %>  
+              </td>
             </tr>
           <% end %>
         </tbody>

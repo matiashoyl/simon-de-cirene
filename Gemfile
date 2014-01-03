@@ -19,6 +19,7 @@ gem 'roo'
 gem 'simple_form'
 gem 'bootstrap-datepicker-rails'
 gem 'bootstrap-timepicker-rails'
+gem "select2-rails"
 gem 'thin'
 group :development do
   gem 'better_errors'

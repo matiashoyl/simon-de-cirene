@@ -12,9 +12,11 @@ class HomeController < ApplicationController
     @curso_alumno_baja_asistencia = Array.new
 
     @sesiones_a_la_fecha.each do |sesion|
-    	if (sesion.porcentaje_asistentes == "NA")
+    	if sesion.curso.alumnos.empty?
+    		#do nothing
+    	elsif sesion.porcentaje_asistentes == "NA"
     		@sesiones_sin_asistencia.push sesion
-    	elsif (sesion.porcentaje_asistentes < 85)
+    	elsif sesion.porcentaje_asistentes < 85
     		@sesiones_pocos_asistentes.push sesion
     	end
     end

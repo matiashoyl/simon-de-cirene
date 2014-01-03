@@ -1,6 +1,6 @@
 class Alumno < ActiveRecord::Base
   
-	attr_accessible :nombre, :apellido_paterno, :apellido_materno, :rut
+	attr_accessible :nombre, :apellido_paterno, :apellido_materno, :rut, :quintil, :direccion, :comuna, :num_telefono, :num_celular, :fecha_nacimiento, :sexo, :email, :escolaridad, :profesion, :actividad, :cargo, :rut_institucion
 
 	validates :nombre, :apellido_paterno, :rut, :presence => true
 	validates :rut, :uniqueness => true
@@ -50,6 +50,30 @@ class Alumno < ActiveRecord::Base
 		rescue 
 			porcentaje_asistencia = 0
 		end
+		if sesiones_totales == 0
+			porcentaje_asistencia = "NA"
+		end
 		return porcentaje_asistencia
+	end
+
+	def cursos
+		cursos = Array.new
+		curso_ids = AlumnoCurso.where(:alumno_id => self).select(:curso_id).group(:curso_id).collect{|p| p.curso_id}
+		curso_ids.each do |curso_id|
+			cursos.push Curso.find(curso_id)
+		end
+		return cursos
+	end
+
+	def sesiones
+		sesiones = Array.new
+		sesion_ids = AlumnoSesion.where(:alumno_id => self).select(:sesion_id).group(:sesion_id).collect{|p| p.sesion_id}
+		sesion_ids.each do |sesion_id|
+			alumno_sesion = AlumnoSesion.where(:alumno_id => self, :sesion_id => sesion_id).first
+			if alumno_sesion.presente
+				sesiones.push Sesion.find(sesion_id)
+			end
+		end
+		return sesiones.sort_by &:fecha
 	end
 end
