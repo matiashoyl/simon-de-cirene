@@ -11,7 +11,7 @@
 
     <% unless @alumno.fecha_nacimiento == "" || @alumno.fecha_nacimiento == nil %>
       <p>
-        Fecha de nacimiento: <b><%= @alumno.fecha_nacimiento %></b>
+        Fecha de nacimiento: <b><%= @alumno.fecha_nacimiento.strftime("%d %b, %Y") %></b>
       </p>
     <% end %>
 
