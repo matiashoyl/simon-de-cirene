@@ -67,9 +67,17 @@
       <p>
         <% rubros = "" %>
         <% JSON.parse(@alumno.profesion).each do |rubro| %>
-          <% rubros = rubros + rubro.to_s + ", " %>
+          <% if rubro != JSON.parse(@alumno.profesion).last %>
+            <% if rubro != "" %>
+              <% rubros = rubros + rubro.to_s + ", " %>
+            <% end %>
+          <% else %>
+            <% if rubro != "" %>
+              <% rubros = rubros + rubro.to_s %>
+            <% end %>
+          <% end %>
         <% end %>
-        Rubro(s): <b><%= rubros[0..-3] %></b>
+        Rubro(s): <b><%= rubros %></b>
       </p>
     <% end %>
 
