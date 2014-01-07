@@ -1,4 +1,6 @@
 class Programa < ActiveRecord::Base
+	audited
+	
 	has_many :cursos
 	has_many :sesions, :through => :cursos
 

@@ -34,4 +34,9 @@ class HomeController < ApplicationController
     end
 
   end
+
+  def cambios
+      @updates = Audited::Adapters::ActiveRecord::Audit.where(:action => "update").last(15)
+      @deletes = Audited::Adapters::ActiveRecord::Audit.where(:action => "delete").last(15)
+  end
 end

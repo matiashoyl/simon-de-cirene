@@ -1,4 +1,6 @@
 class Curso < ActiveRecord::Base
+	audited
+	
 	belongs_to :programa
 	has_many :sesions
 	has_many :users, :through => :sesions
