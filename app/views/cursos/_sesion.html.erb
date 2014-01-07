@@ -20,10 +20,11 @@
 	    </div>
 		<div class="input-append date">
 			<p>Fecha: </p>
-			<input type="text" data-behaviour='datepicker' class="string date_picker required" name="sesion[fecha]" id="sesion_fecha">
+			<input type="text" data-behaviour='datepicker' class="string date_picker required" name="sesion[fecha]" id="sesion_fecha" value="<%= sesion.fecha.strftime("%d/%m/%Y") %>">
 		</div>
-		<script type="text/javascript">setTimers("#sesion_hora_inicio_edit_<%= sesion.id %>", "#sesion_hora_termino_edit_<%= sesion.id %>");</script>
-		<%= f.input :user_id, :as => :hidden, :input_html => { :value => current_user.id } %>
+		<script type="text/javascript">setTimersEdit("#sesion_hora_inicio_edit_<%= sesion.id %>", "#sesion_hora_termino_edit_<%= sesion.id %>", "<%= sesion.hora_inicio.strftime("%I:%M %p") %>", "<%= sesion.hora_termino.strftime("%I:%M %p") %>");</script>
+		<p>Relator: </p>
+		<%= f.input :user_id, :collection => (User.with_role :relator).collect{ |p| [p.name, p.id] }, :label => false, :prompt => "", :class => 'input-block-level' %>
   		<p>Tipo: </p>
   		<%= f.input :tipo, :collection => ['Exposición', 'Trabajo Práctico', 'Invitado', 'Dinámica', 'Otro'], :label => false, :prompt => "", :class => 'input-block-level' %>
       	<%= f.input :direccion, :label => false, :placeholder => 'Direccion', :class => 'input-block-level' %>

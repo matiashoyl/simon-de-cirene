@@ -16,8 +16,8 @@ SimonDeCirene::Application.routes.draw do
   resources :cursos, :controller => "cursos"
 
   match "/cursos/:id", to: "cursos#update", :as => :update_curso, :via => :put
-  match "/sesions/:id/details", to: "sesions#details", :as => :details, :via => :get
-  match "/alumnos/:id/details", to: "alumnos#details", :as => :details, :via => :get
+  match "/sesions/:id/details", to: "sesions#details", :as => :sesion_details, :via => :get
+  match "/alumnos/:id/details", to: "alumnos#details", :as => :alumno_details, :via => :get
   match "/sesions/curso/:id", to: "sesions#curso", :as => :sesion_curso, :via => :get
   match "/alumnos/asistencia/:id", to: "alumnos#asistencia", :via => :post
   match "/download/excel_tipo", to: "alumnos#download_excel"

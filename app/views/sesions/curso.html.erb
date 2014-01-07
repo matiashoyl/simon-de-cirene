@@ -50,8 +50,8 @@
           <td><%= sesion.direccion %></td>
           <td>
             <div class="btn-group">
-              <%= link_to 'Ver', sesion_path(sesion), :class => 'btn btn-mini' %>
-              <a data-toggle="modal" href="#edit-sesion-<%= sesion.id %>" class="btn btn-mini" type="button">Editar</a>
+              <%= link_to '<i class="icon-search"></i>'.html_safe, sesion_path(sesion), :class => 'btn btn-mini' %>
+              <a data-toggle="modal" href="#edit-sesion-<%= sesion.id %>" class="btn btn-mini" type="button"><i class="icon-pencil"></i></a>
             </div>
           </td>
           <%= render :partial => 'edit_sesion', :locals => {:sesion => sesion, :curso => @curso} %>
@@ -84,9 +84,9 @@
             <td><%= alumno.apellido_materno %></td>
             <td>
               <div class="btn-group">
-                <%= link_to 'Detalles', details_path(alumno), :class => 'btn btn-mini' %>
-                <a data-toggle="modal" href="#edit-alumno-<%= alumno.id %>" class="btn btn-mini" type="button">Editar</a>
-                <a data-toggle="modal" href="#delete-alumno-<%= alumno.id %>" class="btn btn-mini btn-inverse" type="button">Eliminar</a>
+                <%= link_to '<i class="icon-search"></i>'.html_safe, alumno_details_path(alumno), :class => 'btn btn-mini' %>
+                <a data-toggle="modal" href="#edit-alumno-<%= alumno.id %>" class="btn btn-mini" type="button"><i class="icon-pencil"></i></a>
+                <a data-toggle="modal" href="#delete-alumno-<%= alumno.id %>" class="btn btn-mini btn-inverse" type="button"><i class="icon-trash icon-white"></i></a>
               </div>
             </td>
             <%= render :partial => 'eliminar_alumno', :locals => {:alumno => alumno, :curso => @curso} %>

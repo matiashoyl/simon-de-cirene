@@ -23,28 +23,35 @@ function setTimers(id_inicio, id_termino){
     	var nuevaHoraTermino = aux2.toLocaleTimeString();
     	nuevaHoraTermino = nuevaHoraTermino.substring(0, nuevaHoraTermino.length-6) + " " + PMoAM;
     	$(id_termino).timepicker('setTime', nuevaHoraTermino);
-  	});
-
-    $(document).ready(function() {
-        $("#alumno_profesion").select2({
-            width: "resolve",
-            placeholder: "Selecciona uno o varios rubros"
-        });
-        $("#alumno_comuna").select2({
-            width: "resolve",
-            placeholder: "Comuna"
-        });
-        $("#alumno_sexo").select2({
-            width: "resolve",
-            placeholder: "Sexo"
-        });
-        $("#alumno_quintil").select2({
-            width: "resolve",
-            placeholder: "Quintil"
-        });
-        $("#alumno_escolaridad").select2({
-            width: "resolve",
-            placeholder: "Escolaridad"
-        });
-    });
+  	});    
 }
+function setTimersEdit(id_inicio, id_termino, hora_inicio, hora_termino){
+    var horaInicio = hora_inicio;
+    var horaTermino = hora_termino;
+    $(id_inicio).timepicker({defaultTime: horaInicio});
+    $(id_termino).timepicker({defaultTime: horaTermino});
+        
+}
+
+$(document).ready(function() {
+    $("#alumno_profesion").select2({
+        width: "resolve",
+        placeholder: "Selecciona uno o varios rubros"
+    });
+    $("#alumno_comuna").select2({
+        width: "resolve",
+        placeholder: "Comuna"
+    });
+    $("#alumno_sexo").select2({
+        width: "resolve",
+        placeholder: "Sexo"
+    });
+    $("#alumno_quintil").select2({
+        width: "resolve",
+        placeholder: "Quintil"
+    });
+    $("#alumno_escolaridad").select2({
+        width: "resolve",
+        placeholder: "Escolaridad"
+    });
+});

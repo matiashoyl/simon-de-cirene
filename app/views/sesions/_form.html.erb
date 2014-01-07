@@ -29,5 +29,9 @@
   <div class="form-actions">
     <%= f.button :submit, "Enviar", :class => 'btn-info' %>
     <% end %>
-    <%= link_to("Atrás", curso_path(@sesion.curso_id), :class => 'btn') %>
+    <% if current_user.has_role? :relator %>
+      <%= link_to("Atrás", sesion_curso_path(@sesion.curso_id), :class => 'btn') %>
+    <% else %>
+      <%= link_to("Atrás", curso_path(@sesion.curso_id), :class => 'btn') %>
+    <% end %>
   </div>

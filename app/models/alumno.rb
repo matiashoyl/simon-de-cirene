@@ -1,6 +1,6 @@
 class Alumno < ActiveRecord::Base
   
-	attr_accessible :nombre, :apellido_paterno, :apellido_materno, :rut, :quintil, :direccion, :comuna, :num_telefono, :num_celular, :fecha_nacimiento, :sexo, :email, :escolaridad, :profesion, :actividad, :cargo, :rut_institucion
+	attr_accessible :nombre, :apellido_paterno, :apellido_materno, :rut, :quintil, :direccion, :comuna, :num_telefono, :num_celular, :fecha_nacimiento, :sexo, :email, :escolaridad, :profesion, :actividad, :cargo, :rut_institucion, :nombre_institucion
 
 	validates :nombre, :apellido_paterno, :rut, :presence => true
 	validates :rut, :uniqueness => true
@@ -13,7 +13,7 @@ class Alumno < ActiveRecord::Base
 			header = spreadsheet.row(1)
 			(2..largo).each do |i|
 				row = Hash[[header, spreadsheet.row(i)].transpose]
-				alumno = find_by_id(row["id"]) || new
+				alumno = find_by_rut(row["rut"]) || new
 				alumno.attributes = row.to_hash.slice(*accessible_attributes)
 				alumno.save
 				AlumnoCurso.create(:alumno_id => alumno.id, :curso_id => cursoId)
@@ -65,7 +65,7 @@ class Alumno < ActiveRecord::Base
 		return cursos
 	end
 
-	def sesiones
+	def sesiones_asistidas
 		sesiones = Array.new
 		sesion_ids = AlumnoSesion.where(:alumno_id => self).select(:sesion_id).group(:sesion_id).collect{|p| p.sesion_id}
 		sesion_ids.each do |sesion_id|
@@ -73,6 +73,15 @@ class Alumno < ActiveRecord::Base
 			if alumno_sesion.presente
 				sesiones.push Sesion.find(sesion_id)
 			end
+		end
+		return sesiones.sort_by &:fecha
+	end
+
+	def sesiones_totales
+		sesiones = Array.new
+		sesion_ids = AlumnoSesion.where(:alumno_id => self).select(:sesion_id).group(:sesion_id).collect{|p| p.sesion_id}
+		sesion_ids.each do |sesion_id|
+			sesiones.push Sesion.find(sesion_id)
 		end
 		return sesiones.sort_by &:fecha
 	end
