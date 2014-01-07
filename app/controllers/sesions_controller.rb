@@ -135,7 +135,7 @@ class SesionsController < ApplicationController
       @cursos.push curso
     end
 
-    @sesiones = Sesion.where(:user_id => current_user).where(:curso_id => @curso.id).order(:fecha).all
+    @sesiones = Sesion.where(:curso_id => @curso.id).order(:fecha).all
 
     respond_to do |format|
       format.html # details.html.erb

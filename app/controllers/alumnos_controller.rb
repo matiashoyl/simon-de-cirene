@@ -71,7 +71,11 @@ class AlumnosController < ApplicationController
           @alumno.update_attributes(:profesion => profesion.to_json)
         end
         AlumnoCurso.create(:alumno_id => @alumno.id, :curso_id => params[:curso_id])
-        format.html { redirect_to sesion_curso_path(params[:curso_id]) }
+        if current_user.has_role? :relator
+          format.html { redirect_to sesion_curso_path(params[:curso_id]) }
+        else
+          format.html { redirect_to curso_path(params[:curso_id]) }
+        end
         format.json { render json: @alumno, status: :created, location: @alumno }
       else
         @curso = Curso.find(params[:curso_id])
@@ -95,7 +99,11 @@ class AlumnosController < ApplicationController
           end
         end
         @alumno.update_attributes(:profesion => profesion.to_json)
-        format.html { redirect_to sesion_curso_path(params[:curso_id]) }
+        if current_user.has_role? :relator
+          format.html { redirect_to sesion_curso_path(params[:curso_id]) }
+        else
+          format.html { redirect_to curso_path(params[:curso_id]) }
+        end
         format.json { head :no_content }
       else
         @curso = Curso.find(params[:curso_id])
@@ -130,7 +138,11 @@ class AlumnosController < ApplicationController
 
   def import
     Alumno.import(params[:file], params[:curso_id])
-    redirect_to sesion_curso_path(params[:curso_id])
+    if current_user.has_role? :relator
+      redirect_to sesion_curso_path(params[:curso_id])
+    else
+      redirect_to curso_path(params[:curso_id])
+    end
   end
 
   def download_excel

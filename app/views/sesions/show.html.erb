@@ -33,7 +33,7 @@
 <div class="span8">
 	<%= render 'layouts/messages' %>
       <div class="page-header">
-          <h1><%= link_to(@sesion.tema, details_path(@sesion)) %> <small><%= @curso.nombre %>,  <%= @sesion.fecha.strftime("%d %b") %></small></h1>
+          <h1><%= link_to(@sesion.tema, sesion_details_path(@sesion)) %> <small><%= @curso.nombre %>,  <%= @sesion.fecha.strftime("%d %b") %></small></h1>
       </div>
 
       <h3>Alumnos</h3>

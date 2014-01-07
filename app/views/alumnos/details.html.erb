@@ -79,6 +79,12 @@
       </p>
     <% end %>
 
+    <% unless @alumno.nombre_institucion == "" || @alumno.nombre_institucion == nil %>
+      <p>
+        Nombre de la Institución: <b><%= @alumno.nombre_institucion %></b>
+      </p>
+    <% end %>
+
     <% unless @alumno.rut_institucion == "" || @alumno.rut_institucion == nil %>
       <p>
         Rut de la Institución: <b><%= @alumno.rut_institucion %></b>
@@ -120,7 +126,7 @@
       </table>
     <% end %>
 
-    <% if @alumno.sesiones.any? %>
+    <% if @alumno.sesiones_totales.any? %>
       <br />
       <h4>Sesiones Asistidas</h4>
       <hr>
@@ -134,7 +140,7 @@
             </tr>
         </thead>
         <tbody>
-          <% @alumno.sesiones.each_with_index do |sesion, index| %>
+          <% @alumno.sesiones_totales.each_with_index do |sesion, index| %>
             <tr>
               <td><%= index + 1 %></td>
               <td><%= sesion.tema %></td>

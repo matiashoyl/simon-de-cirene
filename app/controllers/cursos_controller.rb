@@ -19,6 +19,7 @@ class CursosController < ApplicationController
     @cursos = Curso.all
     @sesion = Sesion.new
     @sesiones = @curso.sesions.order(:fecha)
+    @alumno = Alumno.new
 
     alumnos_ids = AlumnoCurso.where(:curso_id => @curso.id).select(:alumno_id).group(:alumno_id).collect{|p| p.alumno_id}
     @alumnos = Array.new
