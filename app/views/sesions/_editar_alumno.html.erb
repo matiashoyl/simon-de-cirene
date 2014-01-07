@@ -29,7 +29,8 @@
   			<%= f.input :actividad, :label => false, :placeholder => 'Actividad', :class => 'input-block-level' %>
   		<% else %>
   			<%= f.input :actividad, :label => false, :placeholder => 'Profesión', :class => 'input-block-level' %>
-			<%= f.input :rut_institucion, :label => false, :placeholder => 'Rut Institución', :class => 'input-block-level', :input_html => {:id => "edit_rut_institucion_" + alumno.id.to_s} %>
+        <%= f.input :nombre_institucion, :label => false, :placeholder => 'Nombre Institución', :class => 'input-block-level' %>
+			  <%= f.input :rut_institucion, :label => false, :placeholder => 'Rut Institución', :class => 'input-block-level', :input_html => {:id => "edit_rut_institucion_" + alumno.id.to_s} %>
   			<%= f.input :cargo, :label => false, :placeholder => 'Cargo en la institución', :class => 'input-block-level' %>
   		<% end %>
   		<input class="hidden" id="alumno_curso_id" name="curso_id" type="hidden" value="<%= @curso.id %>">
