@@ -93,12 +93,14 @@ class AlumnosController < ApplicationController
     respond_to do |format|
       if @alumno.update_attributes(params[:alumno])
         profesion = Array.new
-        @alumno.profesion.each do |rubro|
-          if rubro != ""
-            profesion.push rubro
+        if params[:alumno][:profesion] != nil && params[:alumno][:profesion].kind_of?(Array)
+          @alumno.profesion.each do |rubro|
+            if rubro != ""
+              profesion.push rubro
+            end
           end
+          @alumno.update_attributes(:profesion => profesion.to_json)
         end
-        @alumno.update_attributes(:profesion => profesion.to_json)
         if current_user.has_role? :relator
           format.html { redirect_to sesion_curso_path(params[:curso_id]) }
         else
