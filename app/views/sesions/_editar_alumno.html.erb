@@ -13,7 +13,11 @@
 		<%= f.input :rut, :label => false, :placeholder => 'Rut', :input_html => {:id => "edit_rut_" + alumno.id.to_s} %>
   		<div class="input-append date">
 			<p>Fecha Nacimiento: </p>
-			<input type="text" data-behaviour='datepicker' placeholder="dd/mm/aaaa" class="string date_picker required" name="alumno[fecha_nacimiento]" id="alumno_fecha">
+      <% if alumno.fecha_nacimiento != nil %>
+			   <input type="text" data-behaviour='datepicker' placeholder="dd/mm/aaaa" class="string date_picker required" name="alumno[fecha_nacimiento]" id="alumno_fecha" value="<%= alumno.fecha_nacimiento.strftime("%d/%m/%Y") %>">
+      <% else %>
+        <input type="text" data-behaviour='datepicker' placeholder="dd/mm/aaaa" class="string date_picker required" name="alumno[fecha_nacimiento]" id="alumno_fecha">
+      <% end %>
 		</div>
 		<%= f.input :sexo, :collection => ['Hombre', 'Mujer'], :label => false, :prompt => "Sexo", :class => 'input-block-level', :input_html => {:id => "alumno_sexo_" + alumno.id.to_s} %>
   		<%= f.input :email, :label => false, :placeholder => 'Email', :class => 'input-block-level' %>
@@ -25,6 +29,22 @@
   		<%= f.input :escolaridad, :collection => ['Sin Escolaridad', 'Básica Completa', 'Básica Incompleta', 'Media Completa', 'Media Incompleta', 'Universitaria Completa', 'Universitaria Incompleta', 'Posgrado'], :label => false, :prompt => "Escolaridad", :class => 'input-block-level', :input_html => {:id => "alumno_escolaridad_" + alumno.id.to_s} %>
   		<% if @curso.programa.tipo == "Microempresas" %>
   			<%= f.select :profesion, options_for_select(["Comercio", "Servicio", "Productivo"]), {}, {:multiple => true, :id => "alumno_profesion_" + alumno.id.to_s} %>
+        <% if alumno.profesion != "[]" %>
+          
+          <script type="text/javascript">
+            $("#alumno_profesion_<%=alumno.id%>").val(<%= raw JSON.parse(alumno.profesion) %>).select2({
+              width: "resolve",
+              placeholder: "Selecciona uno o varios rubros"
+            });
+          </script>
+        <% else %>
+          <script type="text/javascript">
+            $("#alumno_profesion_<%=alumno.id%>").select2({
+              width: "resolve",
+              placeholder: "Selecciona uno o varios rubros"
+            });
+          </script>
+        <% end %>
   			<br /><br />
   			<%= f.input :actividad, :label => false, :placeholder => 'Actividad', :class => 'input-block-level' %>
   		<% else %>
@@ -45,24 +65,21 @@
 <script type="text/javascript">
 	setRut("#edit_rut_<%=alumno.id%>");
 	setRut("#edit_rut_institucion_<%=alumno.id%>");
-	$("#alumno_profesion_<%=alumno.id%>").select2({
-        width: "resolve",
-        placeholder: "Selecciona uno o varios rubros"
-    });
-    $("#alumno_comuna_<%=alumno.id%>").select2({
-        width: "resolve",
-        placeholder: "Comuna"
-    });
-    $("#alumno_sexo_<%=alumno.id%>").select2({
-        width: "resolve",
-        placeholder: "Sexo"
-    });
-    $("#alumno_quintil_<%=alumno.id%>").select2({
-        width: "resolve",
-        placeholder: "Quintil"
-    });
-    $("#alumno_escolaridad_<%=alumno.id%>").select2({
-        width: "resolve",
-        placeholder: "Escolaridad"
-    });
+	
+  $("#alumno_comuna_<%=alumno.id%>").select2({
+      width: "resolve",
+      placeholder: "Comuna"
+  });
+  $("#alumno_sexo_<%=alumno.id%>").select2({
+      width: "resolve",
+      placeholder: "Sexo"
+  });
+  $("#alumno_quintil_<%=alumno.id%>").select2({
+      width: "resolve",
+      placeholder: "Quintil"
+  });
+  $("#alumno_escolaridad_<%=alumno.id%>").select2({
+      width: "resolve",
+      placeholder: "Escolaridad"
+  });
 </script>

@@ -70,7 +70,7 @@ class AlumnosController < ApplicationController
           end
           @alumno.update_attributes(:profesion => profesion.to_json)
         end
-        AlumnoCurso.create(:alumno_id => @alumno.id, :curso_id => params[:curso_id])
+        AlumnoCurso.where(:alumno_id => @alumno.id, :curso_id => params[:curso_id]).first_or_create
         if current_user.has_role? :relator
           format.html { redirect_to sesion_curso_path(params[:curso_id]) }
         else
@@ -118,11 +118,16 @@ class AlumnosController < ApplicationController
   # DELETE /alumnos/1
   # DELETE /alumnos/1.json
   def destroy
-    @alumno_curso = AlumnoCurso.where(:alumno_id => params[:alumno_id], :curso_id => params[:curso_id]).first
-    @alumno_curso.destroy
+    AlumnoCurso.where(:alumno_id => params[:alumno_id], :curso_id => params[:curso_id]).all.each do |alumno_curso|
+      alumno_curso.destroy
+    end
 
     respond_to do |format|
-      format.html { redirect_to sesion_curso_path(params[:curso_id]) }
+      if current_user.has_role? :relator
+        format.html { redirect_to sesion_curso_path(params[:curso_id]) }
+      else
+        format.html { redirect_to curso_path(params[:curso_id]) }
+      end
       format.json { head :no_content }
     end
   end

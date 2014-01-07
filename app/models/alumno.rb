@@ -1,5 +1,6 @@
 class Alumno < ActiveRecord::Base
-  
+  	audited
+
 	attr_accessible :nombre, :apellido_paterno, :apellido_materno, :rut, :quintil, :direccion, :comuna, :num_telefono, :num_celular, :fecha_nacimiento, :sexo, :email, :escolaridad, :profesion, :actividad, :cargo, :rut_institucion, :nombre_institucion
 
 	validates :nombre, :apellido_paterno, :rut, :presence => true

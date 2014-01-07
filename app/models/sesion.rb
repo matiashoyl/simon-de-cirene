@@ -1,4 +1,6 @@
 class Sesion < ActiveRecord::Base
+	audited
+	
 	belongs_to :curso
 	belongs_to :user
 

@@ -1,0 +1,36 @@
+<div class="span3"></div>
+<div class="span6">
+  <h3>Útilmos Cambios</h3>
+  <% if @updates.any? %>
+    <table class="table table-condensed table-striped">
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Cambio</th>
+          <th>Usuario</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @updates.each do |update| %>
+          <tr>
+            <td><%= update.created_at %></td>
+            <td><%= update.audited_changes %></td>
+            <td>
+              <div class="btn-group">
+                <%= link_to("Ver", programa, :class => 'btn btn-mini') %>
+                <a data-toggle="modal" href="#edit-programa-<%= programa.id %>" class="btn btn-mini" type="button">Editar</a>
+                <a data-toggle="modal" href="#delete-programa-<%= programa.id %>" class="btn btn-mini btn-inverse" type="button">Eliminar</a>
+              </div>
+              <%= render :partial => 'edit_programa', :locals => {:programa => programa} %>
+              <%= render :partial => 'eliminar_programa', :locals => {:programa => programa} %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <br />
+  <% end %>
+  <a data-toggle="modal" href="#new-programa" class="btn btn-mini btn-info" type="button">Crear Programa</a>
+  <%= render 'new' %>
+</div>
