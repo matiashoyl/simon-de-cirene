@@ -1,0 +1,17 @@
+<%= simple_form_for(@formulario) do |f| %>
+  <%= f.error_notification %>
+
+  <div class="form-inputs">
+    <%= f.input :codigo, :autofocus => true, :label => false, :placeholder => 'Código' %>
+    <%= f.input :nombre, :label => false, :placeholder => 'Nombre' %>
+    <p>Tipo:</p>
+    <%= f.input :tipo, :collection => ['Social', 'Microempresas'], :label => false, :prompt => "" %>
+    <p>Pega el código del formulario de Google Drive aquí:</p>
+    <%= f.input :cuerpo, :label => false, :as => :text, :input_html => { :class => "input-block-level" } %>
+  </div>
+
+  <div class="form-actions">
+    <%= f.button :submit, "Enviar", :class => 'btn-info' %>
+    <% end %>
+  <%= link_to("Atrás", formularios_path, :class => 'btn') %>
+</div>
