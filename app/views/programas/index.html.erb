@@ -17,9 +17,9 @@
             <td><%= programa.tipo %></td>
             <td>
               <div class="btn-group">
-                <%= link_to("Ver", programa, :class => 'btn btn-mini') %>
-                <a data-toggle="modal" href="#edit-programa-<%= programa.id %>" class="btn btn-mini" type="button">Editar</a>
-                <a data-toggle="modal" href="#delete-programa-<%= programa.id %>" class="btn btn-mini btn-inverse" type="button">Eliminar</a>
+                <%= link_to('<i class="icon-search"></i>'.html_safe, programa, :class => 'btn btn-mini') %>
+                <a data-toggle="modal" href="#edit-programa-<%= programa.id %>" class="btn btn-mini" type="button"><i class="icon-pencil"></i></a>
+                <a data-toggle="modal" href="#delete-programa-<%= programa.id %>" class="btn btn-mini btn-inverse" type="button"><i class="icon-trash icon-white"></i></a>
               </div>
               <%= render :partial => 'edit_programa', :locals => {:programa => programa} %>
               <%= render :partial => 'eliminar_programa', :locals => {:programa => programa} %>
