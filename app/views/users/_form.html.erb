@@ -2,9 +2,9 @@
   <%= f.error_notification %>
 
   <div class="form-inputs">
-    <%= f.input :name, :autofocus => true, :label => false, :placeholder => 'Nombre', :class => 'input-block-level' %>
-    <%= f.input :email, :label => false, :placeholder => 'Email', :class => 'input-block-level' %>
-    <%= f.input :role_ids, :collection => Role.all, :label => false, :prompt => "Selecciona un rol", :class => 'input-block-level' %>
+    <%= f.input :name, :autofocus => true, :label => false, :placeholder => 'Nombre', :input_html => { :class => "input-block-level" } %>
+    <%= f.input :email, :label => false, :placeholder => 'Email', :input_html => { :class => "input-block-level" } %>
+    <%= f.input :role_ids, :collection => Role.all, :label => false, :prompt => "Selecciona un rol", :input_html => { :class => "input-block-level" } %>
   </div>
 
   <div class="form-actions">
