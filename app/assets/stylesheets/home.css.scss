@@ -16,3 +16,22 @@ body .modal-role {
     margin-left:auto;
   	margin-right:auto;
 }
+
+.featurette {
+	padding-top: 50px;
+	overflow: hidden;
+	overflow-x: hidden;
+	overflow-y: hidden;
+}
+
+.featurette-image {
+	margin-top: -50px;
+}
+
+.featurette-image.pull-right {
+	margin-left: 25px;
+}
+
+.featurette-image.pull-left {
+	margin-right: 100px;
+}
