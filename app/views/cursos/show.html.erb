@@ -148,5 +148,44 @@
       
     <%= render :partial => 'sesions/new_alumno', :locals => {:sesion => @sesion} %>
     <%= render :partial => 'sesions/subir_excel', :locals => {:curso => @curso} %>
-      <br /><br />
+
+    <%# ------------------------------ Formularios ------------------------------ %> 
+    <hr>
+    <h3>Formularios</h3>
+    <% if @formularios.any? %>
+      <table class="table table-condensed table-striped">
+        <thead>
+            <tr>
+              <th>Cógido</th>
+              <th>Nombre</th>
+              <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+          <% @formularios.each do |formulario| %>
+            <tr>
+              <td><%= formulario.codigo %></td>
+              <td><%= formulario.nombre %></td>
+              <td>
+                <% if formulario.estado(@curso) == "Pendiente" %>
+                  <button type="button" id="estado-<%= formulario.id %>-<%= @curso.id %>" class="btn btn-mini btn-warning disabled">Pendiente</button>
+                <% else %>
+                  <button type="button" id="estado-<%= formulario.id %>-<%= @curso.id %>" class="btn btn-mini btn-info disabled">Contestado</button>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% else %>
+
+    <p>El curso todavía no tiene formularios</p>
+ 
+    <% end %>
+
+    <a data-toggle="modal" href="#agregar-formulario" class="btn btn-mini btn-info" type="button">Agregar Formulario</a>
+
+    <%= render :partial => 'agregar_formulario', :locals => {:curso => @curso, :formularios => @formularios} %>
+
+    <br /><br />
 </div>

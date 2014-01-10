@@ -1,0 +1,17 @@
+<div class="span3"></div>
+<div class="span6">
+	<h3><%= @formulario.codigo %> <small><%= @formulario.tipo %></small></h3>
+	<h4><%= @formulario.nombre %></h4>
+	<hr>
+	<%= raw @formulario.cuerpo %>
+	<br /><br /><br />
+</div>
+
+<script type="text/javascript">
+$( "#ss-form" ).submit(function() {
+	$.ajax({
+		type: "POST",
+		url: "/curso/<%= @curso.id %>/formulario/<%= @formulario.id %>"
+	});
+});
+</script>

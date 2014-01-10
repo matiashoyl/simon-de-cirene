@@ -1,4 +1,7 @@
 SimonDeCirene::Application.routes.draw do
+  resources :formulario_cursos
+
+
   resources :formularios
 
 
@@ -24,6 +27,8 @@ SimonDeCirene::Application.routes.draw do
   match "/sesions/curso/:id", to: "sesions#curso", :as => :sesion_curso, :via => :get
   match "/alumnos/asistencia/:id", to: "alumnos#asistencia", :via => :post
   match "/download/excel_tipo", to: "alumnos#download_excel"
+  match "/curso/:curso_id/formulario/:formulario_id", to: "cursos#formulario", :as => :curso_formulario, :via => :get
+  match "/curso/:curso_id/formulario/:formulario_id", to: "cursos#formulario_completado", :via => :post
 
   match '/formularios/R7512' => 'formularios#R7512'
 

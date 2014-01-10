@@ -1,0 +1,20 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Formulario:</b>
+  <%= @formulario_curso.formulario_id %>
+</p>
+
+<p>
+  <b>Curso:</b>
+  <%= @formulario_curso.curso_id %>
+</p>
+
+<p>
+  <b>Estado:</b>
+  <%= @formulario_curso.estado %>
+</p>
+
+
+<%= link_to 'Edit', edit_formulario_curso_path(@formulario_curso) %> |
+<%= link_to 'Back', formulario_cursos_path %>

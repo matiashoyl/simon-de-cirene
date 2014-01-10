@@ -1,3 +1,42 @@
 // Place all the styles related to the Formularios controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
+
+.ss-q-title {
+    font-weight: bold;
+}
+
+.ss-form-entry {
+    margin-bottom: 30px;
+}
+
+.ss-gridnumbers {
+	text-align: center;
+	border-bottom: 1px solid #d3d8d3;
+}
+
+.ss-gridrow {
+	text-align: center;
+	color: #666;
+	border-bottom: 1px solid #d3d8d3;
+	padding: .5em .25em;
+}
+
+.ss-gridrow-leftlabel {
+	min-width: 100px;
+	max-width: 200px;
+	padding-left: 15px;
+	text-align: left;
+}
+
+.ss-choices {
+	list-style: none;
+	margin: .5em 0 0 0;
+	padding: 0;
+}
+
+.ss-section-title {
+	font-size: 20px;
+	margin-bottom: 0px;
+	margin-top: 0px;
+}

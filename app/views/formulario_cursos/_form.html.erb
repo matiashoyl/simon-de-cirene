@@ -1,0 +1,13 @@
+<%= simple_form_for(@formulario_curso) do |f| %>
+  <%= f.error_notification %>
+
+  <div class="form-inputs">
+    <%= f.input :formulario_id %>
+    <%= f.input :curso_id %>
+    <%= f.input :estado %>
+  </div>
+
+  <div class="form-actions">
+    <%= f.button :submit %>
+  </div>
+<% end %>

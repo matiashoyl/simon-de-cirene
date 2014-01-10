@@ -139,5 +139,39 @@
   <%= render :partial => 'subir_excel', :locals => {:curso => @curso} %>
   <%= render :partial => 'asistencia', :locals => {:alumnos => @alumnos, :sesiones => @sesiones, :curso => @curso} %>
 
+  <%# ------------------------------ Formularios ------------------------------ %> 
+    <hr>
+    <h3>Formularios</h3>
+    <% if @formularios.any? %>
+      <table class="table table-condensed table-striped">
+        <thead>
+            <tr>
+              <th>Cógido</th>
+              <th>Nombre</th>
+              <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+          <% @formularios.each do |formulario| %>
+            <tr>
+              <td><%= formulario.codigo %></td>
+              <td><%= formulario.nombre %></td>
+              <td>
+                <% if formulario.contestado?(@curso) %>
+                  <button type="button" id="estado-<%= formulario.id %>-<%= @curso.id %>" class="btn btn-mini btn-info disabled">Contestado</button>
+                <% else %>
+                  <%= link_to "Contestar", curso_formulario_path(:curso_id => @curso, :formulario_id => formulario), :class => 'btn btn-mini' %>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% else %>
+
+    <p>El curso todavía no tiene formularios</p>
+ 
+    <% end %>
+
   <br /><br /><br />
 </div>
