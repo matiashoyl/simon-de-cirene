@@ -38,4 +38,8 @@ class HomeController < ApplicationController
   def cambios
       @cambios = Audited::Adapters::ActiveRecord::Audit.last(30)
   end
+
+  def ayuda_formularios
+      
+  end
 end

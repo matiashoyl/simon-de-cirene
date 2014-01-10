@@ -1,0 +1,49 @@
+<div class="span2"></div>
+<div class="span8">
+	<h3>¿Cómo conseguir el código del formulario de Drive?</h3>
+	<hr class="featurette-divider">
+	<div class="featurette">
+		<img class="featurette-image pull-right" src="/images/paso-1.png">
+		<h2 class="featurette-heading">1. Abrir el formulario.</h2>
+		<p class="lead">Dirígete al Google Drive que tiene el formulario, busca el formulario que quieres y ábrelo.</p>
+	</div>
+	<hr class="featurette-divider">
+	<div class="featurette">
+		<img class="featurette-image pull-left" src="/images/paso-2.png">
+		<h2 class="featurette-heading">2. Ver vista previa.</h2>
+		<p class="lead">En el menú debes hacer click en "Ver el formulario publicado" para ver el formulario real.</p>
+	</div>
+	<hr class="featurette-divider">
+	<div class="featurette">
+		<img class="featurette-image pull-right" src="/images/paso-3.png">
+		<h2 class="featurette-heading">3. Ver el código fuente.</h2>
+		<p class="lead">Una vez en el formulario haz click derecho en cualquier lugar de la pantalla y apreta la opción "Ver código fuente" (View page source en inglés).</p>
+	</div>
+	<hr class="featurette-divider">
+	<div class="featurette">
+		<img class="featurette-image pull-left" src="/images/paso-4.png">
+		<h2 class="featurette-heading">4. Encontrar el incio del formulario.</h2>
+		<p class="lead">Debes encontrar el incio del código del formulario, el que se escribe con un tag <code>&lt;form&gt;</code>.</p>
+	</div>
+	<hr class="featurette-divider">
+	<div class="featurette">
+		<img class="featurette-image pull-right" src="/images/paso-5.png">
+		<h2 class="featurette-heading">5. Encontrar el final del formulario.</h2>
+		<p class="lead">Igual que el paso anterior, debes encontrar el tag de término del formulario que es <code>&lt;/form&gt;</code>.</p>
+	</div>
+	<hr class="featurette-divider">
+	<div class="featurette">
+		<img class="featurette-image pull-left" src="/images/paso-6.png">
+		<h2 class="featurette-heading">6. Seleccionar y copiar todo entre medio.</h2>
+		<p class="lead">Une los dos tags preocupándote de seleccionar todo entre medio. Luego copia la selección</p>
+	</div>
+	<hr class="featurette-divider">
+	<div class="featurette">
+		<img class="featurette-image pull-right" src="/images/paso-7.png">
+		<h2 class="featurette-heading">7. Pegar lo seleccionado.</h2>
+		<p class="lead">Finalmente, debes pegar la selección donde se indica al crear un nuevo formulario</p>
+	</div>
+	<br><br>
+	<%= link_to("Atrás", new_formulario_path, :class => 'btn') %>
+	<br><br><br>
+</div>
