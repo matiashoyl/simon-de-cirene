@@ -20,6 +20,8 @@ class CursosController < ApplicationController
     @sesion = Sesion.new
     @sesiones = @curso.sesions.order(:fecha)
     @alumno = Alumno.new
+    @formulario_curso = FormularioCurso.new
+    @formularios = @curso.formularios
 
     alumnos_ids = AlumnoCurso.where(:curso_id => @curso.id).select(:alumno_id).group(:alumno_id).collect{|p| p.alumno_id}
     @alumnos = Array.new
@@ -101,5 +103,15 @@ class CursosController < ApplicationController
       format.html { redirect_to cursos_url }
       format.json { head :no_content }
     end
+  end
+
+  def formulario
+    @formulario = Formulario.find(params[:formulario_id])
+    @curso = Curso.find(params[:curso_id])
+  end
+
+  def formulario_completado
+    @formulario_curso = FormularioCurso.where(:formulario_id => params[:formulario_id], :curso_id => params[:curso_id]).first_or_create
+    @formulario_curso.update_attributes(:estado => "Contestado")
   end
 end

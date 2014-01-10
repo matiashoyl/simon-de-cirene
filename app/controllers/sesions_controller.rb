@@ -123,6 +123,7 @@ class SesionsController < ApplicationController
     @sesion = Sesion.new
     @alumno = Alumno.new
     @curso = Curso.find(params[:id])
+    @formularios = @curso.formularios
 
     alumnos_ids = AlumnoCurso.where(:curso_id => @curso.id).select(:alumno_id).group(:alumno_id).collect{|p| p.alumno_id}
     @alumnos = @curso.alumnos

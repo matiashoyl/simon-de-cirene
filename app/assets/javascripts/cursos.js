@@ -1,10 +1,12 @@
 $(document).ready(function(){
+    //Inicialización del campo de la fecha
     $('[data-behaviour~=datepicker]').datepicker({
 	    format: "dd/mm/yyyy",
         language: "es",
 	    autoclose: true
 	});
 
+    //Manejo de la hora. Parte con la hora actual y la final dos horas más adelante.
     var hora = new Date();
     var horaInicio = hora.toLocaleTimeString();
     var aux = new Date(hora.setHours(hora.getHours()+2));
@@ -26,4 +28,19 @@ $(document).ready(function(){
     	nuevaHoraTermino = nuevaHoraTermino.substring(0, nuevaHoraTermino.length-6) + " " + PMoAM;
     	$('#sesion_hora_termino').timepicker('setTime', nuevaHoraTermino);
   	});
+
+    //Codigo necesario para redireccionar a la página indicada al completar un formulario
+    var url_actual = window.location.pathname;
+    var curso = url_actual.split("/")[2];
+    var html = ""
+    html += '<script type="text/javascript">var submitted=false;</script>'
+    html += '<iframe name="hidden_iframe" id="hidden_iframe" style="display:none;" onload="if(submitted) {window.location='
+    html += "'"
+    html += window.location.origin + "/sesions/curso/" + curso
+    html += "'"
+    html += ';}"></iframe>'
+    $("#ss-form").before(html);
+    $("#ss-form").attr('target', 'hidden_iframe');
+    $("#ss-form").attr('onsubmit', 'submitted=true;');
+    
 })

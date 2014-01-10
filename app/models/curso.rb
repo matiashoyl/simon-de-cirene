@@ -19,4 +19,14 @@ class Curso < ActiveRecord::Base
 	    end
 	    return alumnos
 	end
+
+	def formularios
+		formularios = Array.new
+		formularios_ids = FormularioCurso.where(:curso_id => self).select(:formulario_id).group(:formulario_id).collect{|p| p.formulario_id}
+		formularios_ids.each do |formulario_id|
+	      formulario = Formulario.find(formulario_id)
+	      formularios.push formulario
+	    end
+	    return formularios
+	end
 end
