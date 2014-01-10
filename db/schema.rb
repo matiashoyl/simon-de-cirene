@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140110135255) do
+ActiveRecord::Schema.define(:version => 20140110161231) do
 
   create_table "alumno_cursos", :force => true do |t|
     t.integer  "alumno_id"
@@ -92,9 +92,9 @@ ActiveRecord::Schema.define(:version => 20140110135255) do
   create_table "formularios", :force => true do |t|
     t.string   "codigo"
     t.string   "nombre"
-    t.string   "cuerpo"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.text     "cuerpo",     :limit => 255
+    t.datetime "created_at",                :null => false
+    t.datetime "updated_at",                :null => false
     t.string   "tipo"
   end
 
