@@ -5,9 +5,9 @@ class Curso < ActiveRecord::Base
 	has_many :sesions
 	has_many :users, :through => :sesions
 
-	attr_accessible :codigo, :nombre, :comuna, :programa_id
+	attr_accessible :codigo, :nombre, :comuna, :programa_id, :relator_jefe_id
 
-	validates :codigo, :nombre, :comuna, :programa_id, :presence => true
+	validates :codigo, :nombre, :comuna, :programa_id, :relator_jefe_id, :presence => true
 	validates :codigo, :uniqueness => true
 
 	def alumnos

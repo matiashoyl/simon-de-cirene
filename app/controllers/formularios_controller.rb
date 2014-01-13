@@ -1,3 +1,7 @@
+require 'rubygems'
+require 'nokogiri'
+require 'open-uri'
+
 class FormulariosController < ApplicationController
   # GET /formularios
   # GET /formularios.json
@@ -14,6 +18,8 @@ class FormulariosController < ApplicationController
   # GET /formularios/1.json
   def show
     @formulario = Formulario.find(params[:id])
+    pagina = Nokogiri::HTML(open(@formulario.url))
+    @cuerpo = pagina.css('form').to_html
 
     respond_to do |format|
       format.html # show.html.erb
@@ -79,5 +85,13 @@ class FormulariosController < ApplicationController
       format.html { redirect_to formularios_url }
       format.json { head :no_content }
     end
+  end
+
+  def asignar
+    formulario_id = params[:formulario_id]
+    params[:cursos_ids].each do |curso_id|
+      FormularioCurso.create(:curso_id => curso_id, :formulario_id => formulario_id, :estado => "Pendiente" )
+    end
+    redirect_to formularios_path
   end
 end

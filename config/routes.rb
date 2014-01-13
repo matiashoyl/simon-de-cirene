@@ -2,7 +2,11 @@ SimonDeCirene::Application.routes.draw do
   resources :formulario_cursos
 
 
-  resources :formularios
+  resources :formularios do
+    collection do
+      post :asignar
+    end
+  end
 
 
   resources :programas

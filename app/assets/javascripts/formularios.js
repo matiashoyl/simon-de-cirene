@@ -7,4 +7,5 @@ $(document).ready(function(){
     $("#ss-form").children("table").addClass("table-striped");
     $(".ss-section-title").closest("div").prepend("<hr />");
     $("textarea").addClass("input-block-level");
+    $(".ss-datetime-box").children("select").addClass("input-small");
 })

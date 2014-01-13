@@ -23,7 +23,7 @@
 			<input type="text" data-behaviour='datepicker' placeholder="dd/mm/aaaa" class="string date_picker required" name="sesion[fecha]" id="sesion_fecha">
 		</div>
 		<p>Relator: </p>
-		<%= f.input :user_id, :collection => (User.with_role :relator).collect{ |p| [p.name, p.id] }, :label => false, :prompt => "", :class => 'input-block-level' %>
+		<%= f.input :user_id, :collection => (User.with_role :relator).collect{ |p| [p.name, p.id] }, :label => false, :default => @curso.relator_jefe_id  %>
   		<p>Tipo: </p>
   		<%= f.input :tipo, :collection => ['Exposición', 'Trabajo Práctico', 'Invitado', 'Dinámica', 'Otro'], :label => false, :prompt => "", :class => 'input-block-level' %>
       	<%= f.input :direccion, :label => false, :placeholder => 'Direccion', :class => 'input-block-level' %>

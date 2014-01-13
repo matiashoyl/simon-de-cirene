@@ -225,6 +225,7 @@ DEPENDENCIES
   jquery-rails
   jquery-ui-rails
   meta_request
+  nokogiri
   pg
   quiet_assets
   rails (= 3.2.14)
