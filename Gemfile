@@ -21,6 +21,7 @@ gem 'bootstrap-datepicker-rails'
 gem 'bootstrap-timepicker-rails'
 gem "select2-rails"
 gem "audited-activerecord", "~> 3.0"
+gem 'nokogiri'
 gem 'thin'
 group :development do
   gem 'better_errors'

@@ -107,6 +107,8 @@ class CursosController < ApplicationController
 
   def formulario
     @formulario = Formulario.find(params[:formulario_id])
+    pagina = Nokogiri::HTML(open(@formulario.url))
+    @cuerpo = pagina.css('form').to_html
     @curso = Curso.find(params[:curso_id])
   end
 

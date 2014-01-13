@@ -6,8 +6,8 @@
     <%= f.input :nombre, :label => false, :placeholder => 'Nombre' %>
     <p>Tipo:</p>
     <%= f.input :tipo, :collection => ['Social', 'Microempresas'], :label => false, :prompt => "" %>
-    <p>Pega el código del formulario de Google Drive aquí: <%= link_to('<i class="icon-question-sign"></i>'.html_safe, ayuda_formulario_path, :class => 'btn btn-mini') %></p>
-    <%= f.input :cuerpo, :label => false, :as => :text, :input_html => { :class => "input-block-level" } %>
+    <p>Pega la url del formulario de Google Drive aqui: <%= link_to('<i class="icon-question-sign"></i>'.html_safe, ayuda_formulario_path, :class => 'btn btn-mini') %></p>
+    <%= f.input :url, :label => false, :input_html => { :class => "input-block-level" } %>
   </div>
 
   <div class="form-actions">

@@ -1,7 +1,7 @@
 class Formulario < ActiveRecord::Base
-  attr_accessible :codigo, :cuerpo, :nombre, :tipo
+  attr_accessible :codigo, :url, :nombre, :tipo
 
-  validates :codigo, :cuerpo, :nombre, :tipo, :presence => true
+  validates :codigo, :url, :nombre, :tipo, :presence => true
   validates :codigo, :uniqueness => true
 
   def estado(curso)

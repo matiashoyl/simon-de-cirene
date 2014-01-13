@@ -11,6 +11,7 @@
 		<%= f.input :codigo, :autofocus => true, :label => false, :placeholder => 'Código', :input_html => { :class => "input-block-level" } %>
   		<%= f.input :nombre, :label => false, :placeholder => 'Nombre', :input_html => { :class => "input-block-level" } %>
   		<%= f.input :comuna, :collection => SimonDeCirene::Application::COMUNAS, :label => false, :prompt => "Selecciona una comuna", :input_html => { :class => "input-block-level" } %>
+  		<%= f.input :relator_jefe_id, :collection => (User.with_role :relator).collect{ |p| [p.name, p.id] }, :label => false, :prompt => "Relator Jefe", :input_html => { :class => "input-block-level"} %>
   		<input class="hidden" id="index" name="index" type="hidden" value="<%= index %>">
 	</div>
 	<div class="modal-footer">

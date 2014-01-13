@@ -3,7 +3,7 @@
 	<h3><%= @formulario.codigo %> <small><%= @formulario.tipo %></small></h3>
 	<h4><%= @formulario.nombre %></h4>
 	<hr>
-	<%= raw @formulario.cuerpo %>
+	<%= raw @cuerpo %>
 	<hr>
 	<%= link_to 'Editar', edit_formulario_path(@formulario), :class => "btn btn-info" %>
 	<%= link_to 'Atrás', formularios_path, :class => "btn" %>

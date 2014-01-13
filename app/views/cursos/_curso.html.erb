@@ -7,10 +7,16 @@
 		<%= simple_form_for curso, :url => curso_path(curso), :html => {:method => :put } do |f| %>
 		<%= f.error_notification %>
 		<%= display_base_errors resource %>
+		<p>Programa:</p>
 		<%= f.input :programa_id, :collection => Programa.all.collect{ |p| [p.nombre, p.id] }, :label => false, :prompt => "Programa", :input_html => { :class => "input-block-level" } %>
+		<p>Código:</p>
 		<%= f.input :codigo, :autofocus => true, :label => false, :placeholder => curso.codigo, :input_html => { :class => "input-block-level" } %>
+		<p>Nombre:</p>
   		<%= f.input :nombre, :label => false, :placeholder => curso.nombre, :input_html => { :class => "input-block-level" } %>
+  		<p>Comuna:</p>
   		<%= f.input :comuna, :collection => SimonDeCirene::Application::COMUNAS, :label => false, :selected => curso.comuna, :input_html => { :class => "input-block-level" } %>
+  		<p>Relator Jefe:</p>
+  		<%= f.input :relator_jefe_id, :collection => (User.with_role :relator).collect{ |p| [p.name, p.id] }, :label => false, :prompt => "", :input_html => { :class => "input-block-level" } %>
   		<input class="hidden" id="index" name="index" type="hidden" value="<%= index %>">
 	</div>
 	<div class="modal-footer">
