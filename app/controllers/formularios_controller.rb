@@ -75,16 +75,26 @@ class FormulariosController < ApplicationController
     end
   end
 
+  def delete
+    @formulario = Formulario.find(params[:id])
+  end
+
   # DELETE /formularios/1
   # DELETE /formularios/1.json
   def destroy
     @formulario = Formulario.find(params[:id])
     @formulario.destroy
 
+    FormularioCurso.where(:formulario_id => @formulario).destroy_all
+
     respond_to do |format|
       format.html { redirect_to formularios_url }
       format.json { head :no_content }
     end
+  end
+
+  def asign
+    @formulario = Formulario.find(params[:id])
   end
 
   def asignar
