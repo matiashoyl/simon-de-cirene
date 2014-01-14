@@ -22,9 +22,17 @@ body .modal-small {
     margin-left:auto;
   	margin-right:auto;
 }
+
 body .modal-medium {
     width: 22%;
     left: 39%; /* (100%-width)/2 */
+    margin-left:auto;
+    margin-right:auto;
+}
+
+body .modal-large {
+    width: 50%;
+    left: 25%; /* (100%-width)/2 */
     margin-left:auto;
     margin-right:auto;
 }

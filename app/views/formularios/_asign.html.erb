@@ -1,0 +1,21 @@
+<div>
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+      <h3>Asignar Formulario <%= @formulario.nombre %></h3>
+    </div>
+    <div class="modal-body">
+      <%= form_tag(asignar_formularios_path, :method=>'post') do %>
+      <%= select_tag 'cursos_ids[]', options_for_select(Curso.all.map {|c| [c.codigo + " - " + c.nombre, c.id]}), :multiple => true, :class => "input-block-level", :id => "select-formulario" %>
+      <input type="hidden" id="formulario_id" name="formulario_id" value="<%= @formulario.id %>" />
+    </div>
+    <script type="text/javascript">
+      $("#select-formulario").select2({
+        placeholder: "Selecciona uno o varios cursos"
+      });
+    </script>
+    <div class="modal-footer">
+      <%= submit_tag "Asignar", :class => "btn btn-info" %>
+      <% end %>
+      <a class="btn" data-dismiss="modal" href="#">Cerrar</a>
+    </div>
+</div>

@@ -8,6 +8,8 @@ SimonDeCirene::Application.routes.draw do
     end
   end
 
+  match "/formulario/:id/delete", to: "formularios#delete", :as => :delete_formulario, :via => :get
+  match "/formulario/:id/asign", to: "formularios#asign", :as => :asign_formulario, :via => :get
 
   resources :programas
 

@@ -19,16 +19,14 @@
             <td><%= formulario.nombre %></td>
             <td><%= formulario.tipo %></td>
             <td>
-              <a data-toggle="modal" href="#asignar-formulario-<%= formulario.id %>" class="btn btn-mini" type="button">Asignar</a>
+              <%= link_to('Asignar', asign_formulario_path(formulario), remote: true, class: "btn btn-mini") %>
             </td>
             <td>
               <div class="btn-group">
                 <%= link_to('<i class="icon-search"></i>'.html_safe, formulario, :class => 'btn btn-mini') %>
                 <%= link_to('<i class="icon-pencil"></i>'.html_safe, edit_formulario_path(formulario), :class => 'btn btn-mini') %>
-                <a data-toggle="modal" href="#delete-formulario-<%= formulario.id %>" class="btn btn-mini btn-inverse" type="button"><i class="icon-trash icon-white"></i></a>
+                <%= link_to('<i class="icon-trash icon-white"></i>'.html_safe, delete_formulario_path(formulario), remote: true, class: "btn btn-mini btn-inverse") %>
               </div>
-              <%= render :partial => 'eliminar', :locals => {:formulario => formulario} %>
-              <%= render :partial => 'asignar', :locals => {:formulario => formulario} %>
             </td>
           </tr>
         <% end %>
@@ -38,4 +36,5 @@
     <br />
   <% end %>
   <%= link_to("Nuevo Formulario", new_formulario_path, :class => 'btn btn-mini btn-info') %>
+  <div id="formulario-modal" class="modal hide fade modal-large"></div>
 </div>
