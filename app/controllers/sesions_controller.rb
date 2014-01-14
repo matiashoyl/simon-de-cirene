@@ -41,12 +41,7 @@ class SesionsController < ApplicationController
   # GET /sesions/new.json
   def new
     @sesion = Sesion.new
-    @curso_id = params[:curso_id]
-
-    respond_to do |format|
-      format.html # new.html.erb
-      format.json { render json: @sesion }
-    end
+    @curso_id = params[:id]
   end
 
   # GET /sesions/1/edit
@@ -92,6 +87,10 @@ class SesionsController < ApplicationController
         format.json { render json: @sesion.errors, status: :unprocessable_entity }
       end
     end
+  end
+
+  def delete
+    @sesion = Sesion.find(params[:id])
   end
 
   # DELETE /sesions/1

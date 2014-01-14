@@ -11,6 +11,8 @@ SimonDeCirene::Application.routes.draw do
 
   resources :programas
 
+  match "/programas/:id/delete", to: "programas#delete", :as => :delete_programa, :via => :get
+
 
   resources :alumnos do
     collection do
@@ -19,11 +21,20 @@ SimonDeCirene::Application.routes.draw do
     end
   end
 
+  match "/cursos/:curso_id/delete_alumno/:id", to: "alumnos#delete", :as => :delete_alumno, :via => :get
+  match "/cursos/:id/new_alumno", to: "alumnos#new", :as => :new_alumno, :via => :get
+  match "/cursos/:curso_id/edit_alumno/:id", to: "alumnos#edit", :as => :edit_alumno, :via => :get
+
 
   resources :sesions
 
+  match "/sesion/:id/delete", to: "sesions#delete", :as => :delete_sesion, :via => :get
+  match "/cursos/:id/new_sesion", to: "sesions#new", :as => :new_sesion, :via => :get
+
 
   resources :cursos, :controller => "cursos"
+
+  match "/cursos/:id/delete", to: "cursos#delete", :as => :delete_curso, :via => :get
 
   match "/cursos/:id", to: "cursos#update", :as => :update_curso, :via => :put
   match "/sesions/:id/details", to: "sesions#details", :as => :sesion_details, :via => :get

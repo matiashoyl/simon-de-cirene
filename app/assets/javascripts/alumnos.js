@@ -1,4 +1,4 @@
-$(document).ready(function() {
+function setAlumno() {
     $("#alumno_profesion").select2({
         width: "resolve",
         placeholder: "Selecciona uno o varios rubros"
@@ -19,7 +19,7 @@ $(document).ready(function() {
         width: "resolve",
         placeholder: "Escolaridad"
     });
-});
+}
 
 function setRut(alumno_id){
     $(alumno_id).Rut({

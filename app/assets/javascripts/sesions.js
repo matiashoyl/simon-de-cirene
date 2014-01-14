@@ -29,8 +29,7 @@ function setTimersEdit(id_inicio, id_termino, hora_inicio, hora_termino){
     var horaInicio = hora_inicio;
     var horaTermino = hora_termino;
     $(id_inicio).timepicker({defaultTime: horaInicio});
-    $(id_termino).timepicker({defaultTime: horaTermino});
-        
+    $(id_termino).timepicker({defaultTime: horaTermino});    
 }
 
 $(document).ready(function() {

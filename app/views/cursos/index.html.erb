@@ -23,11 +23,9 @@
               <td>
                 <div class="btn-group">
                   <%= link_to('<i class="icon-search"></i>'.html_safe, curso, :class => 'btn btn-mini') %>
-                  <a data-toggle="modal" href="#edit-curso-<%= curso.id %>" class="btn btn-mini" type="button"><i class="icon-pencil"></i></a>
-                  <a data-toggle="modal" href="#delete-curso-<%= curso.id %>" class="btn btn-mini btn-inverse" type="button"><i class="icon-trash icon-white"></i></a>
+                  <%= link_to('<i class="icon-pencil"></i>'.html_safe, edit_curso_path(curso), remote: true, class: "btn btn-mini") %>
+                  <%= link_to('<i class="icon-trash icon-white"></i>'.html_safe, delete_curso_path(curso), remote: true, class: "btn btn-mini btn-inverse") %>
                 </div>
-                <%= render :partial => 'curso', :locals => {:curso => curso, :index => true} %>
-                <%= render :partial => 'eliminar_curso', :locals => {:curso => curso} %>
               </td>
             </tr>
           <% end %>
@@ -36,9 +34,9 @@
     <% else %>
       <h5>No hay cursos inscritos</h5>
     <% end %>
-    <a data-toggle="modal" href="#new-curso" class="btn btn-mini btn-info" type="button">Crear Curso</a>
-    <%= render :partial => 'new', :locals => {:curso => @curso, :index => true} %>
+    <%= link_to "Crear Curso", new_curso_path, remote: true, class: "btn btn-info btn-mini" %>
   <% else %>
     <h5>Debes crear un programa para crear un curso</h5>
   <% end %>
+  <div id="curso-modal" class="modal hide fade modal-small"></div>
 </div>

@@ -1,0 +1,16 @@
+<div>
+  <div class="modal-header">
+  	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3>Eliminar</h3>
+  </div>
+	<div class="modal-body">
+		<p>Estás a punto de eliminar el programa</p>
+		<br />
+		<h4 align="center"><%= @programa.nombre %></h4>
+		<br />
+	</div>
+	<div class="modal-footer">
+		<%= link_to("Eliminar", @programa, :method => :delete, :class => 'btn btn-inverse') %>
+		<a href="#" class="btn" data-dismiss="modal">Cancelar</a>
+	</div>
+</div>
