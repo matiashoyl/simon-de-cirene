@@ -1,4 +1,5 @@
 class ProgramasController < ApplicationController
+  respond_to :html, :js
   # GET /programas
   # GET /programas.json
   def index
@@ -30,11 +31,6 @@ class ProgramasController < ApplicationController
   # GET /programas/new.json
   def new
     @programa = Programa.new
-
-    respond_to do |format|
-      format.html # new.html.erb
-      format.json { render json: @programa }
-    end
   end
 
   # GET /programas/1/edit
@@ -72,6 +68,10 @@ class ProgramasController < ApplicationController
         format.json { render json: @programa.errors, status: :unprocessable_entity }
       end
     end
+  end
+
+  def delete
+    @programa = Programa.find(params[:id])
   end
 
   # DELETE /programas/1

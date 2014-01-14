@@ -1,4 +1,5 @@
 class CursosController < ApplicationController
+  respond_to :html, :js
   # GET /cursos
   # GET /cursos.json
   def index
@@ -41,11 +42,6 @@ class CursosController < ApplicationController
   # GET /cursos/new.json
   def new
     @curso = Curso.new
-
-    respond_to do |format|
-      format.html # new.html.erb
-      format.json { render json: @curso }
-    end
   end
 
   # GET /cursos/1/edit
@@ -91,6 +87,10 @@ class CursosController < ApplicationController
         format.json { render json: @curso.errors, status: :unprocessable_entity }
       end
     end
+  end
+
+  def delete
+    @curso = Curso.find(params[:id])
   end
 
   # DELETE /cursos/1

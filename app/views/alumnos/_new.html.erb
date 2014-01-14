@@ -1,0 +1,58 @@
+<div>
+  <div class="modal-header">
+  	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h2>Agregar Alumno</h2>
+  </div>
+	<div class="modal-body">
+		<%= simple_form_for(@alumno) do |f| %>
+		<%= f.error_notification %>
+		<%= display_base_errors resource %>
+		<%= f.input :nombre, :autofocus => true, :label => false, :placeholder => 'Nombre', :class => 'input-block-level' %>
+		<%= f.input :apellido_paterno, :label => false, :placeholder => 'Apellido Paterno', :class => 'input-block-level' %>
+		<%= f.input :apellido_materno, :label => false, :placeholder => 'Apellido Materno', :class => 'input-block-level' %>
+		<%= f.input :rut, :label => false, :placeholder => 'Rut', :class => 'input-block-level' %>
+		<div class="input-append date">
+			<p>Fecha Nacimiento: </p>
+			<input type="text" data-behaviour='datepicker' placeholder="dd/mm/aaaa" class="string date_picker required" name="alumno[fecha_nacimiento]" id="alumno_fecha">
+		</div>
+		<%= f.input :sexo, :collection => ['Hombre', 'Mujer'], :label => false, :prompt => "Sexo", :class => 'input-block-level' %>
+  		<%= f.input :email, :label => false, :placeholder => 'Email', :class => 'input-block-level' %>
+  		<%= f.input :num_telefono, :label => false, :placeholder => 'Número Telefono', :class => 'input-block-level' %>
+  		<%= f.input :num_celular, :label => false, :placeholder => 'Celular', :class => 'input-block-level' %>
+  		<%= f.input :direccion, :label => false, :placeholder => 'Dirección', :class => 'input-block-level' %>
+  		<%= f.input :comuna, :collection => SimonDeCirene::Application::COMUNAS, :label => false, :prompt => "Selecciona una comuna", :class => 'input-block-level' %>
+  		<%= f.input :quintil, :collection => ['I', 'II', 'III', 'IV', 'V'], :label => false, :prompt => "Quintil", :class => 'input-block-level' %>
+  		<%= f.input :escolaridad, :collection => ['Sin Escolaridad', 'Básica Completa', 'Básica Incompleta', 'Media Completa', 'Media Incompleta', 'Universitaria Completa', 'Universitaria Incompleta', 'Posgrado'], :label => false, :prompt => "Escolaridad", :class => 'input-block-level' %>
+  		<% if @curso.programa.tipo == "Microempresas" %>
+  			<%= f.select :profesion, options_for_select(["Comercio", "Servicio", "Productivo"]), {}, {:multiple => true} %>
+  			<br /><br />
+  			<%= f.input :actividad, :label => false, :placeholder => 'Actividad', :class => 'input-block-level' %>
+  		<% else %>
+  			<%= f.input :actividad, :label => false, :placeholder => 'Profesión', :class => 'input-block-level' %>
+  			<%= f.input :nombre_institucion, :label => false, :placeholder => 'Nombre Institución', :class => 'input-block-level' %>
+			<%= f.input :rut_institucion, :label => false, :placeholder => 'Rut Institución', :class => 'input-block-level' %>
+  			<%= f.input :cargo, :label => false, :placeholder => 'Cargo en la institución', :class => 'input-block-level' %>
+  		<% end %>
+  		<input class="hidden" id="alumno_curso_id" name="curso_id" type="hidden" value="<%= @curso.id %>">
+	</div>
+	<div class="modal-footer">
+		<%= f.button :submit, "Crear", :class => 'btn-info' %>
+		<% end %>
+		<a href="#" class="btn" data-dismiss="modal">Cerrar</a>
+	</div>
+</div>
+
+<script type="text/javascript">
+	$('#alumno_rut').Rut({
+	  on_error: function(){ alert('Rut incorrecto'); }
+	});
+	$('#alumno_rut_institucion').Rut({
+	  on_error: function(){ alert('Rut incorrecto'); }
+	});
+	$('[data-behaviour~=datepicker]').datepicker({
+	    format: "dd/mm/yyyy",
+        language: "es",
+	    autoclose: true
+	});
+	setAlumno();
+</script>

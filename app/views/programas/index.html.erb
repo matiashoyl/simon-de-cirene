@@ -18,11 +18,9 @@
             <td>
               <div class="btn-group">
                 <%= link_to('<i class="icon-search"></i>'.html_safe, programa, :class => 'btn btn-mini') %>
-                <a data-toggle="modal" href="#edit-programa-<%= programa.id %>" class="btn btn-mini" type="button"><i class="icon-pencil"></i></a>
-                <a data-toggle="modal" href="#delete-programa-<%= programa.id %>" class="btn btn-mini btn-inverse" type="button"><i class="icon-trash icon-white"></i></a>
+                <%= link_to('<i class="icon-pencil"></i>'.html_safe, edit_programa_path(programa), remote: true, class: "btn btn-mini") %>
+                <%= link_to('<i class="icon-trash icon-white"></i>'.html_safe, delete_programa_path(programa), remote: true, class: "btn btn-mini btn-inverse") %>
               </div>
-              <%= render :partial => 'edit_programa', :locals => {:programa => programa} %>
-              <%= render :partial => 'eliminar_programa', :locals => {:programa => programa} %>
             </td>
           </tr>
         <% end %>
@@ -31,6 +29,6 @@
   <% else %>
     <br />
   <% end %>
-  <a data-toggle="modal" href="#new-programa" class="btn btn-mini btn-info" type="button">Crear Programa</a>
-  <%= render 'new' %>
+  <%= link_to "Crear Programa", new_programa_path, remote: true, class: "btn btn-info btn-mini" %>
+  <div id="programa-modal" class="modal hide fade modal-small"></div>
 </div>

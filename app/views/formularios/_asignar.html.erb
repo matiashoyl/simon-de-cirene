@@ -9,7 +9,9 @@
       <input type="hidden" id="formulario_id" name="formulario_id" value="<%= formulario.id %>" />
     </div>
     <script type="text/javascript">
-      $("#select-formulario-<%= formulario.id %>").select2();
+      $("#select-formulario-<%= formulario.id %>").select2({
+        placeholder: "Selecciona uno o varios cursos"
+      });
     </script>
     <div class="modal-footer">
       <%= submit_tag "Asignar", :class => "btn btn-info" %>

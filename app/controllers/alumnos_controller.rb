@@ -42,16 +42,13 @@ class AlumnosController < ApplicationController
   # GET /alumnos/new.json
   def new
     @alumno = Alumno.new
-    @curso = Curso.find(params[:curso_id])
-    respond_to do |format|
-      format.html # new.html.erb
-      format.json { render json: @alumno }
-    end
+    @curso = Curso.find(params[:id])
   end
 
   # GET /alumnos/1/edit
   def edit
     @alumno = Alumno.find(params[:id])
+    @curso = Curso.find(params[:curso_id])
   end
 
   # POST /alumnos
@@ -113,6 +110,11 @@ class AlumnosController < ApplicationController
         format.json { render json: @alumno.errors, status: :unprocessable_entity }
       end
     end
+  end
+
+  def delete
+    @alumno = Alumno.find(params[:id])
+    @curso = Curso.find(params[:curso_id])
   end
 
   # DELETE /alumnos/1

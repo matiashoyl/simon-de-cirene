@@ -41,10 +41,9 @@
         </tr>
       </thead>
       <tbody>
-        <% contador = 1 %>
-        <% @sesiones.each do |sesion| %>
+        <% @sesiones.each_with_index do |sesion, index| %>
           <tr>
-            <td><%= contador %></td>
+            <td><%= index + 1 %></td>
             <td><%= sesion.tema %></td>
             <td><%= User.find(sesion.user_id).name %></td>
             <td><%= sesion.fecha.strftime("%d %b, %Y") %></td>
@@ -60,22 +59,18 @@
             <td>
               <div class="btn-group">
                 <%= link_to('<i class="icon-search"></i>'.html_safe, sesion_details_path(sesion), :class => 'btn btn-mini') %>
-                <a data-toggle="modal" href="#edit-sesion-<%= sesion.id %>" class="btn btn-mini" type="button"><i class="icon-pencil"></i></a>
-                <a data-toggle="modal" href="#delete-sesion-<%= sesion.id %>" class="btn btn-mini btn-inverse" type="button"><i class="icon-trash icon-white"></i></a>
+                <%= link_to('<i class="icon-pencil"></i>'.html_safe, edit_sesion_path(sesion), remote: true, class: "btn btn-mini") %>
+                <%= link_to('<i class="icon-trash icon-white"></i>'.html_safe, delete_sesion_path(sesion), remote: true, class: "btn btn-mini btn-inverse") %>
               </div>
             </td>
           </tr>
-          <%= render :partial => 'sesion', :locals => {:sesion => sesion} %>
-          <%= render :partial => 'eliminar_sesion', :locals => {:sesion => sesion} %>
-          <% contador = contador + 1 %>
         <% end %>
       </tbody>
     </table>
   	<% else %>
     <p>El curso todavía no tiene sesiones programadas</p>
   	<% end %>
-	  <a data-toggle="modal" href="#new-sesion" class="btn btn-mini btn-info" type="button">Agregar Sesión</a>
-  	<%= render 'new_sesion' %>
+    <%= link_to('Agregar Sesión', new_sesion_path(@curso), remote: true, class: "btn btn-mini btn-info") %>
     <hr>
     <%# ------------------------------ Alumnos ------------------------------ %> 
     <h3>Alumnos</h3>
@@ -84,10 +79,8 @@
         <thead>
             <tr>
               <th></th>
-              <% contador = 1 %>
-              <% @sesiones.each do |sesion| %>
-                <th><%= contador %></th>
-                <% contador = contador +1 %>
+              <% @sesiones.each_with_index do |sesion, index| %>
+                <th><%= index + 1 %></th>
               <% end %>
               <th>Asistencia</th>
             </tr>
@@ -121,17 +114,15 @@
               <td>
                 <div class="btn-group">
                   <%= link_to '<i class="icon-search"></i>'.html_safe, alumno_details_path(alumno), :class => 'btn btn-mini' %>
-                  <a data-toggle="modal" href="#edit-alumno-<%= alumno.id %>" class="btn btn-mini" type="button"><i class="icon-pencil"></i></a>
-                  <a data-toggle="modal" href="#delete-alumno-<%= alumno.id %>" class="btn btn-mini btn-inverse" type="button"><i class="icon-trash icon-white"></i></a>
+                  <%= link_to('<i class="icon-pencil"></i>'.html_safe, edit_alumno_path(:id => alumno.id, :curso_id => @curso.id), remote: true, class: "btn btn-mini") %>
+                  <%= link_to('<i class="icon-trash icon-white"></i>'.html_safe, delete_alumno_path(:id => alumno.id, :curso_id => @curso.id), remote: true, class: "btn btn-mini btn-inverse") %>
                 </div>
               </td>
-              <%= render :partial => 'sesions/eliminar_alumno', :locals => {:alumno => alumno, :curso => @curso} %>
-              <%= render :partial => 'sesions/editar_alumno', :locals => {:alumno => alumno, :curso => @curso} %>
             </tr>
           <% end %>
         </tbody>
       </table>
-      <a data-toggle="modal" href="#new-alumno" class="btn btn-mini btn-info" type="button">Agregar Alumno</a>
+      <%= link_to('Agregar Alumno', new_alumno_path(@curso), remote: true, class: "btn btn-mini btn-info") %>
       <a data-toggle="modal" href="#excel-alumno" class="btn btn-mini btn-success" type="button">Subir Excel</a>
       <%= link_to "Descargar Excel", alumno_path(@curso, format: "xls"), :class => 'btn btn-mini btn-success' %>
       <a data-toggle="modal" href="#asistencia" class="btn btn-mini" type="button">Asistencia</a>
@@ -140,13 +131,12 @@
     <% else %>
     <p>El curso todavía no tiene alumnos</p>
 
-    <a data-toggle="modal" href="#new-alumno" class="btn btn-mini btn-info" type="button">Agregar Alumno</a>
+    <%= link_to('Agregar Alumno', new_alumno_path(@curso), remote: true, class: "btn btn-mini btn-info") %>
     <a data-toggle="modal" href="#excel-alumno" class="btn btn-mini btn-success" type="button">Subir Excel</a>
 
     
     <% end %>
       
-    <%= render :partial => 'sesions/new_alumno', :locals => {:sesion => @sesion} %>
     <%= render :partial => 'sesions/subir_excel', :locals => {:curso => @curso} %>
 
     <%# ------------------------------ Formularios ------------------------------ %> 
@@ -186,6 +176,7 @@
     <a data-toggle="modal" href="#agregar-formulario" class="btn btn-mini btn-info" type="button">Agregar Formulario</a>
 
     <%= render :partial => 'agregar_formulario', :locals => {:curso => @curso, :formularios => @formularios} %>
-
+    <div id="sesion-modal" class="modal hide fade modal-medium"></div>
+    <div id="alumno-modal" class="modal hide fade modal-medium"></div>
     <br /><br />
 </div>

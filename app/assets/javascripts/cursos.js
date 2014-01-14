@@ -1,10 +1,4 @@
 $(document).ready(function(){
-    //Inicialización del campo de la fecha
-    $('[data-behaviour~=datepicker]').datepicker({
-	    format: "dd/mm/yyyy",
-        language: "es",
-	    autoclose: true
-	});
 
     //Manejo de la hora. Parte con la hora actual y la final dos horas más adelante.
     var hora = new Date();
@@ -44,3 +38,10 @@ $(document).ready(function(){
     $("#ss-form").attr('onsubmit', 'submitted=true;');
     
 })
+
+function setTimersEdit(id_inicio, id_termino, hora_inicio, hora_termino){
+    var horaInicio = hora_inicio;
+    var horaTermino = hora_termino;
+    $(id_inicio).timepicker({defaultTime: horaInicio});
+    $(id_termino).timepicker({defaultTime: horaTermino});    
+}
