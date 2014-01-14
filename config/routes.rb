@@ -51,6 +51,9 @@ SimonDeCirene::Application.routes.draw do
   authenticated :user do
     root :to => 'home#index'
   end
+
+  match "/user/:id/delete", to: "users#delete", :as => :delete_user, :via => :get
+
   root :to => "home#index"
   devise_for :users, :skip => [:registrations]
   devise_scope :user do

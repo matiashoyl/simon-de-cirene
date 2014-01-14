@@ -12,12 +12,7 @@ class UsersController < ApplicationController
   end
   
   def new
-    @curso = User.new
-
-    respond_to do |format|
-      format.html # new.html.erb
-      format.json { render json: @curso }
-    end
+    @user = User.new
   end
   
   def create
@@ -44,6 +39,10 @@ class UsersController < ApplicationController
     else
       redirect_to users_path, :alert => "No se pudo actualizar el usuario"
     end
+  end
+
+  def delete
+    @user = User.find(params[:id])
   end
     
   def destroy
