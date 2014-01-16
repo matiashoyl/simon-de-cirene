@@ -8,4 +8,5 @@ class Programa < ActiveRecord::Base
 
   	validates :nombre, :tipo, :presence => true
   	validates :tipo, :inclusion => {:in => ["Social", "Microempresas"]}
+
 end

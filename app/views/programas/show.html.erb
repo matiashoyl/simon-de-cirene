@@ -76,6 +76,7 @@
         <% end %>
       </tbody>
     </table>
+    <%= link_to "Descargar Excel", programa_path(@programa, format: "xls"), :class => 'btn btn-mini btn-success' %>
   <% else %>
     <h4>No hay cursos en este programa</h4>
     <br />

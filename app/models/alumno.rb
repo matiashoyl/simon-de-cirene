@@ -22,6 +22,22 @@ class Alumno < ActiveRecord::Base
 		end
 	end
 
+	def self.import_sence(file, cursoId)
+		spreadsheet = open_spreadsheet(file)
+		if (spreadsheet)
+			largo = spreadsheet.last_row
+			header = spreadsheet.row(1)
+			(2..largo).each do |i|
+				row = Hash[[header, spreadsheet.row(i)].transpose]
+				alumno = Alumno.where(:rut => row["rut"]).first
+				if alumno
+					fecha_asistencia = row["Fecha Asistencia"].split("/")
+					fecha = Date.new(fecha_asistencia[2].to_i + 2000, fecha_asistencia[1].to_i, fecha_asistencia[0].to_i)
+				end
+			end
+		end
+	end
+
 	def self.open_spreadsheet(file)
 		if file
 			case File.extname(file.original_filename)
@@ -85,5 +101,10 @@ class Alumno < ActiveRecord::Base
 			sesiones.push Sesion.find(sesion_id)
 		end
 		return sesiones.sort_by &:fecha
+	end
+
+	def formato_rut(rut)
+		rut.insert((rut.length - 5), ".").insert((rut.length - 9), ".")
+		return rut
 	end
 end

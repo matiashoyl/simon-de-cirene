@@ -127,10 +127,9 @@
   <% end %>
   <%= link_to('Agregar Alumno', new_alumno_path(@curso), remote: true, class: "btn btn-mini btn-info") %>
   <a data-toggle="modal" href="#excel-alumno" class="btn btn-mini btn-success" type="button">Subir Excel</a>
-  <a data-toggle="modal" href="#asistencia" class="btn btn-mini" type="button">Asistencia</a>
+  <%= link_to "Asistencia", asistencia_curso_path(@curso), :class => 'btn btn-mini' %>
 
   <%= render :partial => 'subir_excel', :locals => {:curso => @curso} %>
-  <%= render :partial => 'asistencia', :locals => {:alumnos => @alumnos, :sesiones => @sesiones, :curso => @curso} %>
 
   <%# ------------------------------ Formularios ------------------------------ %> 
     <hr>

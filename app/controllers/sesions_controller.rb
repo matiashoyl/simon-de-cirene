@@ -142,4 +142,10 @@ class SesionsController < ApplicationController
       format.json { render json: @sesion }
     end
   end
+
+  def asistencia
+    @curso = Curso.find(params[:id])
+    @alumnos = @curso.alumnos
+    @sesiones = @curso.sesions.order(:fecha)
+  end
 end
