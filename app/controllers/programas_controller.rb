@@ -24,6 +24,10 @@ class ProgramasController < ApplicationController
     respond_to do |format|
       format.html # show.html.erb
       format.json { render json: @programa }
+      format.xls do
+        response.headers['Content-Disposition'] = 'attachment; filename="' + @programa.nombre + '.xls"'
+        render "show.xls.erb"
+      end
     end
   end
 
@@ -36,6 +40,7 @@ class ProgramasController < ApplicationController
   # GET /programas/1/edit
   def edit
     @programa = Programa.find(params[:id])
+    session[:return_to] ||= request.referer
   end
 
   # POST /programas
@@ -61,7 +66,7 @@ class ProgramasController < ApplicationController
 
     respond_to do |format|
       if @programa.update_attributes(params[:programa])
-        format.html { redirect_to programas_path }
+        format.html { redirect_to session.delete(:return_to) }
         format.json { head :no_content }
       else
         format.html { render action: "edit" }

@@ -1,0 +1,108 @@
+<?xml version="1.0"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+  xmlns:o="urn:schemas-microsoft-com:office:office"
+  xmlns:x="urn:schemas-microsoft-com:office:excel"
+  xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
+  xmlns:html="http://www.w3.org/TR/REC-html40">
+  <Worksheet ss:Name="Sheet1">
+    <Table>
+      <% @programa.cursos.each do |curso| %>
+        <Row></Row>
+        <Row>
+          <Cell><Data ss:Type="String"><%= curso.codigo %> - <%= curso.nombre %></Data></Cell>
+        </Row>
+        <Row>
+          <Cell></Cell>
+          <Cell></Cell>
+          <Cell></Cell>
+          <Cell></Cell>
+          <Cell></Cell>
+          <Cell></Cell>
+          <Cell></Cell>
+          <Cell></Cell>
+          <Cell></Cell>
+          <Cell></Cell>
+          <Cell></Cell>
+          <Cell></Cell>
+          <Cell></Cell>
+          <Cell></Cell>
+          <Cell></Cell>
+          <Cell></Cell>
+          <Cell></Cell>
+          <Cell></Cell>
+          <Cell></Cell>
+          <Cell></Cell>
+          <% curso.sesions.each do |sesion| %>
+            <Cell><Data ss:Type="String"><%= sesion.fecha.strftime("%d %b") %></Data></Cell>
+          <% end %>
+        </Row>
+        <Row>
+          <Cell><Data ss:Type="String">Rut</Data></Cell>
+          <Cell><Data ss:Type="String">Nombre</Data></Cell>
+          <Cell><Data ss:Type="String">Apellido Paterno</Data></Cell>
+          <Cell><Data ss:Type="String">Apellido Materno</Data></Cell>
+          <Cell><Data ss:Type="String">Fecha de Nacimiento</Data></Cell>
+          <Cell><Data ss:Type="String">Sexo</Data></Cell>
+          <Cell><Data ss:Type="String">Email</Data></Cell>
+          <Cell><Data ss:Type="String">Teléfono</Data></Cell>
+          <Cell><Data ss:Type="String">Celular</Data></Cell>
+          <Cell><Data ss:Type="String">Dirección</Data></Cell>
+          <Cell><Data ss:Type="String">Comuna</Data></Cell>
+          <Cell><Data ss:Type="String">Quintil</Data></Cell>
+          <Cell><Data ss:Type="String">Escolaridad</Data></Cell>
+          <Cell><Data ss:Type="String">Profesión 1</Data></Cell>
+          <Cell><Data ss:Type="String">Profesión 2</Data></Cell>
+          <Cell><Data ss:Type="String">Profesión 3</Data></Cell>
+          <Cell><Data ss:Type="String">Actividad</Data></Cell>
+          <Cell><Data ss:Type="String">Nombre Institución</Data></Cell>
+          <Cell><Data ss:Type="String">Rut Institución</Data></Cell>
+          <Cell><Data ss:Type="String">Cargo en la Institución</Data></Cell>
+          <% curso.sesions.each do |sesion| %>
+            <Cell><Data ss:Type="String"><%= sesion.tema %></Data></Cell>
+          <% end %>
+        </Row>
+      <% curso.alumnos.each do |alumno| %>
+        <Row>
+          <Cell><Data ss:Type="String"><%= alumno.rut %></Data></Cell>
+          <Cell><Data ss:Type="String"><%= alumno.nombre %></Data></Cell>
+          <Cell><Data ss:Type="String"><%= alumno.apellido_paterno %></Data></Cell>
+          <Cell><Data ss:Type="String"><%= alumno.apellido_materno %></Data></Cell>
+          <Cell><Data ss:Type="String"><%= alumno.fecha_nacimiento %></Data></Cell>
+          <Cell><Data ss:Type="String"><%= alumno.sexo %></Data></Cell>
+          <Cell><Data ss:Type="String"><%= alumno.email %></Data></Cell>
+          <Cell><Data ss:Type="String"><%= alumno.num_telefono %></Data></Cell>
+          <Cell><Data ss:Type="String"><%= alumno.num_celular %></Data></Cell>
+          <Cell><Data ss:Type="String"><%= alumno.direccion %></Data></Cell>
+          <Cell><Data ss:Type="String"><%= alumno.comuna %></Data></Cell>
+          <Cell><Data ss:Type="String"><%= alumno.quintil %></Data></Cell>
+          <Cell><Data ss:Type="String"><%= alumno.escolaridad %></Data></Cell>
+          <% if alumno.profesion != "[]" %>
+            <% JSON.parse(alumno.profesion).each do |rubro| %>
+              <Cell><Data ss:Type="String"><%= rubro %></Data></Cell>
+            <% end %>
+          <% else %>
+            <Cell></Cell>
+            <Cell></Cell>
+            <Cell></Cell>
+          <% end %>
+          <Cell><Data ss:Type="String"><%= alumno.actividad %></Data></Cell>
+          <Cell><Data ss:Type="String"><%= alumno.nombre_institucion %></Data></Cell>
+          <Cell><Data ss:Type="String"><%= alumno.rut_institucion %></Data></Cell>
+          <Cell><Data ss:Type="String"><%= alumno.cargo %></Data></Cell>
+          <% curso.sesions.each do |sesion| %>
+            <% if alumno_sesion = AlumnoSesion.where(:alumno_id => alumno, :sesion_id => sesion).first %>
+              <% if alumno_sesion.presente %>
+                <Cell><Data ss:Type="String">P</Data></Cell>
+              <% else %>
+                <Cell><Data ss:Type="String">A</Data></Cell>
+              <% end %>
+            <% else %>
+              <Cell><Data ss:Type="String">NA</Data></Cell>
+            <% end %>
+          <% end %>
+        </Row>
+      <% end %>
+    <% end %>
+    </Table>
+  </Worksheet>
+</Workbook>

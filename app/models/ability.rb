@@ -5,6 +5,13 @@ class Ability
     user ||= User.new # guest user (not logged in)
     if user.has_role? :admin
       can :manage, :all
+    elsif user.has_role? :coodinador
+        can :manage, :all
+    elsif user.has_role? :relator
+        can :manage, Alumno
+        can :manage, Sesion do |sesion|
+            sesion.try(:user) == user
+        end
     end
     # Define abilities for the passed in user here. For example:
     #
@@ -28,5 +35,5 @@ class Ability
     #   can :update, Article, :published => true
     #
     # See the wiki for details: https://github.com/ryanb/cancan/wiki/Defining-Abilities
-  end
+end
 end

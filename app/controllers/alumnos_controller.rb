@@ -154,6 +154,10 @@ class AlumnosController < ApplicationController
     end
   end
 
+  def import_sence
+    Alumno.import_sence(params[:file], params[:curso_id])
+  end
+
   def download_excel
     send_file("public/data/Excel Tipo.xlsx",
       :filename=> "Excel Tipo.xlsx",

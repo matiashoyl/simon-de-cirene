@@ -1,0 +1,22 @@
+<div id="excel-sence" class="modal hide fade modal-excel">
+  <div class="modal-header">
+  	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h2>Subir Excel SENCE</h2>
+  </div>
+	<div class="modal-body">
+		<p>Primero debe <strong>elegir el archivo</strong> que desea subir</p>
+		<p>Asegúrese de que el formato del excel es el aceptado por el SENCE</p>
+		<br /><br />
+		<%= form_tag import_excel_sence_path, multipart: true do %>
+    		<%= file_field_tag :file %>
+    		<input class="hidden" id="alumno_curso_id" name="curso_id" type="hidden" value="<%= curso.id %>">
+    	<br /><br /><br /><br />
+    	<p>Una vez elegido el archivo debe apretar <strong>"Importar"</strong></p>
+	</div>
+	<div class="modal-footer">
+
+			<%= submit_tag "Importar", :class => "btn btn-success" %>
+		<% end %>
+		<a href="#" class="btn" data-dismiss="modal">Cerrar</a>
+	</div>
+</div>

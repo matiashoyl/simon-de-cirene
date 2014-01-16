@@ -1,5 +1,6 @@
 class CursosController < ApplicationController
   respond_to :html, :js
+  load_and_authorize_resource
   # GET /cursos
   # GET /cursos.json
   def index
@@ -18,19 +19,10 @@ class CursosController < ApplicationController
   def show
     @curso = Curso.find(params[:id])
     @cursos = Curso.all
-    @sesion = Sesion.new
     @sesiones = @curso.sesions.order(:fecha)
-    @alumno = Alumno.new
     @formulario_curso = FormularioCurso.new
     @formularios = @curso.formularios
-
-    alumnos_ids = AlumnoCurso.where(:curso_id => @curso.id).select(:alumno_id).group(:alumno_id).collect{|p| p.alumno_id}
-    @alumnos = Array.new
-    alumnos_ids.each do |alumno_id|
-      alumno = Alumno.find(alumno_id)
-      @alumnos.push alumno
-    end
-    @alumnos.sort_by {|alumno| alumno.apellido_paterno}
+    @alumnos = @curso.alumnos
 
     respond_to do |format|
       format.html # show.html.erb

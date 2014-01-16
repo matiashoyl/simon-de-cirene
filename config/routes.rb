@@ -1,4 +1,6 @@
 SimonDeCirene::Application.routes.draw do
+  match "/not_authorized", to: "home#not_authorized", :as => :not_authorized, :via => :get
+
   resources :formulario_cursos
 
 
@@ -37,6 +39,7 @@ SimonDeCirene::Application.routes.draw do
   resources :cursos, :controller => "cursos"
 
   match "/cursos/:id/delete", to: "cursos#delete", :as => :delete_curso, :via => :get
+  match "/cursos/:id/asistencia", to: "sesions#asistencia", :as => :asistencia_curso, :via => :get
 
   match "/cursos/:id", to: "cursos#update", :as => :update_curso, :via => :put
   match "/sesions/:id/details", to: "sesions#details", :as => :sesion_details, :via => :get
@@ -47,6 +50,7 @@ SimonDeCirene::Application.routes.draw do
   match "/curso/:curso_id/formulario/:formulario_id", to: "cursos#formulario", :as => :curso_formulario, :via => :get
   match "/curso/:curso_id/formulario/:formulario_id", to: "cursos#formulario_completado", :via => :post
   match "/ayuda/formularios", to: "home#ayuda_formularios", :as => :ayuda_formulario, :via => :get
+  match "/cursos/importar_excel_sence", to: "alumnos#import_sence", :as => :import_excel_sence, :via => :post
 
   authenticated :user do
     root :to => 'home#index'
