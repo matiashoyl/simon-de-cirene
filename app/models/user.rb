@@ -16,4 +16,13 @@ class User < ActiveRecord::Base
   validates :name, :email, presence: true
   validates :email, uniqueness: true
   
+  def mensajes
+    mensajes = Array.new
+    mensajes_ids = MensajeUsuario.where(:usuario_id => self).select(:mensaje_id).group(:mensaje_id).collect{|p| p.mensaje_id}
+    mensajes_ids.each do |mensaje_id|
+      mensaje = Mensaje.find(mensaje_id)
+      mensajes.push mensaje
+    end
+    return mensajes.sort {|a,b| b.created_at <=> a.created_at}
+  end
 end

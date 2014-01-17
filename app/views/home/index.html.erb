@@ -1,90 +1,107 @@
 <% if user_signed_in? %>
 	<% if current_user.has_role? :relator %>
-		<div class="span4"></div>
 		<div class="span4">
-			<br /><br /><br /><br /><br /><br />
-			<img src="/images/logo.png" alt="Simón de Cirene" />
+			<% current_user.mensajes.each do |mensaje| %>
+				<% if mensaje.caracter == "Positivo" %>
+					<div class="alert alert-success">
+				<% elsif mensaje.caracter == "Neutro" %>
+					<div class="alert alert-block">
+				<% elsif mensaje.caracter == "Negativo" %>
+					<div class="alert alert-error">
+				<% else %>
+					<div class="alert alert-info">
+				<% end %>
+					<h4><%= mensaje.titulo %></h4>
+					<p><%= mensaje.cuerpo %></p>
+				</div>
+			<% end %>
 		</div>
-	<% elsif @sesiones_pocos_asistentes.empty? && @sesiones_sin_asistencia.empty? && @alumnos_baja_asistencia.empty? %>
-		<div class="span4"></div>
 		<div class="span4">
 			<br /><br /><br /><br /><br /><br />
 			<img src="/images/logo.png" alt="Simón de Cirene" />
-			<h4 class="text-center">Todo está bajo control</h4>
 		</div>
 	<% else %>
-		<div class="span6">
-			<% if @sesiones_pocos_asistentes.any? %>
-				<h3>Sesiones Con Asistencia Bajo 85%</h3>
-				<table class="table table-condensed table-striped">
-					<thead>
-					    <tr>
-					      <th>Tema</th>
-					      <th>Curso</th>
-					      <th>Relator</th>
-					      <th>Asistentes</th>
-					    </tr>
-					</thead>
-					<tbody>
-					  <% @sesiones_pocos_asistentes.each do |sesion| %>
-					    <tr>
-					      <td><%= sesion.tema %></td>
-					      <td><%= sesion.curso.nombre %></td>
-					      <td><%= sesion.relator.name %></td>
-					      <td><%= sesion.porcentaje_asistentes %>%</td>
-					    </tr>
-					  <% end %>
-					</tbody>
-				</table>
-			<% end %>
-			<% if @sesiones_sin_asistencia.any? %>
-				<hr>
-				<h3>Sesiones Sin Asistencia</h3>
-				<table class="table table-condensed table-striped">
-					<thead>
-					    <tr>
-					      <th>Tema</th>
-					      <th>Curso</th>
-					      <th>Relator</th>
-					      <th>Fecha</th>
-					    </tr>
-					</thead>
-					<tbody>
-					  <% @sesiones_sin_asistencia.each do |sesion| %>
-					    <tr>
-					      <td><%= sesion.tema %></td>
-					      <td><%= sesion.curso.nombre %></td>
-					      <td><%= sesion.relator.name %></td>
-					      <td><%= sesion.fecha.strftime("%d %b, %Y") %></td>
-					    </tr>
-					  <% end %>
-					</tbody>
-				</table>
-			<% end %>
-		</div>
-		<div class="span6">
-			<% if @alumnos_baja_asistencia.any? %>
-				<h3>Alumnos Con Baja Asistencia</h3>
-			    <table class="table table-condensed table-striped">
-			      <thead>
-			          <tr>
-			            <th>Nombre</th>
-			            <th>Curso</th>
-			            <th>Asistencia</th>
-			          </tr>
-			      </thead>
-			      <tbody>
-			        <% @alumnos_baja_asistencia.each_with_index do |alumno, index| %>
-			          <tr>
-			            <td><%= alumno.nombre %> <%= alumno.apellido_paterno %></td>
-			            <td><%= @curso_alumno_baja_asistencia[index].nombre %></td>
-			            <td><%= @bajas_asistencias[index] %>%</td>
-			          </tr>
-			        <% end %>
-			      </tbody>
-			    </table>
-		  	<% end %>
-		</div>
+		<% if @sesiones_pocos_asistentes.empty? && @sesiones_sin_asistencia.empty? && @alumnos_baja_asistencia.empty? %>
+			<div class="span4"></div>
+			<div class="span4">
+				<br /><br /><br /><br /><br /><br />
+				<img src="/images/logo.png" alt="Simón de Cirene" />
+				<h4 class="text-center">Todo está bajo control</h4>
+			</div>
+		<% else %>
+			<div class="span6">
+				<% if @sesiones_pocos_asistentes.any? %>
+					<h3>Sesiones Con Asistencia Bajo 85%</h3>
+					<table class="table table-condensed table-striped">
+						<thead>
+						    <tr>
+						      <th>Tema</th>
+						      <th>Curso</th>
+						      <th>Relator</th>
+						      <th>Asistentes</th>
+						    </tr>
+						</thead>
+						<tbody>
+						  <% @sesiones_pocos_asistentes.each do |sesion| %>
+						    <tr>
+						      <td><%= sesion.tema %></td>
+						      <td><%= sesion.curso.nombre %></td>
+						      <td><%= sesion.relator.name %></td>
+						      <td><%= sesion.porcentaje_asistentes %>%</td>
+						    </tr>
+						  <% end %>
+						</tbody>
+					</table>
+				<% end %>
+				<% if @sesiones_sin_asistencia.any? %>
+					<hr>
+					<h3>Sesiones Sin Asistencia</h3>
+					<table class="table table-condensed table-striped">
+						<thead>
+						    <tr>
+						      <th>Tema</th>
+						      <th>Curso</th>
+						      <th>Relator</th>
+						      <th>Fecha</th>
+						    </tr>
+						</thead>
+						<tbody>
+						  <% @sesiones_sin_asistencia.each do |sesion| %>
+						    <tr>
+						      <td><%= sesion.tema %></td>
+						      <td><%= sesion.curso.nombre %></td>
+						      <td><%= sesion.relator.name %></td>
+						      <td><%= sesion.fecha.strftime("%d %b, %Y") %></td>
+						    </tr>
+						  <% end %>
+						</tbody>
+					</table>
+				<% end %>
+			</div>
+			<div class="span6">
+				<% if @alumnos_baja_asistencia.any? %>
+					<h3>Alumnos Con Baja Asistencia</h3>
+				    <table class="table table-condensed table-striped">
+				      <thead>
+				          <tr>
+				            <th>Nombre</th>
+				            <th>Curso</th>
+				            <th>Asistencia</th>
+				          </tr>
+				      </thead>
+				      <tbody>
+				        <% @alumnos_baja_asistencia.each_with_index do |alumno, index| %>
+				          <tr>
+				            <td><%= alumno.nombre %> <%= alumno.apellido_paterno %></td>
+				            <td><%= @curso_alumno_baja_asistencia[index].nombre %></td>
+				            <td><%= @bajas_asistencias[index] %>%</td>
+				          </tr>
+				        <% end %>
+				      </tbody>
+				    </table>
+			  	<% end %>
+			</div>
+		<% end %>
 	<% end %>
 <% else %>
 	<div class="span4"></div>

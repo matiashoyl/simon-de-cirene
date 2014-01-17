@@ -155,7 +155,7 @@ class AlumnosController < ApplicationController
   end
 
   def import_sence
-    Alumno.import_sence(params[:file], params[:curso_id])
+    Alumno.import_sence(params[:file])
   end
 
   def download_excel
