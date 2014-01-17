@@ -16,9 +16,53 @@
 				</div>
 			<% end %>
 		</div>
-		<div class="span4">
-			<br /><br /><br /><br /><br /><br />
-			<img src="/images/logo.png" alt="Simón de Cirene" />
+		<div class="span8">
+			<% if @formularios_sin_contestar.any? %>
+				<h3>Formularios sin contestar</h3>
+				<table class="table table-condensed">
+					<thead>
+					    <tr>
+					      <th>Codigo</th>
+					      <th>Formulario</th>
+					      <th>Curso</th>
+					      <th></th>
+					    </tr>
+					</thead>
+					<tbody>
+					  <% @formularios_sin_contestar.each_with_index do |formulario, index| %>
+					    <tr>
+					      <td><%= formulario.codigo %></td>
+					      <td><%= formulario.nombre %></td>
+					      <td><%= @cursos_formularios_sin_contestar[index].nombre %></td>
+					      <td><%= link_to "Contestar", curso_formulario_path(:curso_id => @cursos_formularios_sin_contestar[index], :formulario_id => formulario), :class => 'btn btn-mini' %></td>
+					    </tr>
+					  <% end %>
+					</tbody>
+				</table>
+			<% end %>
+			<% if @alumnos_con_tres_o_mas_inasistencias.any? %>
+				<h3>Alumnos con tres o más inasistencias</h3>
+				<table class="table table-condensed">
+					<thead>
+					    <tr>
+					      <th>Nombre</th>
+					      <th>Curso</th>
+					      <th>Inasistencias</th>
+					      <th></th>
+					    </tr>
+					</thead>
+					<tbody>
+					  <% @alumnos_con_tres_o_mas_inasistencias.each_with_index do |alumno, index| %>
+					    <tr>
+					      <td><%= alumno.nombre %> <%= alumno.apellido_paterno %></td>
+					      <td><%= @cursos_alumnos_con_tres_o_mas_inasistencias[index].nombre %></td>
+					      <td><%= alumno.numero_inasistencias(@cursos_alumnos_con_tres_o_mas_inasistencias[index]) %></td>
+					      <td><%= link_to "Ver Curso", sesion_curso_path(@cursos_alumnos_con_tres_o_mas_inasistencias[index]), :class => 'btn btn-mini' %></td>
+					    </tr>
+					  <% end %>
+					</tbody>
+				</table>
+			<% end %>
 		</div>
 	<% else %>
 		<% if @sesiones_pocos_asistentes.empty? && @sesiones_sin_asistencia.empty? && @alumnos_baja_asistencia.empty? %>
