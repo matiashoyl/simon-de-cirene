@@ -86,6 +86,18 @@ class Alumno < ActiveRecord::Base
 		return porcentaje_asistencia
 	end
 
+	def numero_inasistencias(curso)
+		inasistencias = 0
+		curso.sesions.each do |sesion|
+			if alumno_sesion = AlumnoSesion.where(:alumno_id => self, :sesion_id => sesion).first
+				if alumno_sesion.presente == false
+					inasistencias = inasistencias + 1
+				end
+			end
+		end
+		return inasistencias
+	end
+
 	def cursos
 		cursos = Array.new
 		curso_ids = AlumnoCurso.where(:alumno_id => self).select(:curso_id).group(:curso_id).collect{|p| p.curso_id}

@@ -8,6 +8,11 @@ class SesionsController < ApplicationController
       curso = Curso.find(curso_id)
       @cursos.push curso
     end
+    Curso.where(:relator_jefe_id => current_user).each do |curso|
+      unless @cursos.include?(curso)
+        @cursos.push curso
+      end
+    end
 
     respond_to do |format|
       format.html # index.html.erb
@@ -133,6 +138,12 @@ class SesionsController < ApplicationController
     curso_ids.each do |curso_id|
       curso = Curso.find(curso_id)
       @cursos.push curso
+    end
+
+    Curso.where(:relator_jefe_id => current_user).each do |curso|
+      unless @cursos.include?(curso)
+        @cursos.push curso
+      end
     end
 
     @sesiones = Sesion.where(:curso_id => @curso.id).order(:fecha).all
