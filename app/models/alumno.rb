@@ -22,7 +22,7 @@ class Alumno < ActiveRecord::Base
 		end
 	end
 
-	def self.import_sence(file, cursoId)
+	def self.import_sence(file)
 		spreadsheet = open_spreadsheet(file)
 		if (spreadsheet)
 			largo = spreadsheet.last_row
@@ -31,8 +31,21 @@ class Alumno < ActiveRecord::Base
 				row = Hash[[header, spreadsheet.row(i)].transpose]
 				alumno = Alumno.where(:rut => row["rut"]).first
 				if alumno
-					fecha_asistencia = row["Fecha Asistencia"].split("/")
-					fecha = Date.new(fecha_asistencia[2].to_i + 2000, fecha_asistencia[1].to_i, fecha_asistencia[0].to_i)
+					aux_fecha = row["Fecha Asistencia"].split("/")
+					fecha = Date.new(aux_fecha[2].to_i + 2000, aux_fecha[1].to_i, aux_fecha[0].to_i)
+					aux_hora_inicio = row["Hora Inicio"].split(":")
+					hora_inicio = Time.new(2000, 1, 1, aux_hora_inicio[0], aux_hora_inicio[1], 0, 0)
+					aux_hora_termino = row["Hora Fin"].split(":")
+					hora_termino = Time.new(2000, 1, 1, aux_hora_termino[0], aux_hora_termino[1], 0, 0)
+					comuna = row["Comuna"]
+					sesion = Sesion.where(:fecha => fecha, :hora_inicio => hora_inicio, :hora_termino => hora_termino, :comuna => comuna).first
+					if sesion
+						if row["Estado Asistencia"] == "Asistio"
+							AlumnoSesion.create(:alumno_id => alumno.id, :sesion_id => sesion.id, :presente => true)
+						elsif row["Estado Asistencia"] == "No Asistio"
+							AlumnoSesion.create(:alumno_id => alumno.id, :sesion_id => sesion.id, :presente => false)
+						end
+					end
 				end
 			end
 		end

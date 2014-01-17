@@ -1,0 +1,25 @@
+<h1>Listing mensaje_usuarios</h1>
+
+<table>
+  <tr>
+    <th>Mensaje</th>
+    <th>Usuario</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @mensaje_usuarios.each do |mensaje_usuario| %>
+  <tr>
+    <td><%= mensaje_usuario.mensaje_id %></td>
+    <td><%= mensaje_usuario.usuario_id %></td>
+    <td><%= link_to 'Show', mensaje_usuario %></td>
+    <td><%= link_to 'Edit', edit_mensaje_usuario_path(mensaje_usuario) %></td>
+    <td><%= link_to 'Destroy', mensaje_usuario, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Mensaje usuario', new_mensaje_usuario_path %>

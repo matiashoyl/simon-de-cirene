@@ -1,4 +1,11 @@
 SimonDeCirene::Application.routes.draw do
+  resources :mensaje_usuarios
+
+
+  resources :mensajes
+
+  match "/mensajes/:id/delete", to: "mensajes#delete", :as => :delete_mensaje, :via => :get
+
   match "/not_authorized", to: "home#not_authorized", :as => :not_authorized, :via => :get
 
   resources :formulario_cursos

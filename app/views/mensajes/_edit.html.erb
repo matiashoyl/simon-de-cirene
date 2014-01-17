@@ -1,0 +1,26 @@
+<div>
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+		<h3 class="text-center">Editar Mensaje</h3>
+	</div>
+	<div class="modal-body">
+		<%= simple_form_for @mensaje, :url => mensaje_path(@mensaje), :html => {:method => :put } do |f| %>
+		<%= f.error_notification %>
+		<%= display_base_errors resource %>
+		<%= f.input :titulo, :autofocus => true, :label => false, :placeholder => "Título", :input_html => { :class => "input-block-level" } %>
+		<%= f.input :cuerpo, :label => false, :placeholder => 'Mensaje', :as => "Text", :input_html => { :rows => 10, :class => "input-block-level" } %>
+		<%= f.input :caracter, :collection => ['Positivo', 'Neutro', 'Negativo'], :label => false, :prompt => "Carácter del mensaje", :input_html => { :class => "input-block-level" } %>
+		<%= select_tag 'user_ids[]', options_for_select((User.with_role :relator).map {|c| [c.name, c.id]}), :multiple => true, :class => "input-block-level", :id => "select-relatores" %>
+	</div>
+	<div class="modal-footer">
+		<%= f.button :submit, "Cambiar", :class => 'btn-info' %>
+		<% end %>
+		<a href="#" class="btn" data-dismiss="modal">Cerrar</a>
+	</div>
+</div>
+
+<script type="text/javascript">
+  $("#select-relatores").val(<%= raw @mensaje.receptores_ids %>).select2({
+    placeholder: "Selecciona uno o varios usuarios"
+  });
+</script>

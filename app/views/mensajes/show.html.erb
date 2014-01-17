@@ -1,0 +1,20 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Titulo:</b>
+  <%= @mensaje.titulo %>
+</p>
+
+<p>
+  <b>Cuerpo:</b>
+  <%= @mensaje.cuerpo %>
+</p>
+
+<p>
+  <b>Caracter:</b>
+  <%= @mensaje.caracter %>
+</p>
+
+
+<%= link_to 'Edit', edit_mensaje_path(@mensaje) %> |
+<%= link_to 'Back', mensajes_path %>
