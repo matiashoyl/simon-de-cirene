@@ -58,6 +58,8 @@ SimonDeCirene::Application.routes.draw do
   match "/curso/:curso_id/formulario/:formulario_id", to: "cursos#formulario_completado", :via => :post
   match "/ayuda/formularios", to: "home#ayuda_formularios", :as => :ayuda_formulario, :via => :get
   match "/cursos/importar_excel_sence", to: "alumnos#import_sence", :as => :import_excel_sence, :via => :post
+  match "/resumen/programa/:id", to: "home#resumen_programa", :as => :resumen_programa, :via => :get
+  match "/resumen/curso/:id", to: "home#resumen_curso", :as => :resumen_curso, :via => :get
 
   authenticated :user do
     root :to => 'home#index'
