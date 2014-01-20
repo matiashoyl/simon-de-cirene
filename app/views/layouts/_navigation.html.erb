@@ -16,7 +16,13 @@
               <% if user_signed_in? %>
                 <% if current_user.has_role? :admin %>
                   <li><%= link_to 'Usuarios', users_path %></li>
-                  <li><%= link_to 'Cursos', cursos_path %></li>
+                  <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Cursos</a>
+                    <ul class="dropdown-menu" >
+                      <li><%= link_to 'Ver Cursos', cursos_path %></li>
+                      <li><%= link_to 'Resumen', resumen_cursos_path %></li>
+                    </ul>
+                  </li>
                   <li><%= link_to 'Programas', programas_path %></li>
                   <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">Formularios</a>
@@ -27,7 +33,13 @@
                   </li>
                   <li><%= link_to 'Mensajes', mensajes_path %></li>
                 <% elsif current_user.has_role? :coordinador %>
-                  <li><%= link_to 'Cursos', cursos_path %></li>
+                  <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Cursos</a>
+                    <ul class="dropdown-menu" >
+                      <li><%= link_to 'Ver Cursos', cursos_path %></li>
+                      <li><%= link_to 'Resumen', resumen_cursos_path %></li>
+                    </ul>
+                  </li>
                   <li><%= link_to 'Programas', programas_path %></li>
                   <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">Formularios</a>

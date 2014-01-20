@@ -8,8 +8,8 @@
 
 # Add application configuration variables here, as shown below.
 #
-GMAIL_USERNAME: matiashoyl@gmail.com
-GMAIL_PASSWORD: 20Loslalo
+GMAIL_USERNAME: formulariossdc@gmail.com
+GMAIL_PASSWORD: simondecirene
 ADMIN_NAME: Admin
 ADMIN_EMAIL: admin@simondecirene.cl
 ADMIN_PASSWORD: simondecirene

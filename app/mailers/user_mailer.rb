@@ -1,7 +1,7 @@
 class UserMailer < ActionMailer::Base
   include Devise::Mailers::Helpers
 
-  default from: "matiashoyl@gmail.com"
+  default from: "formulariossdc@gmail.com"
 
   def welcome(user, password)
     @user = user

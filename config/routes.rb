@@ -48,6 +48,7 @@ SimonDeCirene::Application.routes.draw do
 
   match "/cursos/:id/delete", to: "cursos#delete", :as => :delete_curso, :via => :get
   match "/cursos/:id/asistencia", to: "sesions#asistencia", :as => :asistencia_curso, :via => :get
+  match "/curso/resumen", to: "cursos#resumen", :as => :resumen_cursos, :via => :get
 
   match "/cursos/:id", to: "cursos#update", :as => :update_curso, :via => :put
   match "/sesions/:id/details", to: "sesions#details", :as => :sesion_details, :via => :get

@@ -36,6 +36,9 @@ $(document).ready(function(){
     $("#ss-form").before(html);
     $("#ss-form").attr('target', 'hidden_iframe');
     $("#ss-form").attr('onsubmit', 'submitted=true;');
+
+    //Codigo necesario para los popovers de la vista resumen de cursos
+    $('.sesion-popover').popover({ trigger: "hover" });
     
 })
 

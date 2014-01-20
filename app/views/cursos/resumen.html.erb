@@ -1,0 +1,34 @@
+<div class="span1"></div>
+<div class="span10">
+	<h3>Resumen Cursos</h3>
+	<% if @cursos.empty? %>
+		<h4>Todavía no existen cursos</h4>
+	<% else %>
+		<table class="table table-condensed table-striped">
+			<thead>
+				<tr>
+					<th>Curso</th>
+					<th>Sesiones</th>
+				</tr>
+			</thead>
+			<tbody>
+				<% @cursos.each do |curso| %>
+				<tr>
+					<td><span class="resumen-tooltip" title="<%= User.find(curso.relator_jefe_id).name %>"><%= curso.nombre %></span></td>
+					<td>
+					<% if curso.sesions.any? %>
+						<% curso.sesions.each_with_index do |sesion, index| %>
+							<span data-content="<strong>Relator: </strong><%= sesion.relator.name %><br><strong>Horario: </strong><%= sesion.hora_inicio.strftime("%I:%M %p") %> a <%= sesion.hora_termino.strftime("%I:%M %p") %><br><strong>Fecha: </strong><%= sesion.fecha.strftime("%B %d, %Y") %><br><strong>Tipo: </strong><%= sesion.tipo %><br><strong>Lugar: </strong><%= sesion.direccion %><br><%=sesion.comentario%>" rel="popover" data-placement="bottom" data-original-title="<h5 class='text-center'><%=sesion.tema%></h5>" data-html="true" class="badge badge-info sesion-popover"><%= index + 1 %></span>
+						<% end %>
+					<% else %>
+						<span class="badge badge-warning">Este curso no tiene sesiones inscritas</span>
+					<% end %>
+					</td>
+
+				</tr>
+				<% end %>
+			</tbody>
+		</table>
+	<% end %>
+	<br><br><br>
+</div>

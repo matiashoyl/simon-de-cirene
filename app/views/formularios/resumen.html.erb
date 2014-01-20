@@ -9,26 +9,26 @@
 		<table class="table table-condensed table-striped">
 			<thead>
 				<tr>
-					<th>Curso</th>
-					<% @formularios.each do |formulario| %>
-						<th><span class="resumen-tooltip" title="<%= formulario.nombre %>"><%= formulario.codigo %></span></th>
+					<th>Formulario</th>
+					<% @cursos.each do |curso| %>
+						<th><span class="resumen-tooltip" title="<%= User.find(curso.relator_jefe_id).name %>"><%= curso.nombre %></span></th>
 					<% end %>
 				</tr>
 			</thead>
 			<tbody>
-				<% @cursos.each do |curso| %>
+				<% @formularios.each do |formulario| %>
 				<tr>
-					<td><span class="resumen-tooltip" title="<%= User.find(curso.relator_jefe_id).name %>" data-placement='left'><%= curso.nombre %></span></td>
-					<% @formularios.each do |formulario| %>
+					<td><span class="resumen-tooltip" title="<%= formulario.nombre %>"><%= formulario.codigo %></span></td>
+					<% @cursos.each do |curso| %>
 						<td>
 							<% if FormularioCurso.where(:formulario_id => formulario, :curso_id => curso).first.nil? %>
-								<button type="button"  class="btn btn-mini btn-warning disabled">NA</button>
+								<button type="button"  class="btn btn-mini btn-warning disabled centered">N</button>
 							<% elsif FormularioCurso.where(:formulario_id => formulario, :curso_id => curso).first.estado == "Pendiente" %>
-								<button type="button"  class="btn btn-mini btn-danger disabled">P</button>
+								<button type="button"  class="btn btn-mini btn-danger disabled centered">P</button>
 							<% elsif FormularioCurso.where(:formulario_id => formulario, :curso_id => curso).first.estado == "" %>
-								<button type="button"  class="btn btn-mini btn-warning disabled">NA</button>
+								<button type="button"  class="btn btn-mini btn-warning disabled centered">N</button>
 							<% else %>
-								<button type="button"  class="btn btn-mini btn-success disabled">C</button>
+								<button type="button"  class="btn btn-mini btn-success disabled centered">C</button>
 							<% end %>
 						</td>
 					<% end %>
@@ -37,5 +37,13 @@
 			</tbody>
 		</table>
 	<% end %>
+	<div>
+		<div class="span8"></div>
+		<div class="span4 well well-small">
+			<p><button type="button"  class="btn btn-mini btn-success disabled">C</button> Contestado</p>
+			<p><button type="button"  class="btn btn-mini btn-warning disabled">N</button> Formulario no asociado a este curso</p>
+			<p><button type="button"  class="btn btn-mini btn-danger disabled">P</button> Pendiente</p>
+		</div>
+	</div>
 	<br><br><br>
 </div>
