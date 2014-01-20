@@ -23,7 +23,7 @@
 	<br><br><br><br><br><br>
 </div>
 <div>
-<% if @sesiones_pocos_asistentes.empty? && @sesiones_sin_asistencia.empty? && @alumnos_baja_asistencia.empty? %>
+<% if @sesiones_pocos_asistentes.empty? && @sesiones_sin_asistencia.empty? && @alumnos_baja_asistencia.empty? && @formularios_sin_contestar.empty? %>
 	<div class="span4"></div>
 	<div class="span4">
 		<br /><br />
@@ -34,7 +34,8 @@
 <% else %>
 	<% if @sesiones_pocos_asistentes.any? %>
 		<hr>
-		<h4>Sesiones Con Asistencia Bajo 85%</h4>
+		<button type="button" class="btn btn btn-info disabled"><h4>Sesiones Con Asistencia Bajo 85%</h4></button>
+		<br><br>
 		<table class="table table-condensed table-striped">
 			<thead>
 			    <tr>
@@ -56,7 +57,8 @@
 	<% end %>
 	<% if @sesiones_sin_asistencia.any? %>
 		<hr>
-		<h4>Sesiones Sin Asistencia</h4>
+		<button type="button" class="btn btn btn-info disabled"><h4>Sesiones Sin Asistencia</h4></button>
+		<br><br>
 		<table class="table table-condensed table-striped">
 			<thead>
 			    <tr>
@@ -78,7 +80,8 @@
 	<% end %>
 	<% if @alumnos_baja_asistencia.any? %>
 		<hr>
-		<h4>Alumnos Con Baja Asistencia</h4>
+		<button type="button" class="btn btn btn-info disabled"><h4>Alumnos Con Baja Asistencia</h4></button>
+		<br><br>
 	    <table class="table table-condensed table-striped">
 	      <thead>
 	          <tr>
@@ -100,7 +103,8 @@
   	<% end %>
   	<% if @formularios_sin_contestar.any? %>
   		<hr>
-		<h4>Formularios sin contestar</h4>
+		<button type="button" class="btn btn btn-info disabled"><h4>Formularios sin contestar</h4></button>
+		<br><br>
 		<table class="table table-condensed">
 			<thead>
 			    <tr>
@@ -110,7 +114,7 @@
 			    </tr>
 			</thead>
 			<tbody>
-			  <% @formularios_sin_contestar.each_with_index do |formulario, index| %>
+			  <% @formularios_sin_contestar.each do |formulario| %>
 			    <tr>
 			      <td><%= formulario.codigo %></td>
 			      <td><%= formulario.nombre %></td>
