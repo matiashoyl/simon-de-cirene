@@ -2,12 +2,20 @@
   <%= f.error_notification %>
 
   <div class="form-inputs">
-    <%= f.input :titulo %>
-    <%= f.input :cuerpo %>
-    <%= f.input :caracter %>
+    <%= f.input :titulo, :autofocus => true, :label => false, :placeholder => "Título", :input_html => { :class => "input-block-level" } %>
+	<%= f.input :cuerpo, :label => false, :placeholder => 'Mensaje', :as => "Text", :input_html => { :rows => 10, :class => "input-block-level" } %>
+	<%= f.input :caracter, :collection => ['Positivo', 'Neutro', 'Negativo'], :label => false, :prompt => "Carácter del mensaje", :input_html => { :class => "input-block-level" } %>
+	<%= select_tag 'user_ids[]', options_for_select((User.with_role :relator).map {|c| [c.name, c.id]}), :multiple => true, :class => "input-block-level", :id => "select-relatores" %>
   </div>
 
   <div class="form-actions">
-    <%= f.button :submit %>
+    <%= f.button :submit, "Enviar", :class => 'btn-info' %>
+    <% end %>
+    <%= link_to("Atrás", mensajes_path, :class => 'btn') %>
   </div>
-<% end %>
+
+<script type="text/javascript">
+  $("#select-relatores").select2({
+    placeholder: "Selecciona uno o varios usuarios"
+  });
+</script>

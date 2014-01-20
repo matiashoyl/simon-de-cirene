@@ -14,7 +14,7 @@
 			<tbody>
 				<% @cursos.each do |curso| %>
 				<tr>
-					<td><span class="resumen-tooltip" title="<%= User.find(curso.relator_jefe_id).name %>"><%= curso.nombre %></span></td>
+					<td><span data-placement="left" class="resumen-tooltip" title="<%= User.find(curso.relator_jefe_id).name %>"><%= curso.nombre %></span></td>
 					<td>
 					<% if curso.sesions.any? %>
 						<% curso.sesions.each_with_index do |sesion, index| %>
