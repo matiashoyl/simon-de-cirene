@@ -1,4 +1,137 @@
+<br><br><br>
+<h3><%= @programa.nombre %> <small><%= @programa.tipo %></small></h3>
+<hr>
 <div>
-	<br><br><br>
-	<h3><%= @programa.nombre %> <small><%= @programa.tipo %></small></h3>
+	<div class="span3">
+		<button type="button" class="btn btn-large btn-info disabled btn-block">
+			Cursos <br>
+			<%= @programa.cursos.count %>
+		</button>
+	</div>
+	<div class="span3">
+		<button type="button" class="btn btn-large btn-info disabled btn-block">
+			Sesiones <br>
+			<%= @programa.sesiones.count %>
+		</button>
+	</div>
+	<div class="span3">
+		<button type="button" class="btn btn-large btn-info disabled btn-block">
+			Alumnos <br>
+			<%= @programa.alumnos.count %>
+		</button>
+	</div>
+	<div class="span3">
+		<button type="button" class="btn btn-large btn-info disabled btn-block">
+			Formularios <br>
+			<%= @programa.formularios.count %>
+		</button>
+	</div>
+	<br><br><br><br><br><br>
+</div>
+
+<div>
+	<% if @sesiones_pocos_asistentes.empty? && @sesiones_sin_asistencia.empty? && @alumnos_baja_asistencia.empty? %>
+	<div class="span4"></div>
+	<div class="span4">
+		<br /><br />
+		<img src="/images/logo.png" alt="Simón de Cirene" />
+		<h4 class="text-center">Todo está bajo control</h4>
+		<br /><br /><br />
+	</div>
+<% else %>
+		<% if @sesiones_pocos_asistentes.any? %>
+			<hr>
+			<h4>Sesiones Con Asistencia Bajo 85%</h4>
+			<table class="table table-condensed table-striped">
+				<thead>
+				    <tr>
+				      <th>Tema</th>
+				      <th>Curso</th>
+				      <th>Relator</th>
+				      <th>Asistentes</th>
+				    </tr>
+				</thead>
+				<tbody>
+				  <% @sesiones_pocos_asistentes.each do |sesion| %>
+				    <tr>
+				      <td><%= sesion.tema %></td>
+				      <td><%= sesion.curso.nombre %></td>
+				      <td><%= sesion.relator.name %></td>
+				      <td><%= sesion.porcentaje_asistentes %>%</td>
+				    </tr>
+				  <% end %>
+				</tbody>
+			</table>
+		<% end %>
+		<% if @sesiones_sin_asistencia.any? %>
+			<hr>
+			<h4>Sesiones Sin Asistencia</h4>
+			<table class="table table-condensed table-striped">
+				<thead>
+				    <tr>
+				      <th>Tema</th>
+				      <th>Curso</th>
+				      <th>Relator</th>
+				      <th>Fecha</th>
+				    </tr>
+				</thead>
+				<tbody>
+				  <% @sesiones_sin_asistencia.each do |sesion| %>
+				    <tr>
+				      <td><%= sesion.tema %></td>
+				      <td><%= sesion.curso.nombre %></td>
+				      <td><%= sesion.relator.name %></td>
+				      <td><%= sesion.fecha.strftime("%d %b, %Y") %></td>
+				    </tr>
+				  <% end %>
+				</tbody>
+			</table>
+		<% end %>
+		<% if @alumnos_baja_asistencia.any? %>
+			<hr>
+			<h4>Alumnos Con Baja Asistencia</h4>
+		    <table class="table table-condensed table-striped">
+		      <thead>
+		          <tr>
+		            <th>Nombre</th>
+		            <th>Curso</th>
+		            <th>Relator Jefe</th>
+		            <th>Asistencia</th>
+		          </tr>
+		      </thead>
+		      <tbody>
+		        <% @alumnos_baja_asistencia.each_with_index do |alumno, index| %>
+		          <tr>
+		            <td><%= alumno.nombre %> <%= alumno.apellido_paterno %></td>
+		            <td><%= @curso_alumno_baja_asistencia[index].nombre %></td>
+		            <td><%= User.find(@curso_alumno_baja_asistencia[index].relator_jefe_id).name %></td>
+		            <td><%= @bajas_asistencias[index] %>%</td>
+		          </tr>
+		        <% end %>
+		      </tbody>
+		    </table>
+	  	<% end %>
+	  	<% if @formularios_sin_contestar.any? %>
+	  		<hr>
+			<h4>Formularios sin contestar</h4>
+			<table class="table table-condensed">
+				<thead>
+				    <tr>
+				      <th>Codigo</th>
+				      <th>Formulario</th>
+				      <th>Curso</th>
+				    </tr>
+				</thead>
+				<tbody>
+				  <% @formularios_sin_contestar.each_with_index do |formulario, index| %>
+				    <tr>
+				      <td><%= formulario.codigo %></td>
+				      <td><%= formulario.nombre %></td>
+				      <td><%= @cursos_formularios_sin_contestar[index].nombre %></td>
+				    </tr>
+				  <% end %>
+				</tbody>
+			</table>
+		<% end %>
+<% end %>
 </div>
