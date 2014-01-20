@@ -8,4 +8,5 @@ $(document).ready(function(){
     $(".ss-section-title").closest("div").prepend("<hr />");
     $("textarea").addClass("input-block-level");
     $(".ss-datetime-box").children("select").addClass("input-small");
+    $('.resumen-tooltip').tooltip()
 })

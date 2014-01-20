@@ -100,9 +100,15 @@ class FormulariosController < ApplicationController
 
   def asignar
     formulario_id = params[:formulario_id]
+    Formulario.find(params[:formulario_id]).eliminar_cursos
     params[:cursos_ids].each do |curso_id|
       FormularioCurso.create(:curso_id => curso_id, :formulario_id => formulario_id, :estado => "Pendiente" )
     end
     redirect_to formularios_path
+  end
+
+  def resumen
+    @formularios = Formulario.all
+    @cursos = Curso.all
   end
 end

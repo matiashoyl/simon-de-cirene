@@ -18,12 +18,24 @@
                   <li><%= link_to 'Usuarios', users_path %></li>
                   <li><%= link_to 'Cursos', cursos_path %></li>
                   <li><%= link_to 'Programas', programas_path %></li>
-                  <li><%= link_to 'Formularios', formularios_path %></li>
+                  <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Formularios</a>
+                    <ul class="dropdown-menu" >
+                      <li><%= link_to 'Ver Fomularios', formularios_path %></li>
+                      <li><%= link_to 'Resumen', resumen_formularios_path %></li>
+                    </ul>
+                  </li>
                   <li><%= link_to 'Mensajes', mensajes_path %></li>
                 <% elsif current_user.has_role? :coordinador %>
                   <li><%= link_to 'Cursos', cursos_path %></li>
                   <li><%= link_to 'Programas', programas_path %></li>
-                  <li><%= link_to 'Formularios', formularios_path %></li>
+                  <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Formularios</a>
+                    <ul class="dropdown-menu" >
+                      <li><%= link_to 'Ver Fomularios', formularios_path %></li>
+                      <li><%= link_to 'Resumen', resumen_formularios_path %></li>
+                    </ul>
+                  </li>
                   <li><%= link_to 'Mensajes', mensajes_path %></li>
                 <% elsif current_user.has_role? :relator %>
                   <li><%= link_to 'Sesiones', sesions_path %></li>

@@ -15,4 +15,20 @@ class Formulario < ActiveRecord::Base
   		return false
   	end
   end
+
+  def cursos_ids
+    cursos = Array.new
+    curso_ids = FormularioCurso.where(:formulario_id => self).select(:curso_id).group(:curso_id).collect{|p| p.curso_id}
+    curso_ids.each do |curso_id|
+      cursos.push curso_id
+    end
+    return cursos
+  end
+
+  def eliminar_cursos
+    curso_ids = FormularioCurso.where(:formulario_id => self).select(:curso_id).group(:curso_id).collect{|p| p.curso_id}
+    curso_ids.each do |curso_id|
+      FormularioCurso.where(:formulario_id => self, :curso_id => curso_id).destroy_all
+    end
+  end
 end

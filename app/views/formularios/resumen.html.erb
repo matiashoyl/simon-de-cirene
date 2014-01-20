@@ -1,0 +1,41 @@
+<div class="span1"></div>
+<div class="span10" style="overflow: auto">
+	<h3>Resumen Formularios</h3>
+	<% if @formularios.empty? %>
+		<h4>Todavía no existen formularios</h4>
+	<% elsif @cursos.empty? %>
+		<h4>Todavía no existen cursos</h4>
+	<% else %>
+		<table class="table table-condensed table-striped">
+			<thead>
+				<tr>
+					<th>Curso</th>
+					<% @formularios.each do |formulario| %>
+						<th><span class="resumen-tooltip" title="<%= formulario.nombre %>"><%= formulario.codigo %></span></th>
+					<% end %>
+				</tr>
+			</thead>
+			<tbody>
+				<% @cursos.each do |curso| %>
+				<tr>
+					<td><span class="resumen-tooltip" title="<%= User.find(curso.relator_jefe_id).name %>" data-placement='left'><%= curso.nombre %></span></td>
+					<% @formularios.each do |formulario| %>
+						<td>
+							<% if FormularioCurso.where(:formulario_id => formulario, :curso_id => curso).first.nil? %>
+								<button type="button"  class="btn btn-mini btn-warning disabled">NA</button>
+							<% elsif FormularioCurso.where(:formulario_id => formulario, :curso_id => curso).first.estado == "Pendiente" %>
+								<button type="button"  class="btn btn-mini btn-danger disabled">P</button>
+							<% elsif FormularioCurso.where(:formulario_id => formulario, :curso_id => curso).first.estado == "" %>
+								<button type="button"  class="btn btn-mini btn-warning disabled">NA</button>
+							<% else %>
+								<button type="button"  class="btn btn-mini btn-success disabled">C</button>
+							<% end %>
+						</td>
+					<% end %>
+				</tr>
+				<% end %>
+			</tbody>
+		</table>
+	<% end %>
+	<br><br><br>
+</div>
