@@ -90,4 +90,10 @@ class ProgramasController < ApplicationController
       format.json { head :no_content }
     end
   end
+
+  def set_active
+    programa = Programa.find(params[:id])
+    programa.update_attributes(:active => params[:active])
+    render :nothing => true
+  end
 end

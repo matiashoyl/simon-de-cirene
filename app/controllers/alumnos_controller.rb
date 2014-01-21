@@ -156,6 +156,7 @@ class AlumnosController < ApplicationController
 
   def import_sence
     Alumno.import_sence(params[:file])
+    render :nothing => true
   end
 
   def download_excel
@@ -163,11 +164,13 @@ class AlumnosController < ApplicationController
       :filename=> "Excel Tipo.xlsx",
       :type=>"application/xlsx",
       :x_sendfile=>true)
+    render :nothing => true
   end
 
   def asistencia
     alumno_sesion = AlumnoSesion.where(:alumno_id => params[:id], :sesion_id => params[:sesion]).first_or_create
     alumno_sesion.update_attributes(:presente => params[:presente])
+    render :nothing => true
   end
 
   def search

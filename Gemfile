@@ -19,6 +19,7 @@ gem 'roo'
 gem 'simple_form'
 gem 'bootstrap-datepicker-rails'
 gem 'bootstrap-timepicker-rails'
+gem "bootstrap-switch-rails"
 gem "select2-rails"
 gem "audited-activerecord", "~> 3.0"
 gem 'nokogiri'

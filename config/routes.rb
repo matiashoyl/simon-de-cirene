@@ -26,6 +26,7 @@ SimonDeCirene::Application.routes.draw do
   resources :programas
 
   match "/programas/:id/delete", to: "programas#delete", :as => :delete_programa, :via => :get
+  match "/programas/:id/set_active", to: "programas#set_active", :as => :programa_set_active, :via => :post
 
 
   resources :alumnos do

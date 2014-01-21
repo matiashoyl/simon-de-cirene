@@ -10,6 +10,14 @@ class Curso < ActiveRecord::Base
 	validates :codigo, :nombre, :comuna, :programa_id, :relator_jefe_id, :presence => true
 	validates :codigo, :uniqueness => true
 
+	def self.all_active
+		cursos = Array.new
+		Programa.all_active.each do |programa|
+			cursos += programa.cursos
+		end
+		return cursos
+	end
+
 	def alumnos
 		alumnos = Array.new
 		alumnos_ids = AlumnoCurso.where(:curso_id => self).select(:alumno_id).group(:alumno_id).collect{|p| p.alumno_id}

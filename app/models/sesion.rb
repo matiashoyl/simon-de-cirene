@@ -8,6 +8,14 @@ class Sesion < ActiveRecord::Base
 
  	validates :tema, :tipo, :direccion, :fecha, :hora_inicio, :hora_termino, :curso_id, :user_id, :presence => true
 
+ 	def self.all_active
+		sesiones = Array.new
+		Curso.all_active.each do |curso|
+			sesiones += curso.sesions
+		end
+		return sesiones
+	end
+
  	def porcentaje_asistentes
  		alumno_sesiones = AlumnoSesion.where(:sesion_id => self).all
  		asistentes_presentes = 0.0
