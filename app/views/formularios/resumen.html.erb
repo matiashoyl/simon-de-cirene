@@ -18,7 +18,7 @@
 			<tbody>
 				<% @formularios.each do |formulario| %>
 				<tr>
-					<td><span class="resumen-tooltip" title="<%= formulario.nombre %>"><%= formulario.codigo %></span></td>
+					<td><span data-placement="left" class="resumen-tooltip" title="<%= formulario.nombre %>"><%= formulario.codigo %></span></td>
 					<% @cursos.each do |curso| %>
 						<td class="centered">
 							<% if FormularioCurso.where(:formulario_id => formulario, :curso_id => curso).first.nil? %>

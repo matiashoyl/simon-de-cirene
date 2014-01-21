@@ -60,6 +60,7 @@ class HomeController < ApplicationController
         end
     end
 
+
     def cambios
       @cambios = Audited::Adapters::ActiveRecord::Audit.last(30)
     end
