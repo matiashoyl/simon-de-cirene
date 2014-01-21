@@ -10,7 +10,6 @@
   	 <%= f.input :nombre, :autofocus => true, :label => false, :placeholder => 'Nombre', :class => 'input-block-level' %>
   	 <p>Tipo:</p>
   	 <%= f.input :tipo, :collection => ['Social', 'Microempresas'], :label => false, :prompt => "", :class => 'input-block-level' %>
-     <%= f.input :active, :as => :hidden, :input_html => { :value => true } %>
   </div>
   <div class="modal-footer">
   	 <%= f.button :submit, "Crear", :class => 'btn-info' %>

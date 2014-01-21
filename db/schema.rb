@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140121154859) do
+ActiveRecord::Schema.define(:version => 20140121175910) do
 
   create_table "alumno_cursos", :force => true do |t|
     t.integer  "alumno_id"
@@ -76,10 +76,11 @@ ActiveRecord::Schema.define(:version => 20140121154859) do
     t.string   "codigo"
     t.string   "nombre"
     t.string   "comuna"
-    t.datetime "created_at",      :null => false
-    t.datetime "updated_at",      :null => false
+    t.datetime "created_at",                        :null => false
+    t.datetime "updated_at",                        :null => false
     t.integer  "programa_id"
     t.integer  "relator_jefe_id"
+    t.boolean  "active",          :default => true
   end
 
   create_table "formulario_cursos", :force => true do |t|
@@ -117,9 +118,9 @@ ActiveRecord::Schema.define(:version => 20140121154859) do
   create_table "programas", :force => true do |t|
     t.string   "nombre"
     t.string   "tipo"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
-    t.boolean  "active"
+    t.datetime "created_at",                   :null => false
+    t.datetime "updated_at",                   :null => false
+    t.boolean  "active",     :default => true
   end
 
   create_table "roles", :force => true do |t|
@@ -141,10 +142,11 @@ ActiveRecord::Schema.define(:version => 20140121154859) do
     t.string   "tipo"
     t.string   "direccion"
     t.string   "comentario"
-    t.datetime "created_at",   :null => false
-    t.datetime "updated_at",   :null => false
+    t.datetime "created_at",                     :null => false
+    t.datetime "updated_at",                     :null => false
     t.integer  "curso_id"
     t.integer  "user_id"
+    t.boolean  "active",       :default => true
   end
 
   create_table "users", :force => true do |t|

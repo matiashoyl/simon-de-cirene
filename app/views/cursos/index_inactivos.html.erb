@@ -1,0 +1,40 @@
+<div class="span2"></div>
+<div class="span8">
+  <h3>Cursos Inactivos</h3>
+  <% if @programas.any? %>
+    <% if @cursos.any? %>
+      <table class="table table-condensed table-striped">
+        <thead>
+          <tr>
+            <th>Codigo</th>
+            <th>Nombre</th>
+            <th>Comuna</th>
+            <th>Programa</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @cursos.each do |curso| %>
+            <tr>
+              <td><%= curso.codigo %></td>
+              <td><%= curso.nombre %></td>
+              <td><%= curso.comuna %></td>
+              <td><%= Programa.find(curso.programa_id).nombre %></td>
+              <td>
+                <div class="btn-group">
+                  <%= link_to('<i class="icon-search"></i>'.html_safe, curso_inactivo_path(curso), :class => 'btn btn-mini') %>
+                  <%= link_to('<i class="icon-trash icon-white"></i>'.html_safe, delete_curso_path(curso), remote: true, class: "btn btn-mini btn-inverse") %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% else %>
+      <h5>No hay cursos inscritos</h5>
+    <% end %>
+  <% else %>
+    <h5>Debes crear un programa para crear un curso</h5>
+  <% end %>
+  <div id="curso-modal" class="modal hide fade modal-small"></div>
+</div>

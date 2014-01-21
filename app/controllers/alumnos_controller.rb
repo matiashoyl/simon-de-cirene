@@ -23,9 +23,9 @@ class AlumnosController < ApplicationController
     @alumnos.sort_by {|alumno| alumno.apellido_paterno}
 
     if current_user.has_role? :relator
-      @sesiones = Sesion.where(:user_id => current_user).where(:curso_id => @curso.id).order(:fecha).all
+      @sesiones = Sesion.where(:user_id => current_user, :active => true).where(:curso_id => @curso.id).order(:fecha).all
     else
-      @sesiones = Sesion.where(:curso_id => @curso.id).order(:fecha).all
+      @sesiones = Sesion.where(:curso_id => @curso.id, :active => true).order(:fecha).all
     end
     
     respond_to do |format|

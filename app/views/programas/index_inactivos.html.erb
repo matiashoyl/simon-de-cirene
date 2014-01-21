@@ -1,0 +1,52 @@
+<div class="span3"></div>
+<div class="span6">
+  <h3>Programas Inactivos</h3>
+  <% if @programas.any? %>
+    <table class="table table-condensed table-striped">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Tipo</th>
+          <th></th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @programas.each do |programa| %>
+          <tr>
+            <td><%= programa.nombre %></td>
+            <td><%= programa.tipo %></td>
+            <td>
+              <div class="btn-group">
+                <%= link_to('<i class="icon-search"></i>'.html_safe, programa_inactivo_path(programa), :class => 'btn btn-mini') %>
+                <%= link_to('<i class="icon-trash icon-white"></i>'.html_safe, delete_programa_path(programa), remote: true, class: "btn btn-mini btn-inverse") %>
+              </div>
+            </td>
+            <td>
+              <input id="switch-programa-<%=programa.id%>" class="switch-mini switch" type="checkbox" <% if programa.active %> checked <% end %> data-on="info" data-off="danger" data-on-label="Activo" data-off-label="Inactivo">
+              <script type="text/javascript">
+                $('#switch-programa-<%=programa.id%>').on('switch-change', function (e, data) {
+                  $.ajax({
+                    type: "POST",
+                    url: "/programas/<%= programa.id %>/set_active",
+                    data: {active: data.value}
+                  });
+
+                });
+              </script>
+            </td>
+            
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <br />
+  <% end %>
+  <div id="programa-modal" class="modal hide fade modal-small"></div>
+</div>
+
+
+<script type="text/javascript">
+  $('.switch').bootstrapSwitch();
+</script>

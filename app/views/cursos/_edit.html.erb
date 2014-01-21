@@ -8,7 +8,7 @@
 		<%= f.error_notification %>
 		<%= display_base_errors resource %>
 		<p>Programa:</p>
-		<%= f.input :programa_id, :collection => Programa.all.collect{ |p| [p.nombre, p.id] }, :label => false, :prompt => "Programa", :input_html => { :class => "input-block-level" } %>
+		<%= f.input :programa_id, :collection => Programa.all_active.collect{ |p| [p.nombre, p.id] }, :label => false, :prompt => "Programa", :input_html => { :class => "input-block-level" } %>
 		<p>Código:</p>
 		<%= f.input :codigo, :autofocus => true, :label => false, :placeholder => @curso.codigo, :input_html => { :class => "input-block-level" } %>
 		<p>Nombre:</p>

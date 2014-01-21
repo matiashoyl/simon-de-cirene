@@ -109,6 +109,6 @@ class FormulariosController < ApplicationController
 
   def resumen
     @formularios = Formulario.all
-    @cursos = Curso.all
+    @cursos = Curso.all_active
   end
 end

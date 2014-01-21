@@ -2,7 +2,7 @@
   <%= f.error_notification %>
 
   <div class="form-inputs">
-    <%= f.input :programa_id, :collection => Programa.all.collect{ |p| [p.nombre, p.id] }, :label => false, :prompt => "Programa", :class => 'input-block-level' %>
+    <%= f.input :programa_id, :collection => Programa.all_active.collect{ |p| [p.nombre, p.id] }, :label => false, :prompt => "Programa", :class => 'input-block-level' %>
     <%= f.input :codigo, :autofocus => true, :label => false, :placeholder => 'Código', :input_html => { :class => "input-block-level" } %>
     <%= f.input :nombre, :label => false, :placeholder => 'Nombre', :input_html => { :class => "input-block-level" } %>
     <%= f.input :comuna, :collection => SimonDeCirene::Application::COMUNAS, :label => false, :prompt => "Selecciona una comuna", :input_html => { :class => "input-block-level" } %>

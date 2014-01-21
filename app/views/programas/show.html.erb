@@ -1,6 +1,6 @@
 <div class="span3">
   <ul class="nav nav-tabs nav-stacked sesions-sidenav affix">
-    <% if @programas_sociales %>
+    <% if @programas_sociales.any? %>
       <h5>Área Social</h5>
       <% @programas_sociales.each do |programa_social| %>
         <% if programa_social.id == @programa.id %>
@@ -20,7 +20,7 @@
         <% end %>
       <% end %>
     <% end %>
-    <% if @programas_microempresas %>
+    <% if @programas_microempresas.any? %>
       <h5>Área Microempresas</h5>
       <% @programas_microempresas.each do |programas_microempresas| %>
         <% if programas_microempresas.id == @programa.id %>

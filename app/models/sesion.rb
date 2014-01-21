@@ -4,17 +4,13 @@ class Sesion < ActiveRecord::Base
 	belongs_to :curso
 	belongs_to :user
 
- 	attr_accessible :comentario, :direccion, :fecha, :hora_inicio, :hora_termino, :tema, :tipo, :curso_id, :user_id
+ 	attr_accessible :comentario, :direccion, :fecha, :hora_inicio, :hora_termino, :tema, :tipo, :curso_id, :user_id, :active
 
  	validates :tema, :tipo, :direccion, :fecha, :hora_inicio, :hora_termino, :curso_id, :user_id, :presence => true
 
  	def self.all_active
-		sesiones = Array.new
-		Curso.all_active.each do |curso|
-			sesiones += curso.sesions
-		end
-		return sesiones
-	end
+      return Sesion.where(:active => true).all
+    end
 
  	def porcentaje_asistentes
  		alumno_sesiones = AlumnoSesion.where(:sesion_id => self).all

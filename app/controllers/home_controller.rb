@@ -2,7 +2,7 @@ class HomeController < ApplicationController
     def index
         if user_signed_in?
             if current_user.has_role? :relator
-                @cursos = Curso.where(:relator_jefe_id => current_user).all
+                @cursos = Curso.where(:relator_jefe_id => current_user, :active => true).all
                 
                 @formularios_sin_contestar = Array.new
                 @cursos_formularios_sin_contestar = Array.new
@@ -25,8 +25,8 @@ class HomeController < ApplicationController
 
             else
                 #@sesiones_a_la_fecha = Sesion.where('fecha < ?', DateTime.now).all
-                @sesiones_a_la_fecha = Sesion.all
-                @cursos = Curso.all
+                @sesiones_a_la_fecha = Sesion.all_active
+                @cursos = Curso.all_active
                 @alumnos = Alumno.all
 
                 @sesiones_pocos_asistentes = Array.new
@@ -71,12 +71,12 @@ class HomeController < ApplicationController
 
     def resumen_programa
         @programa = Programa.find(params[:id])
-        @cursos = @programa.cursos
+        @cursos = @programa.cursos.where(:active => true)
 
         #@sesiones_a_la_fecha = Sesion.where('fecha < ?', DateTime.now).all
         @sesiones = Array.new
         @cursos.each do |curso|
-            curso.sesions.each do |sesion|
+            curso.sesions.where(:active => true).each do |sesion|
                 @sesiones.push sesion
             end
         end
@@ -124,7 +124,7 @@ class HomeController < ApplicationController
 
     def resumen_curso
         @curso = Curso.find(params[:id])
-        @sesiones = @curso.sesions
+        @sesiones = @curso.sesions.where(:active => true)
 
         @sesiones_pocos_asistentes = Array.new
         @sesiones_sin_asistencia = Array.new

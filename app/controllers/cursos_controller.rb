@@ -4,9 +4,20 @@ class CursosController < ApplicationController
   # GET /cursos
   # GET /cursos.json
   def index
-    @cursos = Curso.all
+    @cursos = Curso.all_active
     @curso = Curso.new
-    @programas = Programa.all
+    @programas = Programa.all_active
+    
+    respond_to do |format|
+      format.html # index.html.erb
+      format.json { render json: @cursos }
+    end
+  end
+
+  def index_inactivos
+    @cursos = Curso.where(:active => false)
+    @curso = Curso.new
+    @programas = Programa.where(:active => false)
     
     respond_to do |format|
       format.html # index.html.erb
@@ -18,8 +29,22 @@ class CursosController < ApplicationController
   # GET /cursos/1.json
   def show
     @curso = Curso.find(params[:id])
-    @cursos = Curso.all
-    @sesiones = @curso.sesions.order(:fecha)
+    @cursos = Curso.all_active
+    @sesiones = @curso.sesions.where(:active => true).order(:fecha)
+    @formulario_curso = FormularioCurso.new
+    @formularios = @curso.formularios
+    @alumnos = @curso.alumnos
+
+    respond_to do |format|
+      format.html # show.html.erb
+      format.json { render json: @curso }
+    end
+  end
+
+  def show_inactivos
+    @curso = Curso.find(params[:id])
+    @cursos = Curso.where(:active => false)
+    @sesiones = @curso.sesions.where(:active => false).order(:fecha)
     @formulario_curso = FormularioCurso.new
     @formularios = @curso.formularios
     @alumnos = @curso.alumnos
@@ -110,6 +135,11 @@ class CursosController < ApplicationController
   end
 
   def resumen
-    
+    @cursos = Curso.where(:active => true)
+  end
+
+  def resumen_inactivos
+    @cursos = Curso.where(:active => false)
+    render "resumen"
   end
 end

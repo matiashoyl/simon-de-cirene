@@ -27,6 +27,8 @@ SimonDeCirene::Application.routes.draw do
 
   match "/programas/:id/delete", to: "programas#delete", :as => :delete_programa, :via => :get
   match "/programas/:id/set_active", to: "programas#set_active", :as => :programa_set_active, :via => :post
+  match "/programas_inactivos", to: "programas#index_inactivos", :as => :programas_inactivos, :via => :get
+  match "/programas_inactivos/:id", to: "programas#show_inactivos", :as => :programa_inactivo, :via => :get
 
 
   resources :alumnos do
@@ -52,6 +54,9 @@ SimonDeCirene::Application.routes.draw do
   match "/cursos/:id/delete", to: "cursos#delete", :as => :delete_curso, :via => :get
   match "/cursos/:id/asistencia", to: "sesions#asistencia", :as => :asistencia_curso, :via => :get
   match "/curso/resumen", to: "cursos#resumen", :as => :resumen_cursos, :via => :get
+  match "/cursos_inactivos", to: "cursos#index_inactivos", :as => :cursos_inactivos, :via => :get
+  match "/cursos_inactivos/:id", to: "cursos#show_inactivos", :as => :curso_inactivo, :via => :get
+  match "/curso_inactivo/resumen", to: "cursos#resumen_inactivos", :as => :resumen_cursos_inactivos, :via => :get
 
   match "/cursos/:id", to: "cursos#update", :as => :update_curso, :via => :put
   match "/sesions/:id/details", to: "sesions#details", :as => :sesion_details, :via => :get

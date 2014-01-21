@@ -5,18 +5,14 @@ class Curso < ActiveRecord::Base
 	has_many :sesions
 	has_many :users, :through => :sesions
 
-	attr_accessible :codigo, :nombre, :comuna, :programa_id, :relator_jefe_id
+	attr_accessible :codigo, :nombre, :comuna, :programa_id, :relator_jefe_id, :active
 
 	validates :codigo, :nombre, :comuna, :programa_id, :relator_jefe_id, :presence => true
 	validates :codigo, :uniqueness => true
 
 	def self.all_active
-		cursos = Array.new
-		Programa.all_active.each do |programa|
-			cursos += programa.cursos
-		end
-		return cursos
-	end
+      return Curso.where(:active => true).all
+    end
 
 	def alumnos
 		alumnos = Array.new

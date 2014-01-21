@@ -3,7 +3,7 @@ class ProgramasController < ApplicationController
   # GET /programas
   # GET /programas.json
   def index
-    @programas = Programa.all
+    @programas = Programa.all_active
     @programa = Programa.new
 
     respond_to do |format|
@@ -12,14 +12,35 @@ class ProgramasController < ApplicationController
     end
   end
 
+  def index_inactivos
+    @programas = Programa.where(:active => false).all
+  end
+
   # GET /programas/1
   # GET /programas/1.json
   def show
     @programa = Programa.find(params[:id])
-    @programas_sociales = Programa.where(:tipo => "Social").all
-    @programas_microempresas = Programa.where(:tipo => "Microempresas").all
+    @programas_sociales = Programa.where(:tipo => "Social", :active => true).all
+    @programas_microempresas = Programa.where(:tipo => "Microempresas", :active => true).all
     @curso = Curso.new
-    @cursos = @programa.cursos.order(:created_at)
+    @cursos = @programa.cursos.where(:active => true).order(:created_at).all
+
+    respond_to do |format|
+      format.html # show.html.erb
+      format.json { render json: @programa }
+      format.xls do
+        response.headers['Content-Disposition'] = 'attachment; filename="' + @programa.nombre + '.xls"'
+        render "show.xls.erb"
+      end
+    end
+  end
+
+  def show_inactivos
+    @programa = Programa.find(params[:id])
+    @programas_sociales = Programa.where(:tipo => "Social", :active => false).all
+    @programas_microempresas = Programa.where(:tipo => "Microempresas", :active => false).all
+    @curso = Curso.new
+    @cursos = @programa.cursos.where(:active => false).order(:created_at).all
 
     respond_to do |format|
       format.html # show.html.erb
@@ -92,8 +113,20 @@ class ProgramasController < ApplicationController
   end
 
   def set_active
+    ###### Programas ######
     programa = Programa.find(params[:id])
     programa.update_attributes(:active => params[:active])
+
+    ###### Cursos ######
+    programa.cursos.each do |curso|
+      curso.update_attributes(:active => params[:active])
+      ###### Sesiones ######
+      curso.sesions.each do |sesion|
+        sesion.update_attributes(:active => params[:active])
+      end
+    end
     render :nothing => true
   end
+
+  
 end

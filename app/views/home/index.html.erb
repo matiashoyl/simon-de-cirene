@@ -79,8 +79,8 @@
 			<img src="/images/logo_color_rgb.jpg" alt="Simón de Cirene" />
 			<br><br><hr>
 			<div>
-				<%= select_tag "programas", options_from_collection_for_select(Programa.all, "id", "nombre"), :onchange => 'load_programa()', class: "span6", :prompt => "Selecciona un programa" %>
-				<%= select_tag "cursos", options_from_collection_for_select(Curso.all, "id", "nombre"), :onchange => 'load_curso()', class: "span6", :prompt => "Selecciona un curso" %>
+				<%= select_tag "programas", options_from_collection_for_select(Programa.all_active, "id", "nombre"), :onchange => 'load_programa()', class: "span6", :prompt => "Selecciona un programa" %>
+				<%= select_tag "cursos", options_from_collection_for_select(Curso.all_active, "id", "nombre"), :onchange => 'load_curso()', class: "span6", :prompt => "Selecciona un curso" %>
 			</div>
 			<div id="loading">
 				<br><br><br><br><br><br>

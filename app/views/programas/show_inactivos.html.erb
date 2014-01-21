@@ -1,0 +1,84 @@
+<div class="span3">
+  <ul class="nav nav-tabs nav-stacked sesions-sidenav affix">
+    <% if @programas_sociales.any? %>
+      <h5>Área Social</h5>
+      <% @programas_sociales.each do |programa_social| %>
+        <% if programa_social.id == @programa.id %>
+          <li class="active">
+            <a href="#">
+              <i class="icon-chevron-right pull-right"></i>
+              <%= programa_social.nombre %>
+            </a>
+          </li>
+        <% else %>
+          <li>
+            <a href="/programas_inactivos/<%=programa_social.id%>">
+              <i class="icon-chevron-right pull-right"></i>
+              <%= programa_social.nombre %>
+            </a>
+          </li>
+        <% end %>
+      <% end %>
+    <% end %>
+    <% if @programas_microempresas.any? %>
+      <h5>Área Microempresas</h5>
+      <% @programas_microempresas.each do |programas_microempresas| %>
+        <% if programas_microempresas.id == @programa.id %>
+          <li class="active">
+            <a href="#">
+              <i class="icon-chevron-right pull-right"></i>
+              <%= programas_microempresas.nombre %>
+            </a>
+          </li>
+        <% else %>
+          <li>
+            <a href="/programas_inactivos/<%=programas_microempresas.id%>">
+              <i class="icon-chevron-right pull-right"></i>
+              <%= programas_microempresas.nombre %>
+            </a>
+          </li>
+        <% end %>
+      <% end %>
+    <% end %>
+  </ul>
+</div>
+<div class="span1"></div>
+<div class="span8">
+  <%= render 'layouts/messages' %>
+  <div class="page-header">
+    <h1><%= @programa.nombre %> <small>Área <%= @programa.tipo %></small></h1>
+  </div>
+	<br />
+	<% if @cursos.any? %>
+    <table class="table table-condensed table-striped">
+      <thead>
+        <tr>
+          <th>Codigo</th>
+          <th>Nombre</th>
+          <th>Comuna</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @cursos.each do |curso| %>
+          <tr>
+            <td><%= curso.codigo %></td>
+            <td><%= curso.nombre %></td>
+            <td><%= curso.comuna %></td>
+            <td>
+                <div class="btn-group">
+                  <%= link_to('<i class="icon-search"></i>'.html_safe, curso_inactivo_path(curso), :class => 'btn btn-mini') %>
+                  <%= link_to('<i class="icon-trash icon-white"></i>'.html_safe, delete_curso_path(curso), remote: true, class: "btn btn-mini btn-inverse") %>
+                </div>
+              </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+    <%= link_to "Descargar Excel", programa_path(@programa, format: "xls"), :class => 'btn btn-mini btn-success' %>
+  <% else %>
+    <h4>No hay cursos en este programa</h4>
+    <br />
+  <% end %>
+  <div id="curso-modal" class="modal hide fade modal-medium"></div>
+</div>

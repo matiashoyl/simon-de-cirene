@@ -2,13 +2,13 @@ class SesionsController < ApplicationController
   # GET /sesions
   # GET /sesions.json
   def index
-    curso_ids = Sesion.where(:user_id => current_user).select(:curso_id).group(:curso_id).collect{|p| p.curso_id}
+    curso_ids = Sesion.where(:user_id => current_user, :active => true).select(:curso_id).group(:curso_id).collect{|p| p.curso_id}
     @cursos = Array.new
     curso_ids.each do |curso_id|
       curso = Curso.find(curso_id)
       @cursos.push curso
     end
-    Curso.where(:relator_jefe_id => current_user).each do |curso|
+    Curso.where(:relator_jefe_id => current_user, :active => true).each do |curso|
       unless @cursos.include?(curso)
         @cursos.push curso
       end
@@ -34,7 +34,7 @@ class SesionsController < ApplicationController
     end
     @alumnos.sort_by{|alumno| alumno[:apellido_paterno]}
 
-    @sesiones = Sesion.where(:user_id => current_user).where(:curso_id => @curso.id).order(:fecha).all
+    @sesiones = Sesion.where(:user_id => current_user, :active => true).where(:curso_id => @curso.id).order(:fecha).all
 
     respond_to do |format|
       format.html # show.html.erb
@@ -133,20 +133,20 @@ class SesionsController < ApplicationController
     @alumnos = @curso.alumnos
     @alumnos.sort_by {|alumno| alumno.apellido_paterno}
 
-    curso_ids = Sesion.where(:user_id => current_user).select(:curso_id).group(:curso_id).collect{|p| p.curso_id}
+    curso_ids = Sesion.where(:user_id => current_user, :active => true).select(:curso_id).group(:curso_id).collect{|p| p.curso_id}
     @cursos = Array.new
     curso_ids.each do |curso_id|
       curso = Curso.find(curso_id)
       @cursos.push curso
     end
 
-    Curso.where(:relator_jefe_id => current_user).each do |curso|
+    Curso.where(:relator_jefe_id => current_user, :active => true).all.each do |curso|
       unless @cursos.include?(curso)
         @cursos.push curso
       end
     end
 
-    @sesiones = Sesion.where(:curso_id => @curso.id).order(:fecha).all
+    @sesiones = Sesion.where(:curso_id => @curso.id, :active => true).order(:fecha).all
 
     respond_to do |format|
       format.html # details.html.erb
@@ -157,6 +157,6 @@ class SesionsController < ApplicationController
   def asistencia
     @curso = Curso.find(params[:id])
     @alumnos = @curso.alumnos
-    @sesiones = @curso.sesions.order(:fecha)
+    @sesiones = @curso.sesions.where(:active => true).order(:fecha)
   end
 end
