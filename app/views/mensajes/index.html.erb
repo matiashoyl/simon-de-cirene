@@ -13,7 +13,9 @@
       <tbody>
         <% @mensajes.each do |mensaje| %>
           <tr>
-            <td><%= mensaje.titulo %></td>
+            <td>
+              <span data-content="<%= mensaje.cuerpo %>" rel="popover" data-placement="bottom" data-original-title="<%=mensaje.titulo%>" data-html="true" class="sesion-popover"><%= mensaje.titulo %></span>
+            </td>
             <td><%= mensaje.receptores_string %></td>
             <td>
               <div class="btn-group">

@@ -27,6 +27,11 @@ class MensajesController < ApplicationController
     @mensaje = Mensaje.new
   end
 
+  def new_with_receiver
+    @mensaje = Mensaje.new
+    @user = User.find(params[:id])
+  end
+
   # GET /mensajes/1/edit
   def edit
     @mensaje = Mensaje.find(params[:id])
@@ -42,8 +47,13 @@ class MensajesController < ApplicationController
         params[:user_ids].each do |user_id|
           MensajeUsuario.create(:usuario_id => user_id, :mensaje_id => @mensaje.id)
         end
-        format.html { redirect_to mensajes_path }
-        format.json { render json: @mensaje, status: :created, location: @mensaje }
+        puts URI(request.referer).path
+        if URI(request.referer).path == '/mensajes'
+          format.html { redirect_to mensajes_path }
+        else
+          user = User.find(params[:user_ids][0])
+          format.html { redirect_to resumen_formularios_path, notice: 'El mensaje ha sido enviado a ' + user.name }
+        end
       else
         format.html { render action: "new" }
         format.json { render json: @mensaje.errors, status: :unprocessable_entity }

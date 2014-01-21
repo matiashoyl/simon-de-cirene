@@ -8,6 +8,8 @@ SimonDeCirene::Application.routes.draw do
 
   match "/not_authorized", to: "home#not_authorized", :as => :not_authorized, :via => :get
 
+  match "/mensajes/new/:id", to: "mensajes#new_with_receiver", :as => :new_mensaje_with_receiver, :via => :get
+
   resources :formulario_cursos
 
 

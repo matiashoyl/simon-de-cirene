@@ -60,7 +60,7 @@ class FormularioCursosController < ApplicationController
 
     respond_to do |format|
       if @formulario_curso.update_attributes(params[:formulario_curso])
-        format.html { redirect_to @formulario_curso, notice: 'Formulario curso was successfully updated.' }
+        format.html { redirect_to @formulario_curso }
         format.json { head :no_content }
       else
         format.html { render action: "edit" }

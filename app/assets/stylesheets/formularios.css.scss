@@ -41,7 +41,22 @@
 	margin-top: 0px;
 }
 
-.centered {
-	margin-left: 25%;
-	margin-right: 25%;
+.centered{
+	vertical-align:middle; 
+	text-align:center;
+}
+
+.centered button{
+	display:block; 
+	margin:0 auto;
+}
+
+.centered a{
+	display:block; 
+	margin:0 auto;
+}
+
+.centered-header
+{
+    text-align: center !important;
 }

@@ -11,7 +11,7 @@
 				<tr>
 					<th>Formulario</th>
 					<% @cursos.each do |curso| %>
-						<th><span class="resumen-tooltip" title="<%= User.find(curso.relator_jefe_id).name %>"><%= curso.nombre %></span></th>
+						<th class="centered"><%= link_to(curso.nombre, new_mensaje_with_receiver_path(curso.relator_jefe_id), remote: true, :class => 'btn btn-link resumen-tooltip', :title => User.find(curso.relator_jefe_id).name) %></th>
 					<% end %>
 				</tr>
 			</thead>
@@ -20,15 +20,15 @@
 				<tr>
 					<td><span class="resumen-tooltip" title="<%= formulario.nombre %>"><%= formulario.codigo %></span></td>
 					<% @cursos.each do |curso| %>
-						<td>
+						<td class="centered">
 							<% if FormularioCurso.where(:formulario_id => formulario, :curso_id => curso).first.nil? %>
-								<button type="button"  class="btn btn-mini btn-warning disabled centered">N</button>
+								<button type="button"  class="btn btn-mini btn-warning disabled">N</button>
 							<% elsif FormularioCurso.where(:formulario_id => formulario, :curso_id => curso).first.estado == "Pendiente" %>
-								<button type="button"  class="btn btn-mini btn-danger disabled centered">P</button>
+								<button type="button"  class="btn btn-mini btn-danger disabled">P</button>
 							<% elsif FormularioCurso.where(:formulario_id => formulario, :curso_id => curso).first.estado == "" %>
-								<button type="button"  class="btn btn-mini btn-warning disabled centered">N</button>
+								<button type="button"  class="btn btn-mini btn-warning disabled">N</button>
 							<% else %>
-								<button type="button"  class="btn btn-mini btn-success disabled centered">C</button>
+								<button type="button"  class="btn btn-mini btn-success disabled">C</button>
 							<% end %>
 						</td>
 					<% end %>
@@ -38,7 +38,7 @@
 		</table>
 	<% end %>
 	<div>
-		<div class="span8"></div>
+		<div class="span8"><%= render 'layouts/messages' %></div>
 		<div class="span4 well well-small">
 			<p><button type="button"  class="btn btn-mini btn-success disabled">C</button> Contestado</p>
 			<p><button type="button"  class="btn btn-mini btn-warning disabled">N</button> Formulario no asociado a este curso</p>
@@ -46,4 +46,6 @@
 		</div>
 	</div>
 	<br><br><br>
+	
 </div>
+<div id="mensaje-modal" class="modal hide fade modal-mensaje"></div>
