@@ -38,7 +38,7 @@ class Alumno < ActiveRecord::Base
 					aux_hora_termino = row["Hora Fin"].split(":")
 					hora_termino = Time.new(2000, 1, 1, aux_hora_termino[0], aux_hora_termino[1], 0, 0)
 					comuna = row["Comuna"]
-					sesion = Sesion.where(:fecha => fecha, :hora_inicio => hora_inicio, :hora_termino => hora_termino, :comuna => comuna).first
+					sesion = Sesion.where(:fecha => fecha, :hora_inicio => hora_inicio, :hora_termino => hora_termino, :comuna => comuna, :active => true).first
 					if sesion
 						if row["Estado Asistencia"] == "Asistio"
 							AlumnoSesion.create(:alumno_id => alumno.id, :sesion_id => sesion.id, :presente => true)
