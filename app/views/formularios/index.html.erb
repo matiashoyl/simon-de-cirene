@@ -19,7 +19,10 @@
             <td><%= formulario.nombre %></td>
             <td><%= formulario.tipo %></td>
             <td>
-              <%= link_to('Asignar', asign_formulario_path(formulario), remote: true, class: "btn btn-mini") %>
+              <div class="btn-group">
+                <%= link_to('Asignar', asign_formulario_path(formulario), remote: true, class: "btn btn-mini") %>
+                <%= link_to('Repetir', repeat_formulario_path(formulario), remote: true, class: "btn btn-mini") %>
+              </div>
             </td>
             <td>
               <div class="btn-group">
@@ -36,5 +39,5 @@
     <br />
   <% end %>
   <%= link_to("Nuevo Formulario", new_formulario_path, :class => 'btn btn-mini btn-info') %>
-  <div id="formulario-modal" class="modal hide fade modal-large"></div>
+  <div id="formulario-modal" class="modal hide fade"></div>
 </div>

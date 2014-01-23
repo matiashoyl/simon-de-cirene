@@ -152,7 +152,15 @@
                 <% if formulario.contestado?(@curso) %>
                   <button type="button" id="estado-<%= formulario.id %>-<%= @curso.id %>" class="btn btn-mini btn-info disabled">Contestado</button>
                 <% else %>
-                  <%= link_to "Contestar", curso_formulario_path(:curso_id => @curso, :formulario_id => formulario), :class => 'btn btn-mini' %>
+                  <% if formulario.duplicates(@curso) > 1 %>
+                    <% if formulario.pendientes(@curso) == 1 %>
+                      <%= link_to "Contestar", curso_formulario_path(:curso_id => @curso, :formulario_id => formulario), :class => 'btn btn-mini resumen-tooltip', :title => "Falta " + formulario.pendientes(@curso).to_s, 'data-placement' => "right" %>
+                    <% else %>
+                      <%= link_to "Contestar", curso_formulario_path(:curso_id => @curso, :formulario_id => formulario), :class => 'btn btn-mini resumen-tooltip', :title => "Faltan " + formulario.pendientes(@curso).to_s, 'data-placement' => "right" %>
+                    <% end %>
+                  <% else %>
+                    <%= link_to "Contestar", curso_formulario_path(:curso_id => @curso, :formulario_id => formulario), :class => 'btn btn-mini' %>
+                  <% end %>
                 <% end %>
               </td>
             </tr>

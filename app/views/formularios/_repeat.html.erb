@@ -1,0 +1,41 @@
+<div>
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+      <h4>Formulario <%= @formulario.nombre %></h4>
+    </div>
+    <div class="modal-body">
+      <% if @formulario.cursos.any? %>
+      <table class="table">
+        <% @formulario.cursos.each do |curso| %>
+          <tr>
+            <td><%= curso.nombre %></td> 
+            <td><input name="curso-<%=curso.id%>" id="slider-curso-<%=curso.id%>" type="text" class="slider" data-slider-min="1" data-slider-max="30" data-slider-step="1" data-slider-value="<%= @formulario.duplicates(curso) %>" data-slider-orientation="horizontal" data-slider-selection="after" data-slider-tooltip="hide"></td>
+            <td><button id="data-slider-curso-<%=curso.id%>" class="btn btn-mini btn-info disabled"></button></td>
+            <script type="text/javascript">
+              var slider = $('#slider-curso-<%=curso.id%>').slider();
+              slider.on('slide', showSliderValue);
+              slider.on('slideStop', sendSliderValue);
+              $('#data-slider-curso-<%=curso.id%>').html('<%= @formulario.duplicates(curso) %>');
+              function showSliderValue(){
+                $('#data-slider-curso-<%=curso.id%>').html($(this).slider('getValue'));
+              };
+              function sendSliderValue(){
+                $.ajax({
+                  type: "POST",
+                  url: "/formulario/<%= @formulario.id %>/repeat",
+                  data: {curso_id: '<%= curso.id %>', numero: $(this).slider('getValue')}
+                });
+              };
+            </script>
+          </tr>
+        <% end %>
+      </table>
+      <% else %>
+        <p>Este formulario todavía no tiene ningún curso asignado</p>
+      <% end %>
+    </div>
+    <div class="modal-footer">
+      <a class="btn btn-info" data-dismiss="modal" href="#">Listo</a>
+    </div>
+</div>
+

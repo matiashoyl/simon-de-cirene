@@ -21,6 +21,8 @@ SimonDeCirene::Application.routes.draw do
 
   match "/formulario/:id/delete", to: "formularios#delete", :as => :delete_formulario, :via => :get
   match "/formulario/:id/asign", to: "formularios#asign", :as => :asign_formulario, :via => :get
+  match "/formulario/:id/repeat", to: "formularios#repeat", :as => :repeat_formulario, :via => :get
+  match "/formulario/:id/repeat", to: "formularios#repetir", :as => :repetir_formulario, :via => :post
   match "/formulario/resumen", to: "formularios#resumen", :as => :resumen_formularios, :via => :get
 
   resources :programas

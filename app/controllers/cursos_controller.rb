@@ -131,7 +131,7 @@ class CursosController < ApplicationController
 
   def formulario_completado
     @formulario_curso = FormularioCurso.where(:formulario_id => params[:formulario_id], :curso_id => params[:curso_id]).first_or_create
-    @formulario_curso.update_attributes(:estado => "Contestado")
+    @formulario_curso.update_attributes(:contestados => @formulario_curso.contestados + 1)
   end
 
   def resumen

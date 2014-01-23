@@ -23,12 +23,18 @@
 						<td class="centered">
 							<% if FormularioCurso.where(:formulario_id => formulario, :curso_id => curso).first.nil? %>
 								<button type="button"  class="btn btn-mini btn-warning disabled">N</button>
-							<% elsif FormularioCurso.where(:formulario_id => formulario, :curso_id => curso).first.estado == "Pendiente" %>
-								<button type="button"  class="btn btn-mini btn-danger disabled">P</button>
-							<% elsif FormularioCurso.where(:formulario_id => formulario, :curso_id => curso).first.estado == "" %>
-								<button type="button"  class="btn btn-mini btn-warning disabled">N</button>
-							<% else %>
+							<% elsif formulario.contestado?(curso) %>
 								<button type="button"  class="btn btn-mini btn-success disabled">C</button>
+							<% else %>
+								<% if formulario.duplicates(curso) > 1 %>
+									<% if formulario.pendientes(curso) == 1 %>
+										<button type="button"  class="btn btn-mini btn-danger disabled resumen-tooltip" title="Hay <%= formulario.pendientes(curso) %> pendiente">P</button>
+									<% else %>
+										<button type="button"  class="btn btn-mini btn-danger disabled resumen-tooltip" title="Hay <%= formulario.pendientes(curso) %> pendientes">P</button>
+									<% end %>
+								<% else %>
+									<button type="button"  class="btn btn-mini btn-danger disabled">P</button>
+								<% end %>
 							<% end %>
 						</td>
 					<% end %>

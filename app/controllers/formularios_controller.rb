@@ -98,13 +98,33 @@ class FormulariosController < ApplicationController
     @formulario = Formulario.find(params[:id])
   end
 
+  def repeat
+    @formulario = Formulario.find(params[:id])
+  end
+
   def asignar
     formulario_id = params[:formulario_id]
-    Formulario.find(params[:formulario_id]).eliminar_cursos
-    params[:cursos_ids].each do |curso_id|
-      FormularioCurso.create(:curso_id => curso_id, :formulario_id => formulario_id, :estado => "Pendiente" )
+    @formulario = Formulario.find(formulario_id)
+    duplicates = Hash.new
+    contestados = Hash.new
+    if !params[:cursos_ids].nil?
+      params[:cursos_ids].each do |curso_id|
+        duplicates[curso_id] = @formulario.duplicates(curso_id)
+        contestados[curso_id] = @formulario.contestados(curso_id)
+      end
+      Formulario.find(params[:formulario_id]).eliminar_cursos
+      params[:cursos_ids].each do |curso_id|
+        FormularioCurso.create(:curso_id => curso_id, :formulario_id => formulario_id, :estado => "Pendiente", :duplicates => duplicates[curso_id], :contestados => contestados[curso_id] )
+      end
+    else
+      Formulario.find(params[:formulario_id]).eliminar_cursos
     end
     redirect_to formularios_path
+  end
+
+  def repetir
+    FormularioCurso.where(:formulario_id => params[:id], :curso_id => params[:curso_id]).first.update_attributes(:duplicates => params[:numero].to_i)
+    render :nothing => true
   end
 
   def resumen
