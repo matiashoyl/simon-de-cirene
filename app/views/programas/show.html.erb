@@ -55,6 +55,7 @@
         <tr>
           <th>Codigo</th>
           <th>Nombre</th>
+          <th>Relator Jefe</th>
           <th>Comuna</th>
           <th></th>
         </tr>
@@ -64,6 +65,7 @@
           <tr>
             <td><%= curso.codigo %></td>
             <td><%= curso.nombre %></td>
+            <td><%= User.find(curso.relator_jefe_id).name %></td>
             <td><%= curso.comuna %></td>
             <td>
                 <div class="btn-group">

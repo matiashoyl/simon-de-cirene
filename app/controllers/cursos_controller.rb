@@ -59,6 +59,12 @@ class CursosController < ApplicationController
   # GET /cursos/new.json
   def new
     @curso = Curso.new
+    if URI(request.referer).path.split("/")[1] == "cursos"
+      render "new.js.erb"
+    else
+      @programa = Programa.find(URI(request.referer).path.split("/")[2].to_i)
+      render "new_in_programa.js.erb"
+    end
   end
 
   # GET /cursos/1/edit
