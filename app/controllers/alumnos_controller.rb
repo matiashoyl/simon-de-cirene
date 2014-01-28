@@ -164,7 +164,6 @@ class AlumnosController < ApplicationController
       :filename=> "Excel Tipo.xlsx",
       :type=>"application/xlsx",
       :x_sendfile=>true)
-    render :nothing => true
   end
 
   def asistencia
