@@ -29,24 +29,42 @@ class Alumno < ActiveRecord::Base
 			header = spreadsheet.row(1)
 			(2..largo).each do |i|
 				row = Hash[[header, spreadsheet.row(i)].transpose]
-				alumno = Alumno.where(:rut => row["rut"]).first
+				linea = "" + i.to_s + " / "
+				rut_aux = row["Rut Participante"].dup
+				alumno = Alumno.where(:rut => Alumno.formato_rut(rut_aux)).first
+				linea += rut_aux
 				if alumno
-					aux_fecha = row["Fecha Asistencia"].split("/")
-					fecha = Date.new(aux_fecha[2].to_i + 2000, aux_fecha[1].to_i, aux_fecha[0].to_i)
-					aux_hora_inicio = row["Hora Inicio"].split(":")
-					hora_inicio = Time.new(2000, 1, 1, aux_hora_inicio[0], aux_hora_inicio[1], 0, 0)
-					aux_hora_termino = row["Hora Fin"].split(":")
-					hora_termino = Time.new(2000, 1, 1, aux_hora_termino[0], aux_hora_termino[1], 0, 0)
-					comuna = row["Comuna"]
-					sesion = Sesion.where(:fecha => fecha, :hora_inicio => hora_inicio, :hora_termino => hora_termino, :comuna => comuna, :active => true).first
-					if sesion
-						if row["Estado Asistencia"] == "Asistio"
-							AlumnoSesion.create(:alumno_id => alumno.id, :sesion_id => sesion.id, :presente => true)
-						elsif row["Estado Asistencia"] == "No Asistio"
-							AlumnoSesion.create(:alumno_id => alumno.id, :sesion_id => sesion.id, :presente => false)
+					linea += alumno.nombre + " " + alumno.apellido_paterno
+					unless row["Fecha Asistencia"].nil?
+						fecha = Date.new(row["Fecha Asistencia"].year, row["Fecha Asistencia"].month, row["Fecha Asistencia"].day)
+						linea += " / " + fecha.to_s
+						aux_hora_inicio = Time.new(2000, 1, 1, 0, 0, 0, 0) + row["Hora Inicio"].hours*60*60 + row["Hora Inicio"].minutes*60 + row["Hora Inicio"].seconds
+						hora_inicio = Time.utc(2000, 1, 1, aux_hora_inicio.hour, aux_hora_inicio.min, aux_hora_inicio.sec, 0)
+						aux_hora_termino = Time.new(2000, 1, 1, 0, 0, 0, 0) + row["Hora Fin"].hours*60*60 + row["Hora Fin"].minutes*60 + row["Hora Fin"].seconds
+						hora_termino = Time.utc(2000, 1, 1, aux_hora_termino.hour, aux_hora_termino.min, aux_hora_termino.sec, 0)
+						linea += " / " + hora_inicio.to_s
+						linea += " / " + hora_termino.to_s
+						sesiones = Sesion.where(:fecha => fecha, :hora_inicio => hora_inicio, :hora_termino => hora_termino, :active => true).all
+						if sesiones.any?
+							sesion_aux = nil
+							sesiones.each do |sesion|
+								if sesion.curso.comuna == row["Comuna"]
+									sesion_aux = sesion
+								end
+							end
+						end
+						unless sesion_aux.nil?
+							if row["Estado Asistencia"] == "Asistio"
+								ac = AlumnoSesion.where(:alumno_id => alumno.id, :sesion_id => sesion_aux.id).first_or_create
+								ac.update_attributes(:presente => true)
+							elsif row["Estado Asistencia"] == "No Asistio"
+								ac = AlumnoSesion.where(:alumno_id => alumno.id, :sesion_id => sesion_aux.id).first_or_create
+								ac.update_attributes(:presente => false)
+							end
 						end
 					end
 				end
+				puts linea
 			end
 		end
 	end
@@ -128,7 +146,7 @@ class Alumno < ActiveRecord::Base
 		return sesiones.sort_by &:fecha
 	end
 
-	def formato_rut(rut)
+	def self.formato_rut(rut)
 		rut.insert((rut.length - 5), ".").insert((rut.length - 9), ".")
 		return rut
 	end

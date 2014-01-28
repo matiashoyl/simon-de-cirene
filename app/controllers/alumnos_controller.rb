@@ -156,7 +156,7 @@ class AlumnosController < ApplicationController
 
   def import_sence
     Alumno.import_sence(params[:file])
-    render :nothing => true
+    redirect_to asistencia_curso_path(params[:curso_id])
   end
 
   def download_excel
