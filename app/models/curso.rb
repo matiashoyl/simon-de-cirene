@@ -33,4 +33,8 @@ class Curso < ActiveRecord::Base
 	    end
 	    return formularios
 	end
+
+	def relator_codigo
+		return User.find(self.relator_jefe_id).name + " - " + self.codigo
+	end
 end

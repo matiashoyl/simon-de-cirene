@@ -11,7 +11,7 @@
 				<tr>
 					<th>Formulario</th>
 					<% @cursos.each do |curso| %>
-						<th class="centered"><%= link_to(curso.nombre, new_mensaje_with_receiver_path(curso.relator_jefe_id), remote: true, :class => 'btn btn-link resumen-tooltip', :title => User.find(curso.relator_jefe_id).name) %></th>
+						<th class="centered"><%= link_to(curso.codigo + " - " + curso.nombre, new_mensaje_with_receiver_path(curso.relator_jefe_id), remote: true, :class => 'btn btn-link resumen-tooltip', :title => User.find(curso.relator_jefe_id).name) %></th>
 					<% end %>
 				</tr>
 			</thead>

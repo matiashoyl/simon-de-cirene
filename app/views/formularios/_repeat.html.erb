@@ -8,7 +8,7 @@
       <table class="table">
         <% @formulario.cursos.each do |curso| %>
           <tr>
-            <td><%= curso.nombre %></td> 
+            <td><%= curso.relator_codigo %></td> 
             <td><input name="curso-<%=curso.id%>" id="slider-curso-<%=curso.id%>" type="text" class="slider" data-slider-min="1" data-slider-max="30" data-slider-step="1" data-slider-value="<%= @formulario.duplicates(curso) %>" data-slider-orientation="horizontal" data-slider-selection="after" data-slider-tooltip="hide"></td>
             <td><button id="data-slider-curso-<%=curso.id%>" class="btn btn-mini btn-info disabled"></button></td>
             <script type="text/javascript">

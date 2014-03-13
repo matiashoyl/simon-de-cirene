@@ -9,6 +9,7 @@
 				<% @sesiones.each do |sesion| %>
 				<th><%= sesion.fecha.strftime("%d %b") %></th>
 				<% end %>
+				<th class="centered-header">Asistencia</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -18,50 +19,73 @@
 				<% @sesiones.each do |sesion| %>
 				<td>
 					<% if (sesion.user_id == current_user.id) || (current_user.has_role? :admin) || (current_user.has_role? :coordinador)%>
-					<div class="btn-group" data-toggle="buttons-radio">
-						<button type="button" id="presente-<%= alumno.id %>-<%= sesion.id %>" class="btn btn-mini btn-info">P</button>
-						<button type="button" id="ausente-<%= alumno.id %>-<%= sesion.id %>" class="btn btn-mini btn-info">A</button>
-					</div>
-					<% if alumno_sesion = AlumnoSesion.where(:alumno_id => alumno, :sesion_id => sesion).first %>
-					<% if alumno_sesion.presente %>
-					<script type="text/javascript">
-					$("#presente-<%= alumno.id %>-<%= sesion.id %>").button('toggle');
-					</script>
+						<div class="btn-group" data-toggle="buttons-radio">
+							<button type="button" id="presente-<%= alumno.id %>-<%= sesion.id %>" class="btn btn-mini btn-info">P</button>
+							<button type="button" id="ausente-<%= alumno.id %>-<%= sesion.id %>" class="btn btn-mini btn-info">A</button>
+						</div>
+						<% if alumno_sesion = AlumnoSesion.where(:alumno_id => alumno, :sesion_id => sesion).first %>
+							<% if alumno_sesion.presente %>
+							<script type="text/javascript">
+								$("#presente-<%= alumno.id %>-<%= sesion.id %>").button('toggle');
+								$("#presente-<%= alumno.id %>-<%= sesion.id %>").removeClass("btn-info");
+						    	$("#presente-<%= alumno.id %>-<%= sesion.id %>").addClass("btn-success");
+							</script>
+							<% else %>
+							<script type="text/javascript">
+								$("#ausente-<%= alumno.id %>-<%= sesion.id %>").button('toggle');
+								$("#ausente-<%= alumno.id %>-<%= sesion.id %>").removeClass("btn-info");
+						    	$("#ausente-<%= alumno.id %>-<%= sesion.id %>").addClass("btn-danger");
+							</script>
+							<% end %>
+						<% end %>
+						<script type="text/javascript">
+							$("#presente-<%= alumno.id %>-<%= sesion.id %>").click(function() {
+								$.ajax({
+									type: "POST",
+									url: "/alumnos/asistencia/<%= alumno.id %>",
+									data: {presente: 'true', sesion: '<%= sesion.id %>'}
+								});
+								$("#ausente-<%= alumno.id %>-<%= sesion.id %>").removeClass("btn-danger");
+							    $("#ausente-<%= alumno.id %>-<%= sesion.id %>").addClass("btn-info");
+							    $(this).removeClass("btn-info");
+							    $(this).addClass("btn-success");
+							});
+							$("#ausente-<%= alumno.id %>-<%= sesion.id %>").click(function() {
+								$.ajax({
+									type: "POST",
+									url: "/alumnos/asistencia/<%= alumno.id %>",
+									data: {presente: 'false', sesion: '<%= sesion.id %>'}
+								});
+								$("#presente-<%= alumno.id %>-<%= sesion.id %>").removeClass("btn-danger");
+							    $("#presente-<%= alumno.id %>-<%= sesion.id %>").addClass("btn-info");
+							    $(this).removeClass("btn-info");
+							    $(this).addClass("btn-danger");
+							});
+						</script>
 					<% else %>
-					<script type="text/javascript">
-					$("#ausente-<%= alumno.id %>-<%= sesion.id %>").button('toggle');
-					</script>
-					<% end %>
-					<% end %>
-					<script type="text/javascript">
-					$("#presente-<%= alumno.id %>-<%= sesion.id %>").click(function() {
-						$.ajax({
-							type: "POST",
-							url: "/alumnos/asistencia/<%= alumno.id %>",
-							data: {presente: 'true', sesion: '<%= sesion.id %>'}
-						});
-					});
-					$("#ausente-<%= alumno.id %>-<%= sesion.id %>").click(function() {
-						$.ajax({
-							type: "POST",
-							url: "/alumnos/asistencia/<%= alumno.id %>",
-							data: {presente: 'false', sesion: '<%= sesion.id %>'}
-						});
-					});
-					</script>
-					<% else %>
-					<% if alumno_sesion = AlumnoSesion.where(:alumno_id => alumno, :sesion_id => sesion).first %>
-					<% if alumno_sesion.presente %>       
-					<button type="button" id="presente-<%= alumno.id %>-<%= sesion.id %>" class="btn btn-mini btn-info disabled">P</button>
-					<% else %>
-					<button type="button" id="presente-<%= alumno.id %>-<%= sesion.id %>" class="btn btn-mini btn-danger disabled">A</button>
-					<% end %>
-					<% else %>
-					<button type="button" id="presente-<%= alumno.id %>-<%= sesion.id %>" class="btn btn-mini btn-warning disabled">NA</button>
-					<% end %>
+						<% if alumno_sesion = AlumnoSesion.where(:alumno_id => alumno, :sesion_id => sesion).first %>
+							<% if alumno_sesion.presente %>       
+							<button type="button" id="presente-<%= alumno.id %>-<%= sesion.id %>" class="btn btn-mini btn-info disabled">P</button>
+							<% else %>
+							<button type="button" id="presente-<%= alumno.id %>-<%= sesion.id %>" class="btn btn-mini btn-danger disabled">A</button>
+							<% end %>
+						<% else %>
+							<button type="button" id="presente-<%= alumno.id %>-<%= sesion.id %>" class="btn btn-mini btn-warning disabled">NA</button>
+						<% end %>
 					<% end %>
 				</td>
+
 				<% end %>
+				<td class="centered">
+					<% if alumno.porcentaje_asistencia(@curso) == "NA" %>       
+						<button type="button" class="btn btn-mini btn-warning disabled">NA</button>
+					<% elsif alumno.porcentaje_asistencia(@curso) <= 75 %>
+						<button type="button" class="btn btn-mini btn-danger disabled"><%= alumno.porcentaje_asistencia(@curso) %></button>
+					<% else %>
+						<button type="button" class="btn btn-mini btn-success disabled"><%= alumno.porcentaje_asistencia(@curso) %></button>
+					<% end %>
+				
+				</td>
 			</tr>
 			<% end %>
 			<tr>
@@ -83,6 +107,10 @@
 						url: "/alumnos/asistencia/<%= alumno.id %>",
 						data: {presente: 'true', sesion: '<%= sesion.id %>'}
 					});
+					$("#ausente-<%= alumno.id %>-<%= sesion.id %>").removeClass("btn-danger");
+				    $("#ausente-<%= alumno.id %>-<%= sesion.id %>").addClass("btn-info");
+				    $("#presente-<%= alumno.id %>-<%= sesion.id %>").removeClass("btn-info");
+				    $("#presente-<%= alumno.id %>-<%= sesion.id %>").addClass("btn-success");
 					<% end %>
 				});
 				$("#todos-ausentes-<%= sesion.id %>").click(function() {
@@ -93,6 +121,10 @@
 						url: "/alumnos/asistencia/<%= alumno.id %>",
 						data: {presente: 'false', sesion: '<%= sesion.id %>'}
 					});
+					$("#presente-<%= alumno.id %>-<%= sesion.id %>").removeClass("btn-success");
+				    $("#presente-<%= alumno.id %>-<%= sesion.id %>").addClass("btn-info");
+				    $("#ausente-<%= alumno.id %>-<%= sesion.id %>").removeClass("btn-info");
+				    $("#ausente-<%= alumno.id %>-<%= sesion.id %>").addClass("btn-danger");
 					<% end %>
 				});
 				</script>

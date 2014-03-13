@@ -3,7 +3,6 @@ require 'nokogiri'
 require 'open-uri'
 
 class FormulariosController < ApplicationController
-  load_and_authorize_resource
   # GET /formularios
   # GET /formularios.json
   def index

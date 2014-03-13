@@ -64,10 +64,14 @@
 						<% if alumno_sesion.presente %>
 							<script type="text/javascript">
 								$("#presente-<%= alumno.id %>").button('toggle');
+								$("#presente-<%= alumno.id %>").removeClass("btn-info");
+						    	$("#presente-<%= alumno.id %>").addClass("btn-success");
 							</script>
 						<% else %>
 							<script type="text/javascript">
 								$("#ausente-<%= alumno.id %>").button('toggle');
+								$("#ausente-<%= alumno.id %>").removeClass("btn-info");
+						    	$("#ausente-<%= alumno.id %>").addClass("btn-danger");
 							</script>
 						<% end %>
 					<% end %>
@@ -78,6 +82,10 @@
 						      url: "/alumnos/asistencia/<%= alumno.id %>",
 						      data: {presente: 'true', sesion: '<%= @sesion.id %>'}
 						    });
+						    $("#ausente-<%= alumno.id %>").removeClass("btn-danger");
+						    $("#ausente-<%= alumno.id %>").addClass("btn-info");
+						    $(this).removeClass("btn-info");
+						    $(this).addClass("btn-success");
 						});
 						$("#ausente-<%= alumno.id %>").click(function() {
 							$.ajax({
@@ -85,6 +93,10 @@
 						      url: "/alumnos/asistencia/<%= alumno.id %>",
 						      data: {presente: 'false', sesion: '<%= @sesion.id %>'}
 						    });
+						    $("#presente-<%= alumno.id %>").removeClass("btn-success");
+						    $("#presente-<%= alumno.id %>").addClass("btn-info");
+						    $(this).removeClass("btn-info");
+						    $(this).addClass("btn-danger");
 						});
 					</script>
 	            </td>
@@ -101,22 +113,38 @@
 		$("#todos-presentes").click(function() {
 			<% @alumnos.each do |alumno| %>
 				$("#presente-<%= alumno.id %>").button('toggle');
+				$("#ausente-<%= alumno.id %>").removeClass("btn-danger");
+			    $("#ausente-<%= alumno.id %>").addClass("btn-info");
+			    $("#presente-<%= alumno.id %>").removeClass("btn-info");
+			    $("#presente-<%= alumno.id %>").addClass("btn-success");
 				$.ajax({
 			      type: "POST",
 			      url: "/alumnos/asistencia/<%= alumno.id %>",
 			      data: {presente: 'true', sesion: '<%= @sesion.id %>'}
 			    });
 			<% end %>
+			$("#todos-ausentes").removeClass("btn-danger");
+		    $("#todos-ausentes").addClass("btn-info");
+		    $(this).removeClass("btn-info");
+		    $(this).addClass("btn-success");
 		});
 		$("#todos-ausentes").click(function() {
 			<% @alumnos.each do |alumno| %>
 				$("#ausente-<%= alumno.id %>").button('toggle');
+				$("#presente-<%= alumno.id %>").removeClass("btn-success");
+			    $("#presente-<%= alumno.id %>").addClass("btn-info");
+			    $("#ausente-<%= alumno.id %>").removeClass("btn-info");
+			    $("#ausente-<%= alumno.id %>").addClass("btn-danger");
 				$.ajax({
 			      type: "POST",
 			      url: "/alumnos/asistencia/<%= alumno.id %>",
 			      data: {presente: 'false', sesion: '<%= @sesion.id %>'}
 			    });
 			<% end %>
+			$("#todos-presentes").removeClass("btn-success");
+		    $("#todos-presentes").addClass("btn-info");
+		    $(this).removeClass("btn-info");
+		    $(this).addClass("btn-danger");
 		});
 	</script>
 </div>

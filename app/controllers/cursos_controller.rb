@@ -1,6 +1,5 @@
 class CursosController < ApplicationController
   respond_to :html, :js
-  load_and_authorize_resource
   # GET /cursos
   # GET /cursos.json
   def index
