@@ -1,8 +1,14 @@
 <div id='calendar'></div>
 <% if @sesiones.any? %>
 	<% @sesiones.each do |sesion| %>
-		<script type="text/javascript">
-			agregarEvento("<%= sesion.tema %>", "<%= sesion.direccion %>", "<%= sesion.fecha %>", "<%= sesion.hora_inicio %>", "<%= sesion.hora_termino %>");
-		</script>
+		<% if current_user.has_role? :relator %>
+			<script type="text/javascript">
+				agregarEvento("<%= sesion.tema %> - <%= sesion.direccion %>", "<%= sesion.fecha %>", "<%= sesion.hora_inicio %>", "<%= sesion.hora_termino %>");
+			</script>
+		<% else %>
+			<script type="text/javascript">
+				agregarEvento("<%= sesion.relator.name %> - <%= sesion.curso.comuna %> - <%= sesion.direccion %>", "<%= sesion.fecha %>", "<%= sesion.hora_inicio %>", "<%= sesion.hora_termino %>");
+			</script>
+		<% end %>
 	<% end %>
 <% end %>

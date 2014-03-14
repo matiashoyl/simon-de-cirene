@@ -33,7 +33,7 @@ $(document).ready(function() {
 	});
 });
 
-function agregarEvento(nombre, direccion, fecha, hora_inicio, hora_termino){
+function agregarEvento(nombre, fecha, hora_inicio, hora_termino){
 		var date = new Date(fecha);
 		var year = date.getFullYear();
 		var month = date.getMonth();
@@ -50,16 +50,12 @@ function agregarEvento(nombre, direccion, fecha, hora_inicio, hora_termino){
 
 
 	$(document).ready(function() {
-		events = {
-			title: nombre + " - " + direccion,
+		evento = {
+			title: nombre,
 			start: start,
 			end: end,
 			allDay: false
 		};
-		evento = {
-			title: 'All didid Event',
-			start: new Date(2014, 2, 1)
-		};
-		$('#calendar').fullCalendar('renderEvent', events , true );
+		$('#calendar').fullCalendar('renderEvent', evento , true );
 	});
 };

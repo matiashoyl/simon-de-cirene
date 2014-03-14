@@ -164,7 +164,7 @@ class HomeController < ApplicationController
 
     def calendario
         if current_user.has_role? :relator
-            @sesiones = Sesion.all_active
+            @sesiones = Sesion.where(:user_id => current_user).all
         else
             @sesiones = Sesion.all_active
         end
