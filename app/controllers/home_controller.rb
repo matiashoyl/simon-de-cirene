@@ -161,4 +161,12 @@ class HomeController < ApplicationController
             format.js
         end
     end
+
+    def calendario
+        if current_user.has_role? :relator
+            @sesiones = Sesion.all_active
+        else
+            @sesiones = Sesion.all_active
+        end
+    end
 end

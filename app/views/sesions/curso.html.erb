@@ -64,7 +64,7 @@
   <h3>Alumnos</h3>
   <% if @alumnos.any? %>
     <%# ------------------------------ Alumnos Social ------------------------------ %>
-    <% if @curso.programa.tipo = "Social" %>
+    <% if @curso.programa.tipo == "Social" %>
       <table class="table table-condensed table-striped">
         <thead>
             <tr>
@@ -111,7 +111,21 @@
               <td><%= alumno.nombre %> <%= alumno.apellido_paterno %></td>
               <td><%= alumno.quintil %></td>
               <td><%= alumno.escolaridad %></td>
-              <td><%= alumno.profesion %></td>
+              <td>
+                <% rubros = "" %>
+                <% JSON.parse(alumno.profesion).each do |rubro| %>
+                  <% if rubro != JSON.parse(alumno.profesion).last %>
+                    <% if rubro != "" %>
+                      <% rubros = rubros + rubro.to_s + ", " %>
+                    <% end %>
+                  <% else %>
+                    <% if rubro != "" %>
+                      <% rubros = rubros + rubro.to_s %>
+                    <% end %>
+                  <% end %>
+                <% end %>
+                <%= rubros %>
+              </td>
               <td>
                 <div class="btn-group">
                   <%= link_to '<i class="icon-search"></i>'.html_safe, alumno_details_path(alumno), :class => 'btn btn-mini' %>

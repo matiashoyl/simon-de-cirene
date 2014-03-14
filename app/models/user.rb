@@ -25,4 +25,17 @@ class User < ActiveRecord::Base
     end
     return mensajes.sort {|a,b| b.created_at <=> a.created_at}
   end
+
+  def cursos
+    if self.has_role? :relator
+      cursos = Array.new
+      Curso.where(:relator_jefe_id => self).each do |curso|
+        cursos.push curso
+      end
+      return cursos
+    else
+      return nil
+    end
+    
+  end
 end

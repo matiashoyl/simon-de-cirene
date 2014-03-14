@@ -1,0 +1,8 @@
+<div id='calendar'></div>
+<% if @sesiones.any? %>
+	<% @sesiones.each do |sesion| %>
+		<script type="text/javascript">
+			agregarEvento("<%= sesion.tema %>", "<%= sesion.direccion %>", "<%= sesion.fecha %>", "<%= sesion.hora_inicio %>", "<%= sesion.hora_termino %>");
+		</script>
+	<% end %>
+<% end %>

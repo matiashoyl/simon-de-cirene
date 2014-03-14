@@ -120,9 +120,14 @@ class AlumnosController < ApplicationController
   # DELETE /alumnos/1
   # DELETE /alumnos/1.json
   def destroy
+    alumno = Alumno.find(params[:alumno_id])
     AlumnoCurso.where(:alumno_id => params[:alumno_id], :curso_id => params[:curso_id]).all.each do |alumno_curso|
       alumno_curso.destroy
     end
+    alumno.sesiones_totales.each do |sesion|
+      AlumnoSesion.where(:alumno_id => params[:alumno_id], :sesion_id => sesion).destroy_all
+    end
+
 
     respond_to do |format|
       if current_user.has_role? :relator

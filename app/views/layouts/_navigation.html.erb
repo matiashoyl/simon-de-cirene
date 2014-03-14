@@ -42,6 +42,7 @@
                     </ul>
                   </li>
                   <li><%= link_to 'Mensajes', mensajes_path %></li>
+                  <li><%= link_to 'Calendario', calendario_path %></li>
                 <% elsif current_user.has_role? :coordinador %>
                   <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">Cursos</a>
@@ -59,8 +60,10 @@
                     </ul>
                   </li>
                   <li><%= link_to 'Mensajes', mensajes_path %></li>
+                  <li><%= link_to 'Calendario', calendario_path %></li>
                 <% elsif current_user.has_role? :relator %>
                   <li><%= link_to 'Sesiones', sesions_path %></li>
+                  <li><%= link_to 'Calendario', calendario_path %></li>
                 <% end %>
               <% end %>
             </ul>

@@ -49,6 +49,7 @@
 				<p><button type="button"  class="btn btn-mini btn-warning disabled">N</button> Formulario no asociado a este curso</p>
 				<p><button type="button"  class="btn btn-mini btn-danger disabled">P</button> Pendiente</p>
 			</div>
+			<%=link_to_function('<i class="icon-print"></i>'.html_safe, "javascript:print()", :class => 'btn btn-mini pull-right')%>
 		</div>
 	<% end %>
 	<br><br><br>

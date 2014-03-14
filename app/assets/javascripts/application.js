@@ -16,6 +16,7 @@
 //= require jquery.Rut
 //= require bootstrap-timepicker
 //= require bootstrap-datepicker
+//= require fullcalendar
 //= require bootstrap-switch
 //= require bootstrap-slider
 //= require select2

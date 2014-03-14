@@ -49,8 +49,23 @@ class UsersController < ApplicationController
     authorize! :destroy, @user, :message => 'Not authorized as an administrator.'
     user = User.find(params[:id])
     unless user == current_user
-      user.destroy
-      redirect_to users_path
+      if user.has_role? :relator
+        if user.cursos.any?
+          cursos = user.cursos
+          user.destroy
+          relatores = User.with_role :relator
+          cursos.each do |curso|
+            curso.update_attributes(:relator_jefe_id => relatores.sample.id)
+          end
+          redirect_to users_path
+        else
+          user.destroy
+          redirect_to users_path
+        end
+      else
+        user.destroy
+        redirect_to users_path
+      end
     else
       redirect_to users_path, :alert => "No te puedes eliminar a ti mismo"
     end

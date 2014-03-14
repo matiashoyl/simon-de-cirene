@@ -80,6 +80,8 @@ SimonDeCirene::Application.routes.draw do
   match "/user/:id/delete", to: "users#delete", :as => :delete_user, :via => :get
 
   root :to => "home#index"
+  match "/calendario", to: "home#calendario", :as => :calendario, :via => :get
+
   devise_for :users, :skip => [:registrations]
   devise_scope :user do
   	post "user_registration", 		:to => "users#create"

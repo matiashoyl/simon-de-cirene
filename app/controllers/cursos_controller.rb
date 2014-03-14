@@ -119,6 +119,9 @@ class CursosController < ApplicationController
   # DELETE /cursos/1.json
   def destroy
     @curso = Curso.find(params[:id])
+    @curso.sesions.each do |sesion|
+      sesion.destroy
+    end
     @curso.destroy
 
     respond_to do |format|
