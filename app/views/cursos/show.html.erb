@@ -5,14 +5,14 @@
         <li class="active">
           <a href="#">
             <i class="icon-chevron-right pull-right"></i>
-            <%= curso.nombre %>
+            <%= curso.relator %> - <%= curso.comuna %>
           </a>
         </li>
       <% else %>
         <li>
           <a href="/cursos/<%=curso.id%>">
             <i class="icon-chevron-right pull-right"></i>
-            <%= curso.nombre %>
+            <%= curso.relator %> - <%= curso.comuna %>
           </a>
         </li>
       <% end %>
@@ -29,7 +29,7 @@
 	<%# ------------------------------ Sesiones ------------------------------ %> 
 	<h3>Sesiones</h3>
   <% if @sesiones.any? %>
-    <table class="table table-condensed table-striped">
+    <table class="table table-condensed table-striped sortable">
       <thead>
         <tr>
           <th>#</th>
@@ -76,7 +76,7 @@
     <h3>Alumnos</h3>
     <% if @alumnos.any? %>
       <div style="overflow: auto">
-        <table class="table table-condensed table-striped">
+        <table class="table table-condensed table-striped sortable">
           <thead>
               <tr>
                 <th></th>
@@ -121,6 +121,7 @@
                 </td>
               </tr>
             <% end %>
+
           </tbody>
         </table>
       </div>
@@ -128,6 +129,7 @@
       <a data-toggle="modal" href="#excel-alumno" class="btn btn-mini btn-success" type="button">Subir Excel</a>
       <%= link_to "Descargar Excel", alumno_path(@curso, format: "xls"), :class => 'btn btn-mini btn-success' %>
       <%= link_to "Asistencia", asistencia_curso_path(@curso), :class => 'btn btn-mini' %>
+      <%= link_to 'Eliminar Todos', delete_all_alumnos_path(@curso), remote: true, :class => 'btn btn-mini btn-inverse pull-right' %>
     <% else %>
     <p>El curso todavía no tiene alumnos</p>
 
@@ -143,7 +145,7 @@
     <hr>
     <h3>Formularios</h3>
     <% if @formularios.any? %>
-      <table class="table table-condensed table-striped">
+      <table class="table table-condensed table-striped sortable">
         <thead>
             <tr>
               <th>Código</th>

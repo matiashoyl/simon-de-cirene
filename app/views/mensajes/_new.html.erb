@@ -11,6 +11,9 @@
 		<%= f.input :cuerpo, :label => false, :placeholder => 'Mensaje', :as => "Text", :input_html => { :rows => 10, :class => "input-block-level" } %>
 		<%= f.input :caracter, :collection => ['Positivo', 'Neutro', 'Negativo'], :label => false, :prompt => "Carácter del mensaje", :input_html => { :class => "input-block-level" } %>
 		<%= select_tag 'user_ids[]', options_for_select((User.with_role :relator).map {|c| [c.name, c.id]}), :multiple => true, :class => "input-block-level", :id => "select-relatores" %>
+		<label class="checkbox inline">
+			<input class="btn" value="Input" type="checkbox" id="checkbox" >Seleccionar Todos
+		</label>
 	</div>
 	<div class="modal-footer">
 		<%= f.button :submit, "Crear", :class => 'btn-info' %>
@@ -20,7 +23,17 @@
 </div>
 
 <script type="text/javascript">
-  $("#select-relatores").select2({
-    placeholder: "Selecciona uno o varios usuarios"
-  });
+	$("#select-relatores").select2({
+		placeholder: "Selecciona uno o varios usuarios"
+	});
+	$("#checkbox").click(function(){
+		if($("#checkbox").is(':checked') ){
+			$("#select-relatores > option").prop("selected","selected");
+			$("#select-relatores").trigger("change");
+		}
+		else{
+			$("#select-relatores > option").removeAttr("selected");
+			$("#select-relatores").trigger("change");
+		}
+	});
 </script>

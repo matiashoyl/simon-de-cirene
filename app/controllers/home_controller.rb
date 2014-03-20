@@ -24,8 +24,7 @@ class HomeController < ApplicationController
                 end
 
             else
-                #@sesiones_a_la_fecha = Sesion.where('fecha < ?', DateTime.now).all
-                @sesiones_a_la_fecha = Sesion.all_active
+                @sesiones_a_la_fecha = Sesion.all_active_to_date
                 @cursos = Curso.all_active
                 @alumnos = Alumno.all
 
@@ -81,6 +80,13 @@ class HomeController < ApplicationController
             end
         end
 
+        @sesiones_a_la_fecha = Array.new
+        @cursos.each do |curso|
+            curso.sesions.where(:active => true).each do |sesion|
+                @sesiones_a_la_fecha.push sesion
+            end
+        end
+
         @sesiones_pocos_asistentes = Array.new
         @sesiones_sin_asistencia = Array.new
         @alumnos_baja_asistencia = Array.new
@@ -89,7 +95,7 @@ class HomeController < ApplicationController
         @formularios_sin_contestar = Array.new
         @cursos_formularios_sin_contestar = Array.new
 
-        @sesiones.each do |sesion|
+        @sesiones_a_la_fecha.each do |sesion|
             if sesion.curso.alumnos.empty?
                 #do nothing
             elsif sesion.porcentaje_asistentes == "NA"
@@ -125,6 +131,7 @@ class HomeController < ApplicationController
     def resumen_curso
         @curso = Curso.find(params[:id])
         @sesiones = @curso.sesions.where(:active => true)
+        @sesiones_a_la_fecha = @curso.sesions.where(:active => true).where('fecha < ?', DateTime.now)
 
         @sesiones_pocos_asistentes = Array.new
         @sesiones_sin_asistencia = Array.new
@@ -132,7 +139,7 @@ class HomeController < ApplicationController
         @bajas_asistencias = Array.new
         @formularios_sin_contestar = Array.new
 
-        @sesiones.each do |sesion|
+        @sesiones_a_la_fecha.each do |sesion|
             if sesion.curso.alumnos.empty?
                 #do nothing
             elsif sesion.porcentaje_asistentes == "NA"

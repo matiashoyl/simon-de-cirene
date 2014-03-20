@@ -40,6 +40,9 @@ SimonDeCirene::Application.routes.draw do
     end
   end
 
+  match "/cursos/:curso_id/delete_all_alumnos", to: "alumnos#delete_all", :as => :delete_all_alumnos, :via => :get
+  match "/cursos/:curso_id/destroy_all_alumnos", to: "alumnos#destroy_all", :as => :destroy_all_alumnos, :via => :get
+
   match "/cursos/:curso_id/delete_alumno/:id", to: "alumnos#delete", :as => :delete_alumno, :via => :get
   match "/cursos/:id/new_alumno", to: "alumnos#new", :as => :new_alumno, :via => :get
   match "/cursos/:curso_id/edit_alumno/:id", to: "alumnos#edit", :as => :edit_alumno, :via => :get

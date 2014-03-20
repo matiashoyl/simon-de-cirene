@@ -31,7 +31,7 @@
   </div>
   <%# ------------------------------ Sesiones ------------------------------ %> 
   <h3>Sesiones</h3>
-  <table class="table table-condensed table-striped">
+  <table class="table table-condensed table-striped sortable">
     <thead>
         <tr>
           <th>Tema</th>
@@ -65,7 +65,7 @@
   <% if @alumnos.any? %>
     <%# ------------------------------ Alumnos Social ------------------------------ %>
     <% if @curso.programa.tipo == "Social" %>
-      <table class="table table-condensed table-striped">
+      <table class="table table-condensed table-striped sortable">
         <thead>
             <tr>
               <th>Nombre</th>
@@ -93,7 +93,7 @@
       </table>
     <%# ------------------------------ Alumnos Microempresas ------------------------------ %>
     <% else %>
-      <table class="table table-condensed table-striped">
+      <table class="table table-condensed table-striped sortable">
         <thead>
             <tr>
               <th>Rut</th>
@@ -149,7 +149,7 @@
     <hr>
     <h3>Formularios</h3>
     <% if @formularios.any? %>
-      <table class="table table-condensed table-striped">
+      <table class="table table-condensed table-striped sortable">
         <thead>
             <tr>
               <th>Cógido</th>

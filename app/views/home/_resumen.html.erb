@@ -9,7 +9,7 @@
 	<div class="span6">
 		<% if @sesiones_pocos_asistentes.any? %>
 			<h3>Sesiones Con Asistencia Bajo 85%</h3>
-			<table class="table table-condensed table-striped">
+			<table class="table table-condensed table-striped sortable">
 				<thead>
 				    <tr>
 				      <th>Tema</th>
@@ -33,7 +33,7 @@
 		<% if @sesiones_sin_asistencia.any? %>
 			<hr>
 			<h3>Sesiones Sin Asistencia</h3>
-			<table class="table table-condensed table-striped">
+			<table class="table table-condensed table-striped sortable">
 				<thead>
 				    <tr>
 				      <th>Tema</th>
@@ -58,7 +58,7 @@
 	<div class="span6">
 		<% if @alumnos_baja_asistencia.any? %>
 			<h3>Alumnos Con Baja Asistencia</h3>
-		    <table class="table table-condensed table-striped">
+		    <table class="table table-condensed table-striped sortable">
 		      <thead>
 		          <tr>
 		            <th>Nombre</th>

@@ -6,11 +6,24 @@
     <div class="modal-body">
       <%= form_tag(asignar_formularios_path, :method=>'post') do %>
       <%= select_tag 'cursos_ids[]', options_for_select(Curso.all_active.map {|c| [c.relator_codigo, c.id]}), :multiple => true, :class => "input-block-level", :id => "select-formulario" %>
+      <label class="checkbox inline">
+        <input class="btn" value="Input" type="checkbox" id="checkbox" >Seleccionar Todos
+      </label>
       <input type="hidden" id="formulario_id" name="formulario_id" value="<%= @formulario.id %>" />
     </div>
     <script type="text/javascript">
       $("#select-formulario").val(<%= raw @formulario.cursos_ids %>).select2({
         placeholder: "Selecciona uno o varios cursos"
+      });
+      $("#checkbox").click(function(){
+        if($("#checkbox").is(':checked') ){
+          $("#select-formulario > option").prop("selected","selected");
+          $("#select-formulario").trigger("change");
+        }
+        else{
+          $("#select-formulario > option").removeAttr("selected");
+          $("#select-formulario").trigger("change");
+        }
       });
     </script>
     <div class="modal-footer">

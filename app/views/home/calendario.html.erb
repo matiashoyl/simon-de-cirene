@@ -1,14 +1,17 @@
+<%=link_to_function('<i class="icon-print"></i>'.html_safe, "javascript:print()", :class => 'btn btn-mini pull-right')%>
 <div id='calendar'></div>
 <% if @sesiones.any? %>
-	<% @sesiones.each do |sesion| %>
+	<% @sesiones.each_with_index do |sesion, index| %>
 		<% if current_user.has_role? :relator %>
 			<script type="text/javascript">
-				agregarEvento("<%= sesion.tema %> - <%= sesion.direccion %>", "<%= sesion.fecha %>", "<%= sesion.hora_inicio %>", "<%= sesion.hora_termino %>");
+				agregarEvento("Clase <%= index %> - <%= sesion.tema %> - <%= sesion.direccion %>", "<%= sesion.fecha %>", "<%= sesion.hora_inicio %>", "<%= sesion.hora_termino %>");
 			</script>
 		<% else %>
 			<script type="text/javascript">
-				agregarEvento("<%= sesion.relator.name %> - <%= sesion.curso.comuna %> - <%= sesion.direccion %>", "<%= sesion.fecha %>", "<%= sesion.hora_inicio %>", "<%= sesion.hora_termino %>");
+				agregarEvento("Clase <%= index %> - <%= sesion.relator.name %> - <%= sesion.curso.comuna %> - <%= sesion.direccion %>", "<%= sesion.fecha %>", "<%= sesion.hora_inicio %>", "<%= sesion.hora_termino %>");
 			</script>
 		<% end %>
 	<% end %>
 <% end %>
+<div class="span1"></div>
+

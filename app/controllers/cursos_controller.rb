@@ -78,11 +78,7 @@ class CursosController < ApplicationController
 
     respond_to do |format|
       if @curso.save
-        if params[:index] == "true"
-          format.html { redirect_to cursos_path }
-        else
-          format.html { redirect_to programa_path(@curso.programa_id) }
-        end
+        format.html { redirect_to(:back) }
         format.json { render json: @curso, status: :created, location: @curso }
       else
         format.html { render action: "new" }
@@ -98,11 +94,7 @@ class CursosController < ApplicationController
 
     respond_to do |format|
       if @curso.update_attributes(params[:curso])
-        if params[:index] == "true"
-          format.html { redirect_to cursos_path }
-        else
-          format.html { redirect_to programa_path(@curso.programa_id) }
-        end
+        format.html { redirect_to(:back) }
         format.json { head :no_content }
       else
         format.html { render action: "edit" }

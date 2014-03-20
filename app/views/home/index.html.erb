@@ -26,7 +26,7 @@
 			<% else %>
 				<% if @formularios_sin_contestar.any? %>
 					<h3>Formularios sin contestar</h3>
-					<table class="table table-condensed">
+					<table class="table table-condensed sortable">
 						<thead>
 						    <tr>
 						      <th>Codigo</th>
@@ -59,7 +59,7 @@
 				<% end %>
 				<% if @alumnos_con_tres_o_mas_inasistencias.any? %>
 					<h3>Alumnos con tres o más inasistencias</h3>
-					<table class="table table-condensed">
+					<table class="table table-condensed sortable">
 						<thead>
 						    <tr>
 						      <th>Nombre</th>
@@ -89,8 +89,8 @@
 			<img src="/images/logo_color_rgb.jpg" alt="Simón de Cirene" />
 			<br><br><hr>
 			<div>
-				<%= select_tag "programas", options_from_collection_for_select(Programa.all_active, "id", "nombre"), :onchange => 'load_programa()', class: "span6", :prompt => "Selecciona un programa" %>
-				<%= select_tag "cursos", options_from_collection_for_select(Curso.all_active, "id", "relator_codigo"), :onchange => 'load_curso()', class: "span6", :prompt => "Selecciona un curso" %>
+				<%= select_tag "programas", options_from_collection_for_select(Programa.all_active, "id", "nombre"), class: "span6", :prompt => "Selecciona un programa" %>
+				<%= select_tag "cursos", options_from_collection_for_select(Curso.all_active, "id", "relator_codigo"), class: "span6", :prompt => "Selecciona un curso" %>
 			</div>
 			<div id="loading">
 				<br><br><br><br><br><br>

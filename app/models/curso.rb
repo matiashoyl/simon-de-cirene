@@ -37,4 +37,8 @@ class Curso < ActiveRecord::Base
 	def relator_codigo
 		return User.find(self.relator_jefe_id).name + " - " + self.codigo
 	end
+
+	def relator
+		return User.find(self.relator_jefe_id).name
+	end
 end

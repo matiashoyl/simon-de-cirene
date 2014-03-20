@@ -20,6 +20,8 @@
 //= require bootstrap-switch
 //= require bootstrap-slider
 //= require select2
+//= require bootstrap-sortable
+//= require moment.min
 //= require bootstrap
 //= require_self
 //= require_tree .

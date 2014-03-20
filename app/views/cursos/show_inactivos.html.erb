@@ -29,7 +29,7 @@
 	<%# ------------------------------ Sesiones ------------------------------ %> 
 	<h3>Sesiones</h3>
   <% if @sesiones.any? %>
-    <table class="table table-condensed table-striped">
+    <table class="table table-condensed table-striped sortable">
       <thead>
         <tr>
           <th>#</th>
@@ -74,7 +74,7 @@
     <h3>Alumnos</h3>
     <% if @alumnos.any? %>
       <div style="overflow: auto">
-        <table class="table table-condensed table-striped">
+        <table class="table table-condensed table-striped sortable">
           <thead>
               <tr>
                 <th></th>
@@ -134,7 +134,7 @@
     <hr>
     <h3>Formularios</h3>
     <% if @formularios.any? %>
-      <table class="table table-condensed table-striped">
+      <table class="table table-condensed table-striped sortable">
         <thead>
             <tr>
               <th>Cógido</th>

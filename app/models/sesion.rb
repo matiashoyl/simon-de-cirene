@@ -12,6 +12,10 @@ class Sesion < ActiveRecord::Base
       return Sesion.where(:active => true).all
     end
 
+    def self.all_active_to_date
+      return Sesion.where(:active => true).where('fecha < ?', DateTime.now).all
+    end
+
  	def porcentaje_asistentes
  		alumno_sesiones = AlumnoSesion.where(:sesion_id => self).all
  		asistentes_presentes = 0.0

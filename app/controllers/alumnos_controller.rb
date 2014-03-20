@@ -139,6 +139,31 @@ class AlumnosController < ApplicationController
     end
   end
 
+  def delete_all
+    @curso = Curso.find(params[:curso_id])
+  end
+
+  def destroy_all
+    curso = Curso.find(params[:curso_id])
+    curso.alumnos.each do |alumno|
+      AlumnoCurso.where(:alumno_id => alumno, :curso_id => curso).all.each do |alumno_curso|
+        alumno_curso.destroy
+      end
+      alumno.sesiones_totales.each do |sesion|
+        AlumnoSesion.where(:alumno_id => alumno, :sesion_id => sesion).destroy_all
+      end
+    end
+
+    respond_to do |format|
+      if current_user.has_role? :relator
+        format.html { redirect_to sesion_curso_path(params[:curso_id]) }
+      else
+        format.html { redirect_to curso_path(params[:curso_id]) }
+      end
+      format.json { head :no_content }
+    end
+  end
+
   # GET /alumnos/1/details
   # GET /alumnos/1/details.json
   def details
