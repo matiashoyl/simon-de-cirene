@@ -170,10 +170,22 @@ class HomeController < ApplicationController
     end
 
     def calendario
+        @index = Array.new
+        @sesiones = Array.new
         if current_user.has_role? :relator
-            @sesiones = Sesion.where(:user_id => current_user).all
+            Sesion.where(:user_id => current_user).each_with_index do |sesion, index|
+                @sesiones.push sesion
+                @index.push index
+            end
         else
-            @sesiones = Sesion.all_active
+            Curso.all_active.each do |curso|
+                index = 0
+                curso.sesions.each do |sesion|
+                    @sesiones.push sesion
+                    @index.push index
+                    index = index + 1
+                end
+            end
         end
     end
 end

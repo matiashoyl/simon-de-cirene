@@ -4,11 +4,11 @@
 	<% @sesiones.each_with_index do |sesion, index| %>
 		<% if current_user.has_role? :relator %>
 			<script type="text/javascript">
-				agregarEvento("Clase <%= index %> - <%= sesion.tema %> - <%= sesion.direccion %>", "<%= sesion.fecha %>", "<%= sesion.hora_inicio %>", "<%= sesion.hora_termino %>");
+				agregarEvento("Clase <%= @index[index] + 1 %> - <%= sesion.tema %> - <%= sesion.direccion %>", "<%= sesion.fecha %>", "<%= sesion.hora_inicio %>", "<%= sesion.hora_termino %>");
 			</script>
 		<% else %>
 			<script type="text/javascript">
-				agregarEvento("Clase <%= index %> - <%= sesion.relator.name %> - <%= sesion.curso.comuna %> - <%= sesion.direccion %>", "<%= sesion.fecha %>", "<%= sesion.hora_inicio %>", "<%= sesion.hora_termino %>");
+				agregarEvento("Clase <%= @index[index] + 1 %> - <%= sesion.relator.name %> - <%= sesion.curso.comuna %> - <%= sesion.direccion %>", "<%= sesion.fecha %>", "<%= sesion.hora_inicio %>", "<%= sesion.hora_termino %>");
 			</script>
 		<% end %>
 	<% end %>
