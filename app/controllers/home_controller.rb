@@ -82,7 +82,7 @@ class HomeController < ApplicationController
 
         @sesiones_a_la_fecha = Array.new
         @cursos.each do |curso|
-            curso.sesions.where(:active => true).each do |sesion|
+            curso.sesions.where('fecha < ?', DateTime.now).each do |sesion|
                 @sesiones_a_la_fecha.push sesion
             end
         end

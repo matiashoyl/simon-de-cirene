@@ -51,6 +51,7 @@ SimonDeCirene::Application.routes.draw do
   resources :sesions
 
   match "/sesion/:id/delete", to: "sesions#delete", :as => :delete_sesion, :via => :get
+  match "/sesion/:id/borrar_asistencia", to: "sesions#borrar_asistencia", :as => :sesion_borrar_asistencia, :via => :post
   match "/cursos/:id/new_sesion", to: "sesions#new", :as => :new_sesion, :via => :get
 
 

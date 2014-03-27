@@ -133,6 +133,32 @@
 				<% end %>
 				<% end %>
 			</tr>
+			<% if current_user.has_role? :admin %>
+				<tr>
+					<td></td>
+					<% @sesiones.each do |sesion| %>
+						<td>
+							<button type="button" id="borrar-asistencia-sesion-<%= sesion.id %>" class="btn btn-mini btn-danger">Borrar <br />Asistencia</button>
+						</td>
+						<script type="text/javascript">
+							$("#borrar-asistencia-sesion-<%= sesion.id %>").click(function() {
+								<% @alumnos.each do |alumno| %>
+									$("#presente-<%= alumno.id %>-<%= sesion.id %>").removeClass("active");
+									$("#ausente-<%= alumno.id %>-<%= sesion.id %>").removeClass('active');
+									$("#presente-<%= alumno.id %>-<%= sesion.id %>").removeClass("btn-success");
+									$("#ausente-<%= alumno.id %>-<%= sesion.id %>").removeClass('btn-danger');
+									$("#presente-<%= alumno.id %>-<%= sesion.id %>").addClass("btn-info");
+									$("#ausente-<%= alumno.id %>-<%= sesion.id %>").addClass('btn-info');
+								<% end %>
+								$.ajax({
+									type: "POST",
+									url: "/sesion/<%= sesion.id %>/borrar_asistencia"
+								});
+							});
+						</script>
+					<% end %>
+				</tr>
+			<% end %>
 		</tbody>
 	</table>
 	<% else %>

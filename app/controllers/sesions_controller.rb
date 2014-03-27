@@ -159,4 +159,8 @@ class SesionsController < ApplicationController
     @alumnos = @curso.alumnos
     @sesiones = @curso.sesions.where(:active => true).order(:fecha)
   end
+
+  def borrar_asistencia
+    AlumnoSesion.where(:sesion_id => params[:id]).destroy_all
+  end
 end
