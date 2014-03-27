@@ -49,7 +49,7 @@
 				                      	<%= link_to "Contestar", curso_formulario_path(:curso_id => @cursos_formularios_sin_contestar[index], :formulario_id => formulario), :class => 'btn btn-mini resumen-tooltip', :title => "Faltan " + formulario.pendientes(@cursos_formularios_sin_contestar[index]).to_s, 'data-placement' => "right" %>
 				                    <% end %>
 				                <% else %>
-				                    <%= link_to "Contestar", curso_formulario_path(:curso_id => @curso, :formulario_id => formulario), :class => 'btn btn-mini' %>
+				                    <%= link_to "Contestar", curso_formulario_path(:curso_id => @cursos_formularios_sin_contestar[index], :formulario_id => formulario), :class => 'btn btn-mini' %>
 				                <% end %>
 						      </td>
 						    </tr>
