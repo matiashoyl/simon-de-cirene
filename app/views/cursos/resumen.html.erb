@@ -9,6 +9,8 @@
 				<tr>
 					<th>Curso</th>
 					<th>Sesiones</th>
+					<th class="centered-header">Asistencia</th>
+					<th class="centered-header">Asistencia Sobre el Total</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -18,13 +20,30 @@
 					<td>
 					<% if curso.sesions.any? %>
 						<% curso.sesions.each_with_index do |sesion, index| %>
-							<span data-content="<strong>Relator: </strong><%= sesion.relator.name %><br><strong>Horario: </strong><%= sesion.hora_inicio.strftime("%I:%M %p") %> a <%= sesion.hora_termino.strftime("%I:%M %p") %><br><strong>Fecha: </strong><%= sesion.fecha.strftime("%B %d, %Y") %><br><strong>Tipo: </strong><%= sesion.tipo %><br><strong>Lugar: </strong><%= sesion.direccion %><br><%=sesion.comentario%>" rel="popover" data-placement="bottom" data-original-title="<h5 class='text-center'><%=sesion.tema%></h5>" data-html="true" class="badge badge-info sesion-popover"><%= index + 1 %></span>
+							<span data-content="<strong>Relator: </strong><%= sesion.relator.name %><br><strong>Horario: </strong><%= sesion.hora_inicio.strftime("%I:%M %p") %> a <%= sesion.hora_termino.strftime("%I:%M %p") %><br><strong>Fecha: </strong><%= sesion.fecha.strftime("%B %d, %Y") %><br><strong>Tipo: </strong><%= sesion.tipo %><br><strong>Lugar: </strong><%= sesion.direccion %><br><strong>Asistencia: </strong><%= sesion.porcentaje_asistentes %><br><%=sesion.comentario%>" rel="popover" data-placement="bottom" data-original-title="<h5 class='text-center'><%=sesion.tema%></h5>" data-html="true" class="badge badge-info sesion-popover"><%= index + 1 %></span>
 						<% end %>
 					<% else %>
 						<span class="badge badge-warning">Este curso no tiene sesiones inscritas</span>
 					<% end %>
 					</td>
-
+					<td class="centered">
+						<% if curso.asistencia == "NA" %>
+							<button type="button"  class="btn btn-mini btn-warning disabled">NA</button>
+						<% elsif curso.asistencia < 85 %>
+							<button type="button"  class="btn btn-mini btn-danger disabled"><%= curso.asistencia %>%</button>
+						<% else %>
+							<button type="button"  class="btn btn-mini btn-info disabled"><%= curso.asistencia %>%</button>
+						<% end %>
+					</td>
+					<td class="centered">
+						<% if curso.asistencia_sobre_el_total == "NA" %>
+							<button type="button"  class="btn btn-mini btn-warning disabled">NA</button>
+						<% elsif curso.asistencia_sobre_el_total < 85 %>
+							<button type="button"  class="btn btn-mini btn-danger disabled"><%= curso.asistencia_sobre_el_total %>%</button>
+						<% else %>
+							<button type="button"  class="btn btn-mini btn-info disabled"><%= curso.asistencia_sobre_el_total %>%</button>
+						<% end %>
+					</td>
 				</tr>
 				<% end %>
 			</tbody>
