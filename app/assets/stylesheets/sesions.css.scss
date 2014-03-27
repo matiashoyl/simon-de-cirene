@@ -3,8 +3,13 @@
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
 .sesions-sidenav{
-	width: 300px;
+    position:relative;
+	width: 100%;
     height: 100%;
+}
+
+.affix-container{
+    overflow: hidden;
 }
 
 .nav-tabs > li.active > a,

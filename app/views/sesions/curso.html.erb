@@ -1,195 +1,197 @@
-<div class="span3">
-  <ul class="nav nav-tabs nav-stacked sesions-sidenav affix">
-    <% @cursos.each do |curso| %>
-      <% if curso.id == @curso.id %>
-        <li class="active">
-          <a href="#">
-            <span class="badge badge-sidenav-active pull-right">
-              <%= Sesion.where(:user_id => current_user).where(:curso_id => curso.id).count %>
-            </span>
-            <%= curso.nombre %>
-          </a>
-        </li>
-      <% else %>
-        <li>
-          <a href="/sesions/curso/<%=curso.id%>">
-            <span class="badge badge-inverse pull-right">
-              <%= Sesion.where(:user_id => current_user).where(:curso_id => curso.id).count %>
-            </span>
-            <%= curso.nombre %>
-          </a>
-        </li>
+<div class="affix-container">
+  <div class="span3">
+    <ul class="nav nav-tabs nav-stacked sesions-sidenav affix">
+      <% @cursos.each do |curso| %>
+        <% if curso.id == @curso.id %>
+          <li class="active">
+            <a href="#">
+              <span class="badge badge-sidenav-active pull-right">
+                <%= Sesion.where(:user_id => current_user).where(:curso_id => curso.id).count %>
+              </span>
+              <%= curso.nombre %>
+            </a>
+          </li>
+        <% else %>
+          <li>
+            <a href="/sesions/curso/<%=curso.id%>">
+              <span class="badge badge-inverse pull-right">
+                <%= Sesion.where(:user_id => current_user).where(:curso_id => curso.id).count %>
+              </span>
+              <%= curso.nombre %>
+            </a>
+          </li>
+        <% end %>
       <% end %>
-    <% end %>
-  </ul>
-</div>
-<div class="span1"></div>
-<div class="span8">
-  <%# ------------------------------ Header ------------------------------ %>  
-  <div class="page-header">
-      <h1><%= @curso.nombre %> <small><%= @curso.codigo %>, <%= @curso.comuna %></small></h1>
+    </ul>
   </div>
-  <%# ------------------------------ Sesiones ------------------------------ %> 
-  <h3>Sesiones</h3>
-  <table class="table table-condensed table-striped sortable">
-    <thead>
-        <tr>
-          <th>Tema</th>
-          <th>Horario</th>
-          <th>Fecha</th>
-          <th>Lugar</th>
-          <th></th>
-        </tr>
-    </thead>
-    <tbody>
-      <% Sesion.where(:user_id => current_user).where(:curso_id => @curso.id).order(:fecha).each do |sesion| %>
-        <tr>
-          <td><%= sesion.tema %></td>
-          <td><%= sesion.hora_inicio.strftime("%I:%M %p") %> a <%= sesion.hora_termino.strftime("%I:%M %p") %></td>
-          <td><%= sesion.fecha.strftime("%d %b, %Y") %></td>
-          <td><%= sesion.direccion %></td>
-          <td>
-            <div class="btn-group">
-              <%= link_to '<i class="icon-search"></i>'.html_safe, sesion_path(sesion), :class => 'btn btn-mini' %>
-              <%= link_to('<i class="icon-pencil"></i>'.html_safe, edit_sesion_path(sesion), remote: true, class: "btn btn-mini") %>
-            </div>
-          </td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
-  <%= link_to('Agregar Sesión', new_sesion_path(@curso), remote: true, class: "btn btn-mini btn-info") %>
-  <hr>
-  <%# ------------------------------ Alumnos ------------------------------ %> 
-  <h3>Alumnos</h3>
-  <% if @alumnos.any? %>
-    <%# ------------------------------ Alumnos Social ------------------------------ %>
-    <% if @curso.programa.tipo == "Social" %>
-      <table class="table table-condensed table-striped sortable">
-        <thead>
-            <tr>
-              <th>Nombre</th>
-              <th>Apellido</th>
-              <th>Institución</th>
-              <th>Cargo</th>
-              <th></th>
-            </tr>
-        </thead>
-        <tbody>
-          <% @alumnos.each do |alumno| %>
-            <tr>
-              <td><%= alumno.nombre %></td>
-              <td><%= alumno.apellido_paterno %></td>
-              <td><%= alumno.nombre_institucion %></td>
-              <td><%= alumno.cargo %></td>
-              <td>
-                <div class="btn-group">
-                  <%= link_to '<i class="icon-search"></i>'.html_safe, alumno_details_path(alumno), :class => 'btn btn-mini' %>
-                  <%= link_to('<i class="icon-pencil"></i>'.html_safe, edit_alumno_path(:id => alumno.id, :curso_id => @curso.id), remote: true, class: "btn btn-mini") %>
-                  <%= link_to('<i class="icon-trash icon-white"></i>'.html_safe, delete_alumno_path(:id => alumno.id, :curso_id => @curso.id), remote: true, class: "btn btn-mini btn-inverse") %>
-                </div>
-              </td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
-    <%# ------------------------------ Alumnos Microempresas ------------------------------ %>
-    <% else %>
-      <table class="table table-condensed table-striped sortable">
-        <thead>
-            <tr>
-              <th>Rut</th>
-              <th>Nombre</th>
-              <th>Quintil</th>
-              <th>Escolaridad</th>
-              <th>Rubro</th>
-              <th></th>
-            </tr>
-        </thead>
-        <tbody>
-          <% @alumnos.each do |alumno| %>
-            <tr>
-              <td><%= alumno.rut %></td>
-              <td><%= alumno.nombre %> <%= alumno.apellido_paterno %></td>
-              <td><%= alumno.quintil %></td>
-              <td><%= alumno.escolaridad %></td>
-              <td>
-                <% rubros = "" %>
-                <% JSON.parse(alumno.profesion).each do |rubro| %>
-                  <% if rubro != JSON.parse(alumno.profesion).last %>
-                    <% if rubro != "" %>
-                      <% rubros = rubros + rubro.to_s + ", " %>
-                    <% end %>
-                  <% else %>
-                    <% if rubro != "" %>
-                      <% rubros = rubros + rubro.to_s %>
-                    <% end %>
-                  <% end %>
-                <% end %>
-                <%= rubros %>
-              </td>
-              <td>
-                <div class="btn-group">
-                  <%= link_to '<i class="icon-search"></i>'.html_safe, alumno_details_path(alumno), :class => 'btn btn-mini' %>
-                  <%= link_to('<i class="icon-pencil"></i>'.html_safe, edit_alumno_path(:id => alumno.id, :curso_id => @curso.id), remote: true, class: "btn btn-mini") %>
-                  <%= link_to('<i class="icon-trash icon-white"></i>'.html_safe, delete_alumno_path(:id => alumno.id, :curso_id => @curso.id), remote: true, class: "btn btn-mini btn-inverse") %>
-                </div>
-              </td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
-    <% end %>
-  <% end %>
-  <%= link_to('Agregar Alumno', new_alumno_path(@curso), remote: true, class: "btn btn-mini btn-info") %>
-  <a data-toggle="modal" href="#excel-alumno" class="btn btn-mini btn-success" type="button">Subir Excel</a>
-  <%= link_to "Asistencia", asistencia_curso_path(@curso), :class => 'btn btn-mini' %>
-
-  <%= render :partial => 'subir_excel', :locals => {:curso => @curso} %>
-
-  <%# ------------------------------ Formularios ------------------------------ %> 
+  <div class="span1"></div>
+  <div class="span8">
+    <%# ------------------------------ Header ------------------------------ %>  
+    <div class="page-header">
+        <h1><%= @curso.nombre %> <small><%= @curso.codigo %>, <%= @curso.comuna %></small></h1>
+    </div>
+    <%# ------------------------------ Sesiones ------------------------------ %> 
+    <h3>Sesiones</h3>
+    <table class="table table-condensed table-striped sortable">
+      <thead>
+          <tr>
+            <th>Tema</th>
+            <th>Horario</th>
+            <th>Fecha</th>
+            <th>Lugar</th>
+            <th></th>
+          </tr>
+      </thead>
+      <tbody>
+        <% Sesion.where(:user_id => current_user).where(:curso_id => @curso.id).order(:fecha).each do |sesion| %>
+          <tr>
+            <td><%= sesion.tema %></td>
+            <td><%= sesion.hora_inicio.strftime("%I:%M %p") %> a <%= sesion.hora_termino.strftime("%I:%M %p") %></td>
+            <td><%= sesion.fecha.strftime("%d %b, %Y") %></td>
+            <td><%= sesion.direccion %></td>
+            <td>
+              <div class="btn-group">
+                <%= link_to '<i class="icon-search"></i>'.html_safe, sesion_path(sesion), :class => 'btn btn-mini' %>
+                <%= link_to('<i class="icon-pencil"></i>'.html_safe, edit_sesion_path(sesion), remote: true, class: "btn btn-mini") %>
+              </div>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+    <%= link_to('Agregar Sesión', new_sesion_path(@curso), remote: true, class: "btn btn-mini btn-info") %>
     <hr>
-    <h3>Formularios</h3>
-    <% if @formularios.any? %>
-      <table class="table table-condensed table-striped sortable">
-        <thead>
-            <tr>
-              <th>Cógido</th>
-              <th>Nombre</th>
-              <th>Estado</th>
-            </tr>
-        </thead>
-        <tbody>
-          <% @formularios.each do |formulario| %>
-            <tr>
-              <td><%= formulario.codigo %></td>
-              <td><%= formulario.nombre %></td>
-              <td>
-                <% if formulario.contestado?(@curso) %>
-                  <button type="button" id="estado-<%= formulario.id %>-<%= @curso.id %>" class="btn btn-mini btn-info disabled">Contestado</button>
-                <% else %>
-                  <% if formulario.duplicates(@curso) > 1 %>
-                    <% if formulario.pendientes(@curso) == 1 %>
-                      <%= link_to "Contestar", curso_formulario_path(:curso_id => @curso, :formulario_id => formulario), :class => 'btn btn-mini resumen-tooltip', :title => "Falta " + formulario.pendientes(@curso).to_s, 'data-placement' => "right" %>
+    <%# ------------------------------ Alumnos ------------------------------ %> 
+    <h3>Alumnos</h3>
+    <% if @alumnos.any? %>
+      <%# ------------------------------ Alumnos Social ------------------------------ %>
+      <% if @curso.programa.tipo == "Social" %>
+        <table class="table table-condensed table-striped sortable">
+          <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Institución</th>
+                <th>Cargo</th>
+                <th></th>
+              </tr>
+          </thead>
+          <tbody>
+            <% @alumnos.each do |alumno| %>
+              <tr>
+                <td><%= alumno.nombre %></td>
+                <td><%= alumno.apellido_paterno %></td>
+                <td><%= alumno.nombre_institucion %></td>
+                <td><%= alumno.cargo %></td>
+                <td>
+                  <div class="btn-group">
+                    <%= link_to '<i class="icon-search"></i>'.html_safe, alumno_details_path(alumno), :class => 'btn btn-mini' %>
+                    <%= link_to('<i class="icon-pencil"></i>'.html_safe, edit_alumno_path(:id => alumno.id, :curso_id => @curso.id), remote: true, class: "btn btn-mini") %>
+                    <%= link_to('<i class="icon-trash icon-white"></i>'.html_safe, delete_alumno_path(:id => alumno.id, :curso_id => @curso.id), remote: true, class: "btn btn-mini btn-inverse") %>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      <%# ------------------------------ Alumnos Microempresas ------------------------------ %>
+      <% else %>
+        <table class="table table-condensed table-striped sortable">
+          <thead>
+              <tr>
+                <th>Rut</th>
+                <th>Nombre</th>
+                <th>Quintil</th>
+                <th>Escolaridad</th>
+                <th>Rubro</th>
+                <th></th>
+              </tr>
+          </thead>
+          <tbody>
+            <% @alumnos.each do |alumno| %>
+              <tr>
+                <td><%= alumno.rut %></td>
+                <td><%= alumno.nombre %> <%= alumno.apellido_paterno %></td>
+                <td><%= alumno.quintil %></td>
+                <td><%= alumno.escolaridad %></td>
+                <td>
+                  <% rubros = "" %>
+                  <% JSON.parse(alumno.profesion).each do |rubro| %>
+                    <% if rubro != JSON.parse(alumno.profesion).last %>
+                      <% if rubro != "" %>
+                        <% rubros = rubros + rubro.to_s + ", " %>
+                      <% end %>
                     <% else %>
-                      <%= link_to "Contestar", curso_formulario_path(:curso_id => @curso, :formulario_id => formulario), :class => 'btn btn-mini resumen-tooltip', :title => "Faltan " + formulario.pendientes(@curso).to_s, 'data-placement' => "right" %>
+                      <% if rubro != "" %>
+                        <% rubros = rubros + rubro.to_s %>
+                      <% end %>
                     <% end %>
-                  <% else %>
-                    <%= link_to "Contestar", curso_formulario_path(:curso_id => @curso, :formulario_id => formulario), :class => 'btn btn-mini' %>
                   <% end %>
-                <% end %>
-              </td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
-    <% else %>
-
-    <p>El curso todavía no tiene formularios</p>
- 
+                  <%= rubros %>
+                </td>
+                <td>
+                  <div class="btn-group">
+                    <%= link_to '<i class="icon-search"></i>'.html_safe, alumno_details_path(alumno), :class => 'btn btn-mini' %>
+                    <%= link_to('<i class="icon-pencil"></i>'.html_safe, edit_alumno_path(:id => alumno.id, :curso_id => @curso.id), remote: true, class: "btn btn-mini") %>
+                    <%= link_to('<i class="icon-trash icon-white"></i>'.html_safe, delete_alumno_path(:id => alumno.id, :curso_id => @curso.id), remote: true, class: "btn btn-mini btn-inverse") %>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      <% end %>
     <% end %>
+    <%= link_to('Agregar Alumno', new_alumno_path(@curso), remote: true, class: "btn btn-mini btn-info") %>
+    <a data-toggle="modal" href="#excel-alumno" class="btn btn-mini btn-success" type="button">Subir Excel</a>
+    <%= link_to "Asistencia", asistencia_curso_path(@curso), :class => 'btn btn-mini' %>
 
-  <br /><br /><br />
-  <div id="sesion-modal" class="modal hide fade modal-medium"></div>
-  <div id="alumno-modal" class="modal hide fade modal-medium"></div>
+    <%= render :partial => 'subir_excel', :locals => {:curso => @curso} %>
+
+    <%# ------------------------------ Formularios ------------------------------ %> 
+      <hr>
+      <h3>Formularios</h3>
+      <% if @formularios.any? %>
+        <table class="table table-condensed table-striped sortable">
+          <thead>
+              <tr>
+                <th>Cógido</th>
+                <th>Nombre</th>
+                <th>Estado</th>
+              </tr>
+          </thead>
+          <tbody>
+            <% @formularios.each do |formulario| %>
+              <tr>
+                <td><%= formulario.codigo %></td>
+                <td><%= formulario.nombre %></td>
+                <td>
+                  <% if formulario.contestado?(@curso) %>
+                    <button type="button" id="estado-<%= formulario.id %>-<%= @curso.id %>" class="btn btn-mini btn-info disabled">Contestado</button>
+                  <% else %>
+                    <% if formulario.duplicates(@curso) > 1 %>
+                      <% if formulario.pendientes(@curso) == 1 %>
+                        <%= link_to "Contestar", curso_formulario_path(:curso_id => @curso, :formulario_id => formulario), :class => 'btn btn-mini resumen-tooltip', :title => "Falta " + formulario.pendientes(@curso).to_s, 'data-placement' => "right" %>
+                      <% else %>
+                        <%= link_to "Contestar", curso_formulario_path(:curso_id => @curso, :formulario_id => formulario), :class => 'btn btn-mini resumen-tooltip', :title => "Faltan " + formulario.pendientes(@curso).to_s, 'data-placement' => "right" %>
+                      <% end %>
+                    <% else %>
+                      <%= link_to "Contestar", curso_formulario_path(:curso_id => @curso, :formulario_id => formulario), :class => 'btn btn-mini' %>
+                    <% end %>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      <% else %>
+
+      <p>El curso todavía no tiene formularios</p>
+   
+      <% end %>
+
+    <br /><br /><br />
+    <div id="sesion-modal" class="modal hide fade modal-medium"></div>
+    <div id="alumno-modal" class="modal hide fade modal-medium"></div>
+  </div>
 </div>
