@@ -2,7 +2,7 @@
 <h3><%= @programa.nombre %> <small><%= @programa.tipo %></small></h3>
 <hr>
 <div>
-	<div class"row">
+	<div>
 		<div class="span3">
 			<button type="button" class="btn btn-large btn-info disabled btn-block">
 				Cursos <br>
@@ -35,16 +35,21 @@
 	<hr>
 	<button type="button" class="btn btn btn-info disabled"><h4>Cursos</h4></button>
 	<br><br>
-	<div class"row">
-		<% @programa.cursos.each do |curso| %>
+	
+	<% @programa.cursos.each_with_index do |curso, index| %>
+		<% if index%4 == 0 %>
+			<div>
+		<% end %>
 			<div class="span3 curso-span">
 				<span data-content="<strong>Relator: </strong><%= curso.relator %>" rel="popover" data-placement="top" data-original-title="<h5 class='text-center'><%= curso.nombre %></h5>" data-html="true" class="badge badge-info curso-popover">
 					<%= curso.codigo %><br /><%= curso.comuna %>
 				</span>
 			</div>
+		<% if index%4 == 3 %>
+			</div>
 		<% end %>
-	</div>
-	<br /><br /><br />
+	<% end %>
+	
 	<% if @sesiones_pocos_asistentes.empty? && @sesiones_sin_asistencia.empty? && @alumnos_baja_asistencia.empty? && @formularios_sin_contestar.empty? %>
 	<div class="span4"></div>
 	<div class="span4">
@@ -55,6 +60,7 @@
 	</div>
 <% else %>
 		<% if @sesiones_pocos_asistentes.any? %>
+		<br /><br /><br /><br /><br /><br /><br /><br /><br />
 			<hr>
 			<button type="button" class="btn btn btn-info disabled"><h4>Sesiones Con Asistencia Bajo 85%</h4></button>
 			<br><br>
