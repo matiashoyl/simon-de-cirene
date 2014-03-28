@@ -22,8 +22,11 @@ $(document).ready(function(){
 		});
 		$('#programas').select2('data', {id: null, text: "Selecciona un programa"})
 	})
+
+	
 })
 
 function hideLoadingImage() {
     $( "#loading" ).hide();
+    $('.curso-popover').popover({ trigger: "hover" });
 }

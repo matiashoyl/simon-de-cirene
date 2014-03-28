@@ -2,34 +2,49 @@
 <h3><%= @programa.nombre %> <small><%= @programa.tipo %></small></h3>
 <hr>
 <div>
-	<div class="span3">
-		<button type="button" class="btn btn-large btn-info disabled btn-block">
-			Cursos <br>
-			<%= @programa.cursos.count %>
-		</button>
-	</div>
-	<div class="span3">
-		<button type="button" class="btn btn-large btn-info disabled btn-block">
-			Sesiones <br>
-			<%= @programa.sesiones.count %>
-		</button>
-	</div>
-	<div class="span3">
-		<button type="button" class="btn btn-large btn-info disabled btn-block">
-			Alumnos <br>
-			<%= @programa.alumnos.count %>
-		</button>
-	</div>
-	<div class="span3">
-		<button type="button" class="btn btn-large btn-info disabled btn-block">
-			Formularios <br>
-			<%= @programa.formularios.count %>
-		</button>
+	<div class"row">
+		<div class="span3">
+			<button type="button" class="btn btn-large btn-info disabled btn-block">
+				Cursos <br>
+				<%= @programa.cursos.count %>
+			</button>
+		</div>
+		<div class="span3">
+			<button type="button" class="btn btn-large btn-info disabled btn-block">
+				Sesiones <br>
+				<%= @programa.sesiones.count %>
+			</button>
+		</div>
+		<div class="span3">
+			<button type="button" class="btn btn-large btn-info disabled btn-block">
+				Alumnos <br>
+				<%= @programa.alumnos.count %>
+			</button>
+		</div>
+		<div class="span3">
+			<button type="button" class="btn btn-large btn-info disabled btn-block">
+				Formularios <br>
+				<%= @programa.formularios.count %>
+			</button>
+		</div>
 	</div>
 	<br><br><br><br><br><br>
 </div>
 
 <div>
+	<hr>
+	<button type="button" class="btn btn btn-info disabled"><h4>Cursos</h4></button>
+	<br><br>
+	<div class"row">
+		<% @programa.cursos.each do |curso| %>
+			<div class="span3 curso-span">
+				<span data-content="<strong>Relator: </strong><%= curso.relator %>" rel="popover" data-placement="top" data-original-title="<h5 class='text-center'><%= curso.nombre %></h5>" data-html="true" class="badge badge-info curso-popover">
+					<%= curso.codigo %><br /><%= curso.comuna %>
+				</span>
+			</div>
+		<% end %>
+	</div>
+	<br /><br /><br />
 	<% if @sesiones_pocos_asistentes.empty? && @sesiones_sin_asistencia.empty? && @alumnos_baja_asistencia.empty? && @formularios_sin_contestar.empty? %>
 	<div class="span4"></div>
 	<div class="span4">
