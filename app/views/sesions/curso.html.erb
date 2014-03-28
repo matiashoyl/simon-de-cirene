@@ -101,6 +101,7 @@
               <tr>
                 <th>Rut</th>
                 <th>Nombre</th>
+                <th>Apellido</th>
                 <th>Quintil</th>
                 <th>Escolaridad</th>
                 <th>Rubro</th>
@@ -111,7 +112,8 @@
             <% @alumnos.each do |alumno| %>
               <tr>
                 <td><%= alumno.rut %></td>
-                <td><%= alumno.nombre %> <%= alumno.apellido_paterno %></td>
+                <td><%= alumno.nombre %></td>
+                <td><%= alumno.apellido_paterno %></td>
                 <td><%= alumno.quintil %></td>
                 <td><%= alumno.escolaridad %></td>
                 <td>
