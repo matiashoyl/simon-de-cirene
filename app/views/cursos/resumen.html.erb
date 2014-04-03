@@ -10,7 +10,9 @@
 					<th>Curso</th>
 					<th>Sesiones</th>
 					<th class="centered-header">Asistencia</th>
+					<th class="centered-header">Asistencia Promedio Programa</th>
 					<th class="centered-header">Asistencia Sobre el Total</th>
+					<th class="centered-header">Asistencia Sobre el Total Promedio Programa</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -38,12 +40,30 @@
 						<% end %>
 					</td>
 					<td class="centered">
+						<% if curso.programa.asistencia_promedio == "NA" %>
+							<button type="button"  class="btn btn-mini btn-warning disabled">NA</button>
+						<% elsif curso.programa.asistencia_promedio < 85 %>
+							<button type="button"  class="btn btn-mini btn-danger disabled"><%= curso.programa.asistencia_promedio %>%</button>
+						<% else %>
+							<button type="button"  class="btn btn-mini btn-info disabled"><%= curso.programa.asistencia_promedio %>%</button>
+						<% end %>
+					</td>
+					<td class="centered">
 						<% if curso.asistencia_sobre_el_total == "NA" %>
 							<button type="button"  class="btn btn-mini btn-warning disabled">NA</button>
 						<% elsif curso.asistencia_sobre_el_total < 85 %>
 							<button type="button"  class="btn btn-mini btn-danger disabled"><%= curso.asistencia_sobre_el_total %>%</button>
 						<% else %>
 							<button type="button"  class="btn btn-mini btn-info disabled"><%= curso.asistencia_sobre_el_total %>%</button>
+						<% end %>
+					</td>
+					<td class="centered">
+						<% if curso.programa.asistencia_sobre_el_total_promedio == "NA" %>
+							<button type="button"  class="btn btn-mini btn-warning disabled">NA</button>
+						<% elsif curso.programa.asistencia_sobre_el_total_promedio < 85 %>
+							<button type="button"  class="btn btn-mini btn-danger disabled"><%= curso.programa.asistencia_sobre_el_total_promedio %>%</button>
+						<% else %>
+							<button type="button"  class="btn btn-mini btn-info disabled"><%= curso.programa.asistencia_sobre_el_total_promedio %>%</button>
 						<% end %>
 					</td>
 				</tr>

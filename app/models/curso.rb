@@ -82,4 +82,12 @@ class Curso < ActiveRecord::Base
 			return "NA"
 		end
 	end
+
+	def proxima_sesion
+		if self.sesions.any?
+			return self.sesions.where(:active => true).where('fecha > ?', DateTime.now).order(:fecha).first
+		else
+			return nil
+		end
+	end
 end

@@ -51,4 +51,36 @@ class Programa < ActiveRecord::Base
   		end
   		return formularios
   	end
+
+    def asistencia_promedio
+      suma = 0
+      num_cursos = 0
+      self.cursos.each do |curso|
+        unless curso.asistencia == "NA"
+          suma += curso.asistencia
+          num_cursos += 1
+        end
+      end
+      if num_cursos != 0 
+        return ((suma/num_cursos).round(2)).to_i
+      else
+        return "NA"
+      end
+    end
+
+    def asistencia_sobre_el_total_promedio
+      suma = 0
+      num_cursos = 0
+      self.cursos.each do |curso|
+        unless curso.asistencia_sobre_el_total == "NA"
+          suma += curso.asistencia_sobre_el_total
+          num_cursos += 1
+        end
+      end
+      if num_cursos != 0 
+        return ((suma/num_cursos).round(2)).to_i
+      else
+        return "NA"
+      end
+    end
 end

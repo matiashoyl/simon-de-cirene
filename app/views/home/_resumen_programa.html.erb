@@ -41,7 +41,7 @@
 			<div>
 		<% end %>
 			<div class="span3 curso-span">
-				<span data-content="<strong>Relator: </strong><%= curso.relator %>" rel="popover" data-placement="top" data-original-title="<h5 class='text-center'><%= curso.nombre %></h5>" data-html="true" class="badge badge-info curso-popover">
+				<span data-content="<strong>Relator: </strong><%= curso.relator %><br /><strong>Alumnos: </strong><%= curso.alumnos.count %><% if curso.proxima_sesion %><br /><strong>Próxima Sesión: </strong><%= curso.proxima_sesion.fecha.strftime("%d-%m-%y") %><br /><strong>Lugar: </strong><%= curso.proxima_sesion.direccion %><br /><% else %><br /><strong>No hay próximas sesiones</strong><br /><% end %><strong>Asistencia a la Fecha: </strong><%= curso.asistencia %><br /><strong>Asistencia Total: </strong><%= curso.asistencia_sobre_el_total %>" rel="popover" data-placement="top" data-original-title="<h5 class='text-center'><%= curso.nombre %></h5>" data-html="true" class="badge badge-info curso-popover">
 					<%= curso.codigo %><br /><%= curso.comuna %>
 				</span>
 			</div>
