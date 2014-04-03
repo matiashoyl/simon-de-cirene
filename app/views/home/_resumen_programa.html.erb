@@ -38,7 +38,7 @@
 	
 	<% @programa.cursos.each_with_index do |curso, index| %>
 		<% if index%4 == 0 %>
-			<div class="row">
+			<div>
 		<% end %>
 			<div class="span3 curso-span">
 				<span data-content="<strong>Relator: </strong><%= curso.relator %><br /><strong>Alumnos: </strong><%= curso.alumnos.count %><% if curso.proxima_sesion %><br /><strong>Próxima Sesión: </strong><%= curso.proxima_sesion.fecha.strftime("%d-%m-%y") %><br /><strong>Lugar: </strong><%= curso.proxima_sesion.direccion %><br /><% else %><br /><strong>No hay próximas sesiones</strong><br /><% end %><strong>Asistencia a la Fecha: </strong><%= curso.asistencia %><br /><strong>Asistencia Total: </strong><%= curso.asistencia_sobre_el_total %>" rel="popover" data-placement="top" data-original-title="<h5 class='text-center'><%= curso.nombre %></h5>" data-html="true" class="badge badge-info curso-popover">
@@ -48,115 +48,133 @@
 		<% if index%4 == 3 %>
 			</div>
 		<% end %>
+		<% if curso == @programa.cursos.last %>
+			<% if index%4 == 2 %>
+				<div class="span3 curso-span"></div>
+				</div>
+			<% elsif index%4 == 1 %>
+				<div class="span3 curso-span"></div>
+				<div class="span3 curso-span"></div>
+				</div>
+			<% elsif index%4 == 0 %>
+				<div class="span3 curso-span"></div>
+				<div class="span3 curso-span"></div>
+				<div class="span3 curso-span"></div>
+				</div>
+			<% end %>
+		<% end %>
 	<% end %>
-	<div class ="row">
+
+</div>
+<div>
+	<br /><br /><br /><br />
 	<% if @sesiones_pocos_asistentes.empty? && @sesiones_sin_asistencia.empty? && @alumnos_baja_asistencia.empty? && @formularios_sin_contestar.empty? %>
-	<div class="span4"></div>
-	<div class="span4">
-		<br /><br />
-		<img src="/images/logo.png" alt="Simón de Cirene" />
-		<h4 class="text-center">No hay información</h4>
-		<br /><br /><br />
-	</div>
-<% else %>
-		<% if @sesiones_pocos_asistentes.any? %>
-		<br /><br /><br /><br /><br /><br /><br /><br /><br />
-			<hr>
-			<button type="button" class="btn btn btn-info disabled"><h4>Sesiones Con Asistencia Bajo 85%</h4></button>
-			<br><br>
-			<table class="table table-condensed table-striped sortable">
-				<thead>
-				    <tr>
-				      <th>Tema</th>
-				      <th>Curso</th>
-				      <th>Relator</th>
-				      <th>Asistentes</th>
-				    </tr>
-				</thead>
-				<tbody>
-				  <% @sesiones_pocos_asistentes.each do |sesion| %>
-				    <tr>
-				      <td><%= sesion.tema %></td>
-				      <td><%= sesion.curso.nombre %></td>
-				      <td><%= sesion.relator.name %></td>
-				      <td><%= sesion.porcentaje_asistentes %>%</td>
-				    </tr>
-				  <% end %>
-				</tbody>
-			</table>
-		<% end %>
-		<% if @sesiones_sin_asistencia.any? %>
-			<hr>
-			<button type="button" class="btn btn btn-info disabled"><h4>Sesiones Sin Asistencia</h4></button>
-			<br><br>
-			<table class="table table-condensed table-striped sortable">
-				<thead>
-				    <tr>
-				      <th>Tema</th>
-				      <th>Curso</th>
-				      <th>Relator</th>
-				      <th>Fecha</th>
-				    </tr>
-				</thead>
-				<tbody>
-				  <% @sesiones_sin_asistencia.each do |sesion| %>
-				    <tr>
-				      <td><%= sesion.tema %></td>
-				      <td><%= sesion.curso.nombre %></td>
-				      <td><%= sesion.relator.name %></td>
-				      <td><%= sesion.fecha.strftime("%d %b, %Y") %></td>
-				    </tr>
-				  <% end %>
-				</tbody>
-			</table>
-		<% end %>
-		<% if @alumnos_baja_asistencia.any? %>
-			<hr>
-			<button type="button" class="btn btn btn-info disabled"><h4>Alumnos Con Baja Asistencia</h4></button>
-			<br><br>
-		    <table class="table table-condensed table-striped sortable">
-		      <thead>
-		          <tr>
-		            <th>Nombre</th>
-		            <th>Curso</th>
-		            <th>Relator Jefe</th>
-		            <th>Asistencia</th>
-		          </tr>
-		      </thead>
-		      <tbody>
-		        <% @alumnos_baja_asistencia.each_with_index do |alumno, index| %>
-		          <tr>
-		            <td><%= alumno.nombre %> <%= alumno.apellido_paterno %></td>
-		            <td><%= @curso_alumno_baja_asistencia[index].nombre %></td>
-		            <td><%= User.find(@curso_alumno_baja_asistencia[index].relator_jefe_id).name %></td>
-		            <td><%= @bajas_asistencias[index] %>%</td>
-		          </tr>
-		        <% end %>
-		      </tbody>
-		    </table>
-	  	<% end %>
-	  	<% if @formularios_sin_contestar.any? %>
-	  		<hr>
-			<button type="button" class="btn btn btn-info disabled"><h4>Formularios sin contestar</h4></button>
-			<br><br>
-			<table class="table table-condensed sortable">
-				<thead>
-				    <tr>
-				      <th>Codigo</th>
-				      <th>Formulario</th>
-				      <th>Curso</th>
-				    </tr>
-				</thead>
-				<tbody>
-				  <% @formularios_sin_contestar.each_with_index do |formulario, index| %>
-				    <tr>
-				      <td><%= formulario.codigo %></td>
-				      <td><%= formulario.nombre %></td>
-				      <td><%= @cursos_formularios_sin_contestar[index].nombre %></td>
-				    </tr>
-				  <% end %>
-				</tbody>
-			</table>
-		<% end %>
-<% end %>
+		<div class="span4"></div>
+		<div class="span4">
+			<br /><br />
+			<img src="/images/logo.png" alt="Simón de Cirene" />
+			<h4 class="text-center">No hay información</h4>
+			<br /><br /><br />
+		</div>
+	<% else %>
+			<% if @sesiones_pocos_asistentes.any? %>
+			<br /><br /><br /><br /><br /><br /><br /><br /><br />
+				<hr>
+				<button type="button" class="btn btn btn-info disabled"><h4>Sesiones Con Asistencia Bajo 85%</h4></button>
+				<br><br>
+				<table class="table table-condensed table-striped sortable">
+					<thead>
+					    <tr>
+					      <th>Tema</th>
+					      <th>Curso</th>
+					      <th>Relator</th>
+					      <th>Asistentes</th>
+					    </tr>
+					</thead>
+					<tbody>
+					  <% @sesiones_pocos_asistentes.each do |sesion| %>
+					    <tr>
+					      <td><%= sesion.tema %></td>
+					      <td><%= sesion.curso.nombre %></td>
+					      <td><%= sesion.relator.name %></td>
+					      <td><%= sesion.porcentaje_asistentes %>%</td>
+					    </tr>
+					  <% end %>
+					</tbody>
+				</table>
+			<% end %>
+			<% if @sesiones_sin_asistencia.any? %>
+				<hr>
+				<button type="button" class="btn btn btn-info disabled"><h4>Sesiones Sin Asistencia</h4></button>
+				<br><br>
+				<table class="table table-condensed table-striped sortable">
+					<thead>
+					    <tr>
+					      <th>Tema</th>
+					      <th>Curso</th>
+					      <th>Relator</th>
+					      <th>Fecha</th>
+					    </tr>
+					</thead>
+					<tbody>
+					  <% @sesiones_sin_asistencia.each do |sesion| %>
+					    <tr>
+					      <td><%= sesion.tema %></td>
+					      <td><%= sesion.curso.nombre %></td>
+					      <td><%= sesion.relator.name %></td>
+					      <td><%= sesion.fecha.strftime("%d %b, %Y") %></td>
+					    </tr>
+					  <% end %>
+					</tbody>
+				</table>
+			<% end %>
+			<% if @alumnos_baja_asistencia.any? %>
+				<hr>
+				<button type="button" class="btn btn btn-info disabled"><h4>Alumnos Con Baja Asistencia</h4></button>
+				<br><br>
+			    <table class="table table-condensed table-striped sortable">
+			      <thead>
+			          <tr>
+			            <th>Nombre</th>
+			            <th>Curso</th>
+			            <th>Relator Jefe</th>
+			            <th>Asistencia</th>
+			          </tr>
+			      </thead>
+			      <tbody>
+			        <% @alumnos_baja_asistencia.each_with_index do |alumno, index| %>
+			          <tr>
+			            <td><%= alumno.nombre %> <%= alumno.apellido_paterno %></td>
+			            <td><%= @curso_alumno_baja_asistencia[index].nombre %></td>
+			            <td><%= User.find(@curso_alumno_baja_asistencia[index].relator_jefe_id).name %></td>
+			            <td><%= @bajas_asistencias[index] %>%</td>
+			          </tr>
+			        <% end %>
+			      </tbody>
+			    </table>
+		  	<% end %>
+		  	<% if @formularios_sin_contestar.any? %>
+		  		<hr>
+				<button type="button" class="btn btn btn-info disabled"><h4>Formularios sin contestar</h4></button>
+				<br><br>
+				<table class="table table-condensed sortable">
+					<thead>
+					    <tr>
+					      <th>Codigo</th>
+					      <th>Formulario</th>
+					      <th>Curso</th>
+					    </tr>
+					</thead>
+					<tbody>
+					  <% @formularios_sin_contestar.each_with_index do |formulario, index| %>
+					    <tr>
+					      <td><%= formulario.codigo %></td>
+					      <td><%= formulario.nombre %></td>
+					      <td><%= @cursos_formularios_sin_contestar[index].nombre %></td>
+					    </tr>
+					  <% end %>
+					</tbody>
+				</table>
+			<% end %>
+	<% end %>
 </div>
