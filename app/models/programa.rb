@@ -56,8 +56,9 @@ class Programa < ActiveRecord::Base
       suma = 0
       num_cursos = 0
       self.cursos.each do |curso|
-        unless curso.asistencia == "NA"
-          suma += curso.asistencia
+        asistencia = curso.asistencia
+        unless asistencia == "NA"
+          suma += asistencia
           num_cursos += 1
         end
       end
@@ -72,8 +73,9 @@ class Programa < ActiveRecord::Base
       suma = 0
       num_cursos = 0
       self.cursos.each do |curso|
-        unless curso.asistencia_sobre_el_total == "NA"
-          suma += curso.asistencia_sobre_el_total
+        asistencia_sobre_el_total = curso.asistencia_sobre_el_total
+        unless asistencia_sobre_el_total == "NA"
+          suma += asistencia_sobre_el_total
           num_cursos += 1
         end
       end

@@ -46,10 +46,11 @@ class Curso < ActiveRecord::Base
 		sesiones_con_asistencia = 0
 		sumatoria = 0
 		self.sesions.each do |sesion|
-			if sesion.porcentaje_asistentes == "NA"
+			porcentaje_asistentes = sesion.porcentaje_asistentes
+			if porcentaje_asistentes == "NA"
 				#no hacer nada
 			else
-				sumatoria += sesion.porcentaje_asistentes
+				sumatoria += porcentaje_asistentes
 				sesiones_con_asistencia += 1
 			end
 		end
@@ -65,10 +66,11 @@ class Curso < ActiveRecord::Base
 		sesiones_sin_asistencia = 0
 		sumatoria = 0
 		self.sesions.each do |sesion|
-			if sesion.porcentaje_asistentes == "NA"
+			porcentaje_asistentes = sesion.porcentaje_asistentes
+			if porcentaje_asistentes == "NA"
 				sesiones_sin_asistencia += 1
 			else
-				sumatoria += sesion.porcentaje_asistentes		
+				sumatoria += porcentaje_asistentes		
 			end
 			sesiones += 1
 		end
