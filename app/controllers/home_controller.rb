@@ -140,14 +140,14 @@ class HomeController < ApplicationController
         @index = Array.new
         @sesiones = Array.new
         if current_user.has_role? :relator
-            Sesion.where(:user_id => current_user).each_with_index do |sesion, index|
+            Sesion.where(:user_id => current_user).order(:fecha).each_with_index do |sesion, index|
                 @sesiones.push sesion
                 @index.push index
             end
         else
             Curso.all_active.each do |curso|
                 index = 0
-                curso.sesions.each do |sesion|
+                curso.sesions.order(:fecha).each do |sesion|
                     @sesiones.push sesion
                     @index.push index
                     index = index + 1
