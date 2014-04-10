@@ -20,7 +20,7 @@
 				<td><%= alumno.apellido_paterno %></td>
 				<% @sesiones.each do |sesion| %>
 				<td>
-					<% if (sesion.user_id == current_user.id) || (current_user.has_role? :admin) || (current_user.has_role? :coordinador)%>
+					<% if (sesion.user_id == current_user.id && sesion.fecha < DateTime.now) || (current_user.has_role? :admin) || (current_user.has_role? :coordinador)%>
 						<div class="btn-group" data-toggle="buttons-radio">
 							<button type="button" id="presente-<%= alumno.id %>-<%= sesion.id %>" class="btn btn-mini btn-info">P</button>
 							<button type="button" id="ausente-<%= alumno.id %>-<%= sesion.id %>" class="btn btn-mini btn-info">A</button>
