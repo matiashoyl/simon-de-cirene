@@ -21,7 +21,7 @@ class Curso < ActiveRecord::Base
 	      alumno = Alumno.find(alumno_id)
 	      alumnos.push alumno
 	    end
-	    return alumnos
+	    return alumnos.sort_by{|e| e[:apellido_paterno]}
 	end
 
 	def formularios

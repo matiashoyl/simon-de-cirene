@@ -5,7 +5,8 @@
 	<table class="table table-condensed table-striped sortable">
 		<thead>
 			<tr>
-				<th>Alumno</th>
+				<th>Nombre</th>
+				<th>Apellido</th>
 				<% @sesiones.each do |sesion| %>
 				<th><%= sesion.fecha.strftime("%d %b") %></th>
 				<% end %>
@@ -15,7 +16,8 @@
 		<tbody>
 			<% @alumnos.each do |alumno| %>
 			<tr>
-				<td><%= alumno.nombre %> <%= alumno.apellido_paterno %></td>
+				<td><%= alumno.nombre %></td>
+				<td><%= alumno.apellido_paterno %></td>
 				<% @sesiones.each do |sesion| %>
 				<td>
 					<% if (sesion.user_id == current_user.id) || (current_user.has_role? :admin) || (current_user.has_role? :coordinador)%>
