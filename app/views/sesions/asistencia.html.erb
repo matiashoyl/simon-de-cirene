@@ -79,12 +79,13 @@
 
 				<% end %>
 				<td class="centered">
-					<% if alumno.porcentaje_asistencia(@curso) == "NA" %>       
+					<% porcentaje_asistencia = alumno.porcentaje_asistencia(@curso) %>
+					<% if porcentaje_asistencia == "NA" %>       
 						<button type="button" class="btn btn-mini btn-warning disabled">NA</button>
-					<% elsif alumno.porcentaje_asistencia(@curso) <= 75 %>
-						<button type="button" class="btn btn-mini btn-danger disabled"><%= alumno.porcentaje_asistencia(@curso) %></button>
+					<% elsif porcentaje_asistencia <= 75 %>
+						<button type="button" class="btn btn-mini btn-danger disabled"><%= porcentaje_asistencia %></button>
 					<% else %>
-						<button type="button" class="btn btn-mini btn-success disabled"><%= alumno.porcentaje_asistencia(@curso) %></button>
+						<button type="button" class="btn btn-mini btn-success disabled"><%= porcentaje_asistencia %></button>
 					<% end %>
 				
 				</td>
