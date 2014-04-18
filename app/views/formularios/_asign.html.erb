@@ -3,8 +3,8 @@
       <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
       <h3>Asignar Formulario <%= @formulario.nombre %></h3>
     </div>
+    <%= form_tag(asignar_formularios_path, :method=>'post') do %>
     <div class="modal-body">
-      <%= form_tag(asignar_formularios_path, :method=>'post') do %>
       <%= select_tag 'cursos_ids[]', options_for_select(Curso.all_active.map {|c| [c.relator_codigo, c.id]}), :multiple => true, :class => "input-block-level", :id => "select-formulario" %>
       <label class="checkbox inline">
         <input class="btn" value="Input" type="checkbox" id="checkbox" >Seleccionar Todos

@@ -3,8 +3,8 @@
 		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
 		<h2 class="text-center">Editar</h2>
 	</div>
+	<%= simple_form_for @curso, :url => curso_path(@curso), :html => {:method => :put } do |f| %>
 	<div class="modal-body">
-		<%= simple_form_for @curso, :url => curso_path(@curso), :html => {:method => :put } do |f| %>
 		<%= f.error_notification %>
 		<%= display_base_errors resource %>
 		<p>Programa:</p>

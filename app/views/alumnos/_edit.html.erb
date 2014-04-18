@@ -3,8 +3,8 @@
   	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
     <h2>Editar</h2>
   </div>
+  <%= simple_form_for(@alumno) do |f| %>
 	<div class="modal-body">
-		<%= simple_form_for(@alumno) do |f| %>
 		<%= f.error_notification %>
 		<%= display_base_errors resource %>
 		<%= f.input :nombre, :autofocus => true, :label => false, :placeholder => 'Nombre', :class => 'input-block-level' %>
