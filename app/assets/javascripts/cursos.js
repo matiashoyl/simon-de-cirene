@@ -27,12 +27,12 @@ $(document).ready(function(){
     var url_actual = window.location.pathname;
     var curso = url_actual.split("/")[2];
     var html = ""
-    html += '<script type="text/javascript">var submitted=false;</script>'
-    html += '<iframe name="hidden_iframe" id="hidden_iframe" style="display:none;" onload="if(submitted) {window.location='
-    html += "'"
-    html += window.location.origin + "/sesions/curso/" + curso
-    html += "'"
-    html += ';}"></iframe>'
+    html += '<script type="text/javascript">var submitted=false;</script>';
+    html += '<iframe name="hidden_iframe" id="hidden_iframe" style="display:none;" onload="if(submitted) {window.location=';
+    html += "'";
+    html += window.location.origin + "/sesions/curso/" + curso;
+    html += "'";
+    html += ';}"></iframe>';
     $("#ss-form").before(html);
     $("#ss-form").attr('target', 'hidden_iframe');
     $("#ss-form").attr('onsubmit', 'submitted=true;');
