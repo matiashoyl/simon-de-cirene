@@ -93,6 +93,7 @@
 			<% end %>
 			<tr>
 				<td></td>
+				<td></td>
 				<% @sesiones.each do |sesion| %>
 				<% if (sesion.user_id == current_user.id) || (current_user.has_role? :admin) || (current_user.has_role? :coordinador)%>
 				<td>
@@ -138,6 +139,7 @@
 			</tr>
 			<% if current_user.has_role? :admin %>
 				<tr>
+					<td></td>
 					<td></td>
 					<% @sesiones.each do |sesion| %>
 						<td>
