@@ -42,15 +42,8 @@
 						      <td><%= formulario.nombre %></td>
 						      <td><%= @cursos_formularios_sin_contestar[index].nombre %></td>
 						      <td>
-						      	<% if formulario.duplicates(@cursos_formularios_sin_contestar[index]) > 1 %>
-				                    <% if formulario.pendientes(@cursos_formularios_sin_contestar[index]) == 1 %>
-				                      	<%= link_to "Contestar", curso_formulario_path(:curso_id => @cursos_formularios_sin_contestar[index], :formulario_id => formulario), :class => 'btn btn-mini resumen-tooltip', :title => "Falta " + formulario.pendientes(@cursos_formularios_sin_contestar[index]).to_s, 'data-placement' => "right" %>
-				                    <% else %>
-				                      	<%= link_to "Contestar", curso_formulario_path(:curso_id => @cursos_formularios_sin_contestar[index], :formulario_id => formulario), :class => 'btn btn-mini resumen-tooltip', :title => "Faltan " + formulario.pendientes(@cursos_formularios_sin_contestar[index]).to_s, 'data-placement' => "right" %>
-				                    <% end %>
-				                <% else %>
-				                    <%= link_to "Contestar", curso_formulario_path(:curso_id => @cursos_formularios_sin_contestar[index], :formulario_id => formulario), :class => 'btn btn-mini' %>
-				                <% end %>
+				                <%= link_to "Contestar", curso_formulario_path(:curso_id => @cursos_formularios_sin_contestar[index], :formulario_id => formulario), :class => 'btn btn-mini' %>
+				                
 						      </td>
 						    </tr>
 						  <% end %>

@@ -129,5 +129,25 @@ class FormulariosController < ApplicationController
   def resumen
     @formularios = Formulario.all
     @cursos = Curso.all_active
+
+    respond_to do |format|
+      format.html # resumen.html.erb
+      format.xls do
+        response.headers['Content-Disposition'] = 'attachment; filename="Resumen Formularios.xls"'
+        render "resumen.xls.erb"
+      end
+    end
+  end
+
+  def resumen_formulario
+    @formulario = Formulario.find(params[:id])
+    @cursos = Curso.all_active
+
+    respond_to do |format|
+      format.xls do
+        response.headers['Content-Disposition'] = 'attachment; filename="' + @formulario.nombre + '.xls"'
+        render "resumen_formulario.xls.erb"
+      end
+    end
   end
 end

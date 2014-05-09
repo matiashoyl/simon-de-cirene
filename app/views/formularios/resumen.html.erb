@@ -9,6 +9,7 @@
 		<table class="table table-condensed table-striped sortable">
 			<thead>
 				<tr>
+					<th></th>
 					<th>Formulario</th>
 					<% @cursos.each do |curso| %>
 						<th class="centered"><%= link_to(curso.codigo + " - " + curso.nombre, new_mensaje_with_receiver_path(curso.relator_jefe_id), remote: true, :class => 'btn btn-link resumen-tooltip', :title => User.find(curso.relator_jefe_id).name) %></th>
@@ -18,41 +19,63 @@
 			<tbody>
 				<% @formularios.each do |formulario| %>
 				<tr>
+					<td><%= link_to '<i class="icon-download-alt"></i>'.html_safe, resumen_formulario_path(formulario, format: "xls"), :class => 'btn btn-mini btn-success' %></td>
 					<td><span data-placement="left" class="resumen-tooltip" title="<%= formulario.nombre %>"><%= formulario.codigo %></span></td>
 					<% @cursos.each do |curso| %>
 						<td class="centered">
 							<% if FormularioCurso.where(:formulario_id => formulario, :curso_id => curso).first.nil? %>
-								<button type="button"  class="btn btn-mini btn-warning disabled">N</button>
+								<button type="button" id="contestado-<%= formulario.id %>-<%= curso.id %>" class="btn btn-mini btn-warning disabled">N</button>
 							<% elsif formulario.contestado?(curso) %>
-								<button type="button"  class="btn btn-mini btn-success disabled">C</button>
+								<button type="button" id="contestado-<%= formulario.id %>-<%= curso.id %>" class="btn btn-mini btn-success disabled">C</button>
 							<% else %>
-								<% if formulario.duplicates(curso) > 1 %>
-									<% if formulario.pendientes(curso) == 1 %>
-										<button type="button"  class="btn btn-mini btn-danger disabled resumen-tooltip" title="Hay <%= formulario.pendientes(curso) %> pendiente">P</button>
-									<% else %>
-										<button type="button"  class="btn btn-mini btn-danger disabled resumen-tooltip" title="Hay <%= formulario.pendientes(curso) %> pendientes">P</button>
-									<% end %>
-								<% else %>
-									<button type="button"  class="btn btn-mini btn-danger disabled">P</button>
-								<% end %>
+								<button type="button" id="contestado-<%= formulario.id %>-<%= curso.id %>" class="btn btn-mini btn-danger disabled">P</button>
 							<% end %>
 						</td>
+						<script type="text/javascript">
+		                  $("#contestado-<%= formulario.id %>-<%= curso.id %>").click(function() {
+		                    if ($(this).text() == "P") {
+		                    	$(this).removeClass("btn-danger");
+                    			$(this).addClass("btn-success");
+                    			$(this).text("C");
+                    			$.ajax({
+			                      type: "POST",
+			                      url: "/curso/<%= curso.id %>/formulario/<%= formulario.id %>",
+			                      data: {estado: 'Contestado'}
+			                    });
+		                    }
+		                    else if ($(this).text() == "C") {
+		                    	$(this).removeClass("btn-success");
+                    			$(this).addClass("btn-danger");
+                    			$(this).text("P");
+                    			$.ajax({
+			                      type: "POST",
+			                      url: "/curso/<%= curso.id %>/formulario/<%= formulario.id %>",
+			                      data: {estado: 'Pendiente'}
+			                    });
+		                    }
+		                  });
+		                </script>
 					<% end %>
 				</tr>
 				<% end %>
 			</tbody>
 		</table>
-		<div>
-			<div class="span8"><%= render 'layouts/messages' %></div>
-			<div class="span4 well well-small">
-				<p><button type="button"  class="btn btn-mini btn-success disabled">C</button> Contestado</p>
-				<p><button type="button"  class="btn btn-mini btn-warning disabled">N</button> Formulario no asociado a este curso</p>
-				<p><button type="button"  class="btn btn-mini btn-danger disabled">P</button> Pendiente</p>
-			</div>
-			<%=link_to_function('<i class="icon-print"></i>'.html_safe, "javascript:print()", :class => 'btn btn-mini pull-right')%>
-		</div>
 	<% end %>
 	<br><br><br>
-	
 </div>
+<div class="span10">
+	<div>
+		<div class="span8"><%= render 'layouts/messages' %></div>
+		<div class="span4 well well-small">
+			<p><button type="button"  class="btn btn-mini btn-success disabled">C</button> Contestado</p>
+			<p><button type="button"  class="btn btn-mini btn-warning disabled">N</button> Formulario no asociado a este curso</p>
+			<p><button type="button"  class="btn btn-mini btn-danger disabled">P</button> Pendiente</p>
+		</div>
+	</div>
+	<div class="pull-right">
+		<%= link_to_function('<i class="icon-print"></i>'.html_safe, "javascript:print()", :class => 'btn btn-mini')%>
+		<%= link_to '<i class="icon-download-alt"></i>'.html_safe, resumen_formularios_path(format: "xls"), :class => 'btn btn-mini btn-success' %>
+	</div>
+</div>
+
 <div id="mensaje-modal" class="modal hide fade modal-mensaje"></div>

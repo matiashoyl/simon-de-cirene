@@ -58,7 +58,7 @@
 									url: "/alumnos/asistencia/<%= alumno.id %>",
 									data: {presente: 'false', sesion: '<%= sesion.id %>'}
 								});
-								$("#presente-<%= alumno.id %>-<%= sesion.id %>").removeClass("btn-danger");
+								$("#presente-<%= alumno.id %>-<%= sesion.id %>").removeClass("btn-success");
 							    $("#presente-<%= alumno.id %>-<%= sesion.id %>").addClass("btn-info");
 							    $(this).removeClass("btn-info");
 							    $(this).addClass("btn-danger");

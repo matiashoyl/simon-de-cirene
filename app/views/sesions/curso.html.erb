@@ -166,22 +166,50 @@
             <% @formularios.each do |formulario| %>
               <tr>
                 <td><%= formulario.codigo %></td>
-                <td><%= formulario.nombre %></td>
+                <td><%= link_to formulario.nombre, curso_formulario_path(:curso_id => @curso, :formulario_id => formulario) %></td>
                 <td>
-                  <% if formulario.contestado?(@curso) %>
-                    <button type="button" id="estado-<%= formulario.id %>-<%= @curso.id %>" class="btn btn-mini btn-info disabled">Contestado</button>
-                  <% else %>
-                    <% if formulario.duplicates(@curso) > 1 %>
-                      <% if formulario.pendientes(@curso) == 1 %>
-                        <%= link_to "Contestar", curso_formulario_path(:curso_id => @curso, :formulario_id => formulario), :class => 'btn btn-mini resumen-tooltip', :title => "Falta " + formulario.pendientes(@curso).to_s, 'data-placement' => "right" %>
-                      <% else %>
-                        <%= link_to "Contestar", curso_formulario_path(:curso_id => @curso, :formulario_id => formulario), :class => 'btn btn-mini resumen-tooltip', :title => "Faltan " + formulario.pendientes(@curso).to_s, 'data-placement' => "right" %>
-                      <% end %>
-                    <% else %>
-                      <%= link_to "Contestar", curso_formulario_path(:curso_id => @curso, :formulario_id => formulario), :class => 'btn btn-mini' %>
-                    <% end %>
-                  <% end %>
+                  <div class="btn-group" data-toggle="buttons-radio">
+                    <button type="button" id="contestado-<%= formulario.id %>" class="btn btn-mini btn-info">Contestado</button>
+                    <button type="button" id="no-contestado-<%= formulario.id %>" class="btn btn-mini btn-info">Pendiente</button>
+                  </div>
                 </td>
+                <% if formulario.contestado?(@curso) %>
+                  <script type="text/javascript">
+                    $("#contestado-<%= formulario.id %>").button('toggle');
+                    $("#contestado-<%= formulario.id %>").removeClass("btn-info");
+                    $("#contestado-<%= formulario.id %>").addClass("btn-success");
+                  </script>
+                <% else %>
+                  <script type="text/javascript">
+                    $("#no-contestado-<%= formulario.id %>").button('toggle');
+                    $("#no-contestado-<%= formulario.id %>").removeClass("btn-info");
+                    $("#no-contestado-<%= formulario.id %>").addClass("btn-danger");
+                  </script>
+                <% end %>
+                <script type="text/javascript">
+                  $("#contestado-<%= formulario.id %>").click(function() {
+                    $.ajax({
+                      type: "POST",
+                      url: "/curso/<%= @curso.id %>/formulario/<%= formulario.id %>",
+                      data: {estado: 'Contestado'}
+                    });
+                    $("#no-contestado-<%= formulario.id %>").removeClass("btn-danger");
+                    $("#no-contestado-<%= formulario.id %>").addClass("btn-info");
+                    $(this).removeClass("btn-info");
+                    $(this).addClass("btn-success");
+                  });
+                  $("#no-contestado-<%= formulario.id %>").click(function() {
+                    $.ajax({
+                      type: "POST",
+                      url: "/curso/<%= @curso.id %>/formulario/<%= formulario.id %>",
+                      data: {estado: 'Pendiente'}
+                    });
+                    $("#contestado-<%= formulario.id %>").removeClass("btn-success");
+                    $("#contestado-<%= formulario.id %>").addClass("btn-info");
+                    $(this).removeClass("btn-info");
+                    $(this).addClass("btn-danger");
+                  });
+                </script>
               </tr>
             <% end %>
           </tbody>

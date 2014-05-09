@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+  xmlns:o="urn:schemas-microsoft-com:office:office"
+  xmlns:x="urn:schemas-microsoft-com:office:excel"
+  xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
+  xmlns:html="http://www.w3.org/TR/REC-html40">
+  <Worksheet ss:Name="Sheet1">
+    <Table>
+      <Row>
+        <Cell>Formulario</Cell>
+        <% @cursos.each do |curso| %>
+          <Cell><Data ss:Type="String"><%= curso.codigo %></Data></Cell>
+        <% end %>
+      </Row>
+      <% @formularios.each do |formulario| %>
+        <Row>
+          <Cell><Data ss:Type="String"><%= formulario.codigo %></Data></Cell>
+          <% @cursos.each do |curso| %>
+            <% if FormularioCurso.where(:formulario_id => formulario, :curso_id => curso).first.nil? %>
+              <Cell><Data ss:Type="String">N</Data></Cell>
+            <% elsif formulario.contestado?(curso) %>
+              <Cell><Data ss:Type="String">C</Data></Cell>
+            <% else %>
+              <Cell><Data ss:Type="String">P</Data></Cell>
+            <% end %>
+          <% end %>
+        </Row>
+      <% end %>
+    </Table>
+  </Worksheet>
+</Workbook>
