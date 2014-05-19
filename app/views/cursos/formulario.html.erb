@@ -6,12 +6,3 @@
 	<%= raw @cuerpo %>
 	<br /><br /><br />
 </div>
-
-<script type="text/javascript">
-$( "#ss-form" ).submit(function() {
-	$.ajax({
-		type: "POST",
-		url: "/curso/<%= @curso.id %>/formulario/<%= @formulario.id %>"
-	});
-});
-</script>
