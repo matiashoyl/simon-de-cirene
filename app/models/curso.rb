@@ -92,4 +92,33 @@ class Curso < ActiveRecord::Base
 			return nil
 		end
 	end
+
+	def formularios_contestados
+		contador = 0
+		FormularioCurso.where(:curso_id => self).all.each do |formulario_curso|
+			unless formulario_curso.nil?
+				if formulario_curso.contestado?
+					contador = contador +  1
+				end
+			end
+		end
+		return contador
+	end
+
+	def formularios_pendientes
+		contador = 0
+		FormularioCurso.where(:curso_id => self).all.each do |formulario_curso|
+			unless formulario_curso.nil?
+				if formulario_curso.pendiente?
+					contador = contador +  1
+				end
+			end
+		end
+		return contador
+	end
+
+	def formularios_no_asignados
+		formularios = Formulario.all.count
+		return formularios - self.formularios_contestados - self.formularios_pendientes
+	end
 end

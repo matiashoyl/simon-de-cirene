@@ -6,22 +6,42 @@
 	<% elsif @cursos.empty? %>
 		<h4>Todavía no existen cursos</h4>
 	<% else %>
-		<table class="table table-condensed table-striped sortable">
+		<table class="table table-condensed table-striped">
 			<thead>
 				<tr>
+					<td></td>
+					<td></td>
+					<% @formularios.each do |formulario| %>
+						<td> 
+							<div class="btn-group" style="width: 100%;">
+								<button class="btn btn-mini btn-success disabled" style="width: 33%;"><%= formulario.contestados %></button>
+								<button class="btn btn-mini btn-danger disabled" style="width: 33%;"><%= formulario.pendientes %></button>
+								<button class="btn btn-mini btn-warning disabled" style="width: 33%;"><%= formulario.no_asignados %></button>
+							</div>
+						</td>
+					<% end %>
+				</tr>
+				<tr>
 					<th></th>
-					<th>Formulario</th>
-					<% @cursos.each do |curso| %>
-						<th class="centered"><%= link_to(curso.codigo + " - " + curso.nombre, new_mensaje_with_receiver_path(curso.relator_jefe_id), remote: true, :class => 'btn btn-link resumen-tooltip', :title => User.find(curso.relator_jefe_id).name) %></th>
+					<th>Curso</th>
+					<% @formularios.each do |formulario| %>
+						<th class="centered"><span data-placement="top" class="resumen-tooltip" title="<%= formulario.nombre %>"><%= link_to formulario.codigo, resumen_formulario_path(formulario, format: "xls"), :class => 'btn btn-mini btn-success' %></span></th>
 					<% end %>
 				</tr>
 			</thead>
 			<tbody>
-				<% @formularios.each do |formulario| %>
+				<% @cursos.each do |curso| %>
 				<tr>
-					<td><%= link_to '<i class="icon-download-alt"></i>'.html_safe, resumen_formulario_path(formulario, format: "xls"), :class => 'btn btn-mini btn-success' %></td>
-					<td><span data-placement="left" class="resumen-tooltip" title="<%= formulario.nombre %>"><%= formulario.codigo %></span></td>
-					<% @cursos.each do |curso| %>
+					<td>
+						<div class="btn-group">
+							<button class="btn btn-mini btn-success disabled"><%= curso.formularios_contestados %></button>
+							<button class="btn btn-mini btn-danger disabled"><%= curso.formularios_pendientes %></button>
+							<button class="btn btn-mini btn-warning disabled"><%= curso.formularios_no_asignados %></button>
+						</div>
+					</td>
+					<td><%= link_to(curso.codigo + " - " + curso.nombre, new_mensaje_with_receiver_path(curso.relator_jefe_id), remote: true, :class => 'btn btn-link resumen-tooltip', :title => User.find(curso.relator_jefe_id).name) %></td>
+					
+					<% @formularios.each do |formulario| %>
 						<td class="centered">
 							<% if FormularioCurso.where(:formulario_id => formulario, :curso_id => curso).first.nil? %>
 								<button type="button" id="contestado-<%= formulario.id %>-<%= curso.id %>" class="btn btn-mini btn-warning disabled">N</button>

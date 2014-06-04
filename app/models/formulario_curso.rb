@@ -9,6 +9,14 @@ class FormularioCurso < ActiveRecord::Base
   	end
   end
 
+  def pendiente?
+    if self.estado == "Pendiente"
+      return true
+    else
+      return false
+    end
+  end
+
   def pendientes
   	return (self.duplicates - self.contestados)
   end

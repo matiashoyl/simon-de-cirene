@@ -26,6 +26,35 @@ class Formulario < ActiveRecord::Base
     end
   end
 
+  def contestados
+    contador = 0
+      FormularioCurso.where(:formulario_id => self).all.each do |formulario_curso|
+        unless formulario_curso.nil?
+          if formulario_curso.contestado?
+            contador = contador +  1
+          end
+        end
+      end
+    return contador
+  end
+
+  def pendientes
+    contador = 0
+      FormularioCurso.where(:formulario_id => self).all.each do |formulario_curso|
+        unless formulario_curso.nil?
+          if formulario_curso.pendiente?
+            contador = contador +  1
+          end
+        end
+      end
+    return contador
+  end
+
+  def no_asignados
+    cursos = Curso.all.count
+    return cursos - self.contestados - self.pendientes
+  end
+
   def cursos_ids
     cursos = Array.new
     curso_ids = FormularioCurso.where(:formulario_id => self).select(:curso_id).group(:curso_id).collect{|p| p.curso_id}
