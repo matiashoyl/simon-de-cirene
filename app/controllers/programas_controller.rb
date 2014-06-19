@@ -104,6 +104,9 @@ class ProgramasController < ApplicationController
   # DELETE /programas/1.json
   def destroy
     @programa = Programa.find(params[:id])
+    @programa.cursos.each do |curso|
+      curso.destroy
+    end
     @programa.destroy
 
     respond_to do |format|
