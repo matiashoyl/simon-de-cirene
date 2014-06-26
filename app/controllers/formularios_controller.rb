@@ -109,7 +109,7 @@ class FormulariosController < ApplicationController
     if !params[:cursos_ids].nil?
       params[:cursos_ids].each do |curso_id|
         duplicates[curso_id] = @formulario.duplicates(curso_id)
-        contestados[curso_id] = @formulario.contestados(curso_id)
+        contestados[curso_id] = @formulario.contestados
       end
       Formulario.find(params[:formulario_id]).eliminar_cursos
       params[:cursos_ids].each do |curso_id|

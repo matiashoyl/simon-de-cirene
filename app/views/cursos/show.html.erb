@@ -37,6 +37,7 @@
             <th>Tema</th>
             <th>Relator</th>
             <th>Fecha</th>
+            <th>Dirección</th>
             <th class="centered-header">Asistentes</th>
             <th></th>
           </tr>
@@ -48,6 +49,7 @@
               <td><%= sesion.tema %></td>
               <td><%= User.find(sesion.user_id).name %></td>
               <td data-dateformat="DD-MMM-YYYY"><%= sesion.fecha.strftime("%d %b, %Y") %></td>
+              <td><%= sesion.direccion %></td>
               <td class="centered">
                 <% if sesion.porcentaje_asistentes == "NA" %>
                   <button type="button" id="porcentaje-<%= sesion.id %>" class="btn btn-mini btn-warning disabled">NA</button>
