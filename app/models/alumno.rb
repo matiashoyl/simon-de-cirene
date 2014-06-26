@@ -120,7 +120,9 @@ class Alumno < ActiveRecord::Base
 		cursos = Array.new
 		curso_ids = AlumnoCurso.where(:alumno_id => self).select(:curso_id).group(:curso_id).collect{|p| p.curso_id}
 		curso_ids.each do |curso_id|
-			cursos.push Curso.find(curso_id)
+			if Curso.exists?(curso_id)
+				cursos.push Curso.find(curso_id)
+			end
 		end
 		return cursos
 	end
