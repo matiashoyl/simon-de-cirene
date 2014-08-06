@@ -95,7 +95,7 @@
 				<td></td>
 				<td></td>
 				<% @sesiones.each do |sesion| %>
-				<% if (sesion.user_id == current_user.id) || (current_user.has_role? :admin) || (current_user.has_role? :coordinador)%>
+				<% if (sesion.user_id == current_user.id && sesion.fecha < DateTime.now) || (current_user.has_role? :admin) || (current_user.has_role? :coordinador)%>
 				<td>
 					<div class="btn-group">
 						<button type="button" id="todos-presentes-<%= sesion.id %>" class="btn btn-mini btn-inverse">P</button>
