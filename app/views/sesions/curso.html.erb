@@ -69,6 +69,7 @@
         <table class="table table-condensed table-striped sortable">
           <thead>
               <tr>
+                <th></th>
                 <th>Nombre</th>
                 <th>Apellido</th>
                 <th>Institución</th>
@@ -77,8 +78,9 @@
               </tr>
           </thead>
           <tbody>
-            <% @alumnos.each do |alumno| %>
+            <% @alumnos.each_with_index do |alumno, index| %>
               <tr>
+                <td><%= index + 1 %></td>
                 <td><%= alumno.nombre %></td>
                 <td><%= alumno.apellido_paterno %></td>
                 <td><%= alumno.nombre_institucion %></td>
@@ -166,7 +168,7 @@
             <% @formularios.each do |formulario| %>
               <tr>
                 <td><%= formulario.codigo %></td>
-                <td><%= link_to formulario.nombre, curso_formulario_path(:curso_id => @curso, :formulario_id => formulario) %></td>
+                <td><%= link_to formulario.nombre, formulario.url %></td>
                 <td>
                   <div class="btn-group" data-toggle="buttons-radio">
                     <button type="button" id="contestado-<%= formulario.id %>" class="btn btn-mini btn-info">Contestado</button>

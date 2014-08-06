@@ -42,7 +42,7 @@
 						      <td><%= formulario.nombre %></td>
 						      <td><%= @cursos_formularios_sin_contestar[index].nombre %></td>
 						      <td>
-				                <%= link_to "Contestar", curso_formulario_path(:curso_id => @cursos_formularios_sin_contestar[index], :formulario_id => formulario), :class => 'btn btn-mini' %>
+				                <%= link_to "Contestar", formulario.url, :class => 'btn btn-mini' %>
 				                
 						      </td>
 						    </tr>
