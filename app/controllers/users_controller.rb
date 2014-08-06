@@ -43,6 +43,8 @@ class UsersController < ApplicationController
 
   def delete
     @user = User.find(params[:id])
+    @relatores = (User.with_role :relator).all
+    @relatores.delete(@user)
   end
     
   def destroy
@@ -52,7 +54,10 @@ class UsersController < ApplicationController
       if user.has_role? :relator
         if user.cursos.any?
           cursos = user.cursos
-          UsuarioMensaje.where(:usuario_id => user).destroy_all
+          MensajeUsuario.where(:usuario_id => user).destroy_all
+          Sesion.where(:user_id => user).all.each do |sesion|
+            sesion.update_attributes(:user_id => params[:relator_id])
+          end
           user.destroy
           relatores = User.with_role :relator
           cursos.each do |curso|
@@ -60,7 +65,10 @@ class UsersController < ApplicationController
           end
           redirect_to users_path
         else
-          UsuarioMensaje.where(:usuario_id => user).destroy_all
+          MensajeUsuario.where(:usuario_id => user).destroy_all
+          Sesion.where(:user_id => user).all.each do |sesion|
+            sesion.update_attributes(:user_id => params[:relator_id])
+          end
           user.destroy
           redirect_to users_path
         end

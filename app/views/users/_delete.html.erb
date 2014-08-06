@@ -3,14 +3,33 @@
   	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
     <h2>Eliminar</h2>
   </div>
-	<div class="modal-body">
-		<p>Estás a punto de eliminar el usuario</p>
-		<br />
-		<h4 align="center"><%= @user.name %></h4>
-		<br />
-	</div>
-	<div class="modal-footer">
-		<%= link_to("Eliminar", user_path(@user), :method => :delete, :class => 'btn btn-inverse') %>
-		<a href="#" class="btn" data-dismiss="modal">Cancelar</a>
-	</div>
+  	<% if @user.sesion.any? %>
+  		<%= form_for @user, :method => :delete do %>
+			<div class="modal-body">
+				<p>El usuario que quieres eliminar tiene sesiones asociadas a él. Debes asignar esas sesiones a otro relator antes de eliminarlo:</p>
+				<br />
+				<%= select_tag :relator_id, options_for_select(@relatores.collect{ |p| [p.name, p.id] }), :label => false, :prompt => "Relator Jefe", :input_html => { :class => "input-block-level"}, :onChange=>"$('#button_delete').prop('disabled', false);" %>
+				<br />
+			</div>
+			<div class="modal-footer">
+				<%= submit_tag "Eliminar", :id => "button_delete", :class => 'btn btn-inverse' %>
+				<a href="#" class="btn" data-dismiss="modal">Cancelar</a>
+			</div>
+		<% end %>
+  	<% else %>
+		<div class="modal-body">
+			<p>Estás a punto de eliminar el usuario</p>
+			<br />
+			<h4 align="center"><%= @user.name %></h4>
+			<br />
+		</div>
+		<div class="modal-footer">
+			<%= link_to("Eliminar", user_path(@user), :method => :delete, :class => 'btn btn-inverse') %>
+			<a href="#" class="btn" data-dismiss="modal">Cancelar</a>
+		</div>
+	<% end %>
 </div>
+
+<script type="text/javascript">
+	$('#button_delete').prop('disabled', true);
+</script>
