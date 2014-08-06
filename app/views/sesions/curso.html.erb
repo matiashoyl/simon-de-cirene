@@ -35,6 +35,7 @@
     <table class="table table-condensed table-striped sortable">
       <thead>
           <tr>
+            <th></th>
             <th>Tema</th>
             <th>Horario</th>
             <th>Fecha</th>
@@ -43,8 +44,9 @@
           </tr>
       </thead>
       <tbody>
-        <% Sesion.where(:user_id => current_user).where(:curso_id => @curso.id).order(:fecha).each do |sesion| %>
+        <% Sesion.where(:user_id => current_user).where(:curso_id => @curso.id).order(:fecha).each_with_index do |sesion, index| %>
           <tr>
+            <td><%= index + 1 %></td>
             <td><%= sesion.tema %></td>
             <td><%= sesion.hora_inicio.strftime("%I:%M %p") %> a <%= sesion.hora_termino.strftime("%I:%M %p") %></td>
             <td><%= sesion.fecha.strftime("%d %b, %Y") %></td>
