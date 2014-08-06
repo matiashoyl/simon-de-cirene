@@ -101,6 +101,7 @@
         <table class="table table-condensed table-striped sortable">
           <thead>
               <tr>
+                <th></th>
                 <th>Rut</th>
                 <th>Nombre</th>
                 <th>Apellido</th>
@@ -111,8 +112,9 @@
               </tr>
           </thead>
           <tbody>
-            <% @alumnos.each do |alumno| %>
+            <% @alumnos.each_with_index do |alumno, index| %>
               <tr>
+                <td><%= index + 1 %></td>
                 <td><%= alumno.rut %></td>
                 <td><%= alumno.nombre %></td>
                 <td><%= alumno.apellido_paterno %></td>

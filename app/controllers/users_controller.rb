@@ -52,6 +52,7 @@ class UsersController < ApplicationController
       if user.has_role? :relator
         if user.cursos.any?
           cursos = user.cursos
+          UsuarioMensaje.where(:usuario_id => user).destroy_all
           user.destroy
           relatores = User.with_role :relator
           cursos.each do |curso|
@@ -59,9 +60,11 @@ class UsersController < ApplicationController
           end
           redirect_to users_path
         else
+          UsuarioMensaje.where(:usuario_id => user).destroy_all
           user.destroy
           redirect_to users_path
         end
+        
       else
         user.destroy
         redirect_to users_path
