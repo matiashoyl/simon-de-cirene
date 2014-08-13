@@ -83,6 +83,8 @@
             <thead>
                 <tr>
                   <th></th>
+                  <th>Nombre</th>
+                  <th>Apellido</th>
                   <% @sesiones.each_with_index do |sesion, index| %>
                     <th class="centered-header"><%= index + 1 %></th>
                   <% end %>
@@ -90,9 +92,11 @@
                 </tr>
             </thead>
             <tbody>
-              <% @alumnos.each do |alumno| %>
+              <% @alumnos.each_with_index do |alumno, index| %>
                 <tr>
-                  <td><%= alumno.nombre %> <%= alumno.apellido_paterno %></td>
+                  <td><%= index + 1 %></td>
+                  <td><%= alumno.nombre %></td>
+                  <td><%= alumno.apellido_paterno %></td>
                   <% @sesiones.each do |sesion| %>
                     <td class="centered">
                       <% if alumno_sesion = AlumnoSesion.where(:alumno_id => alumno, :sesion_id => sesion).first %>
