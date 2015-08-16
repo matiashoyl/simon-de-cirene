@@ -79,7 +79,8 @@
       <h3>Alumnos</h3>
       <% if @alumnos.any? %>
           <div class="row">
-            <div class="span5">
+            <%# ------------------------------ Primer Tercio Tabla ------------------------ %> 
+            <div class="span4">
               <div style="overflow: auto">
                 <table class="table table-condensed table-striped sortable tabla-alumnos">
                   <thead>
@@ -102,33 +103,52 @@
                 </table>
               </div>
             </div>
-            <div class="span7" style="margin-left: 0px;">
+            <%# ------------------------------ Segundo Tercio Tabla ------------------------ %> 
+            <div class="span5" style="margin-left: 0px;">
+              <div style="overflow: auto">
+                <table class="table table-condensed table-striped sortable tabla-alumnos">
+                  <thead>
+                      <tr>
+                        <% @sesiones.each_with_index do |sesion, index| %>
+                          <th class="centered-header"><%= index + 1 %></th>
+                        <% end %>
+                      </tr>
+                  </thead>
+                  <tbody>
+                    <% @alumnos.each_with_index do |alumno, index| %>
+                      <tr>
+                        <% @sesiones.each do |sesion| %>
+                          <td class="centered">
+                            <% if alumno_sesion = AlumnoSesion.where(:alumno_id => alumno, :sesion_id => sesion).first %>
+                              <% if alumno_sesion.presente %>
+                                <button type="button" id="asistencia-<%= alumno.id %>-<%= sesion.id %>" class="btn btn-mini btn-info disabled">P</button>
+                              <% else %>
+                                <button type="button" id="asistencia-<%= alumno.id %>-<%= sesion.id %>" class="btn btn-mini btn-danger disabled">A</button>
+                              <% end %>
+                            <% else %>
+                              <button type="button" id="asistencia-<%= alumno.id %>-<%= sesion.id %>" class="btn btn-mini btn-warning disabled">N</button>
+                            <% end %>
+                          </td>
+                        <% end %>
+                      </tr>
+                    <% end %>
+
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <%# ------------------------------ Tercer Tercio Tabla ------------------------ %> 
+            <div class="span3" style="margin-left: 0px;">
               <div style="overflow: auto">
               <table class="table table-condensed table-striped sortable tabla-alumnos">
                 <thead>
                     <tr>
-                      <% @sesiones.each_with_index do |sesion, index| %>
-                        <th class="centered-header"><%= index + 1 %></th>
-                      <% end %>
                       <th class="centered-header">Asistencia</th>
                     </tr>
                 </thead>
                 <tbody>
                   <% @alumnos.each_with_index do |alumno, index| %>
                     <tr>
-                      <% @sesiones.each do |sesion| %>
-                        <td class="centered">
-                          <% if alumno_sesion = AlumnoSesion.where(:alumno_id => alumno, :sesion_id => sesion).first %>
-                            <% if alumno_sesion.presente %>
-                              <button type="button" id="asistencia-<%= alumno.id %>-<%= sesion.id %>" class="btn btn-mini btn-info disabled">P</button>
-                            <% else %>
-                              <button type="button" id="asistencia-<%= alumno.id %>-<%= sesion.id %>" class="btn btn-mini btn-danger disabled">A</button>
-                            <% end %>
-                          <% else %>
-                            <button type="button" id="asistencia-<%= alumno.id %>-<%= sesion.id %>" class="btn btn-mini btn-warning disabled">N</button>
-                          <% end %>
-                        </td>
-                      <% end %>
                       <td class="centered">
                         <% if alumno.porcentaje_asistencia(@curso) == "NA" %>
                           <button type="button" id="porcentaje-<%= alumno.id %>" class="btn btn-mini btn-info disabled">N</button>
