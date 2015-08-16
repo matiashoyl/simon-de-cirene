@@ -205,3 +205,8 @@ table .span24 {
   width: 1884px;
   margin-left: 0;
 }
+
+.tabla-alumnos tr { 
+  height: 33px; 
+  vertical-align: middle;
+}

@@ -78,59 +78,78 @@
       <%# ------------------------------ Alumnos ------------------------------ %> 
       <h3>Alumnos</h3>
       <% if @alumnos.any? %>
-        <div style="overflow: auto">
-          <table class="table table-condensed table-striped sortable">
-            <thead>
-                <tr>
-                  <th></th>
-                  <th>Nombre</th>
-                  <th>Apellido</th>
-                  <% @sesiones.each_with_index do |sesion, index| %>
-                    <th class="centered-header"><%= index + 1 %></th>
+          <div class="row">
+            <div class="span3">
+              <table class="table table-condensed table-striped sortable tabla-alumnos">
+                <thead>
+                    <tr>
+                      <th></th>
+                      <th>Nombre</th>
+                      <th>Apellido</th>
+                    </tr>
+                </thead>
+                <tbody>
+                  <% @alumnos.each_with_index do |alumno, index| %>
+                    <tr>
+                      <td><%= index + 1 %></td>
+                      <td><%= alumno.nombre %></td>
+                      <td><%= alumno.apellido_paterno %></td>
+                    </tr>
                   <% end %>
-                  <th class="centered-header">Asistencia</th>
-                </tr>
-            </thead>
-            <tbody>
-              <% @alumnos.each_with_index do |alumno, index| %>
-                <tr>
-                  <td><%= index + 1 %></td>
-                  <td><%= alumno.nombre %></td>
-                  <td><%= alumno.apellido_paterno %></td>
-                  <% @sesiones.each do |sesion| %>
-                    <td class="centered">
-                      <% if alumno_sesion = AlumnoSesion.where(:alumno_id => alumno, :sesion_id => sesion).first %>
-                        <% if alumno_sesion.presente %>
-                          <button type="button" id="asistencia-<%= alumno.id %>-<%= sesion.id %>" class="btn btn-mini btn-info disabled">P</button>
-                        <% else %>
-                          <button type="button" id="asistencia-<%= alumno.id %>-<%= sesion.id %>" class="btn btn-mini btn-danger disabled">A</button>
-                        <% end %>
-                      <% else %>
-                        <button type="button" id="asistencia-<%= alumno.id %>-<%= sesion.id %>" class="btn btn-mini btn-warning disabled">N</button>
-                      <% end %>
-                    </td>
-                  <% end %>
-                  <td class="centered">
-                    <% if alumno.porcentaje_asistencia(@curso) == "NA" %>
-                      <button type="button" id="porcentaje-<%= alumno.id %>" class="btn btn-mini btn-info disabled">N</button>
-                    <% elsif alumno.porcentaje_asistencia(@curso) < 75 %>
-                      <button type="button" id="porcentaje-<%= alumno.id %>" class="btn btn-mini btn-danger disabled"><%= alumno.porcentaje_asistencia(@curso) %>%</button>
-                    <% else %>
-                      <button type="button" id="porcentaje-<%= alumno.id %>" class="btn btn-mini btn-info disabled"><%= alumno.porcentaje_asistencia(@curso) %>%</button>
-                    <% end %>  
-                  </td>
-                  <td>
-                    <div class="btn-group">
-                      <%= link_to '<i class="icon-search"></i>'.html_safe, alumno_details_path(alumno), :class => 'btn btn-mini' %>
-                      <%= link_to('<i class="icon-pencil"></i>'.html_safe, edit_alumno_path(:id => alumno.id, :curso_id => @curso.id), remote: true, class: "btn btn-mini") %>
-                      <%= link_to('<i class="icon-trash icon-white"></i>'.html_safe, delete_alumno_path(:id => alumno.id, :curso_id => @curso.id), remote: true, class: "btn btn-mini btn-inverse") %>
-                    </div>
-                  </td>
-                </tr>
-              <% end %>
 
-            </tbody>
-          </table>
+                </tbody>
+              </table>
+            </div>
+            <div class="span9" style="margin-left: 0px;">
+              <div style="overflow: auto">
+              <table class="table table-condensed table-striped sortable tabla-alumnos">
+                <thead>
+                    <tr>
+                      <% @sesiones.each_with_index do |sesion, index| %>
+                        <th class="centered-header"><%= index + 1 %></th>
+                      <% end %>
+                      <th class="centered-header">Asistencia</th>
+                    </tr>
+                </thead>
+                <tbody>
+                  <% @alumnos.each_with_index do |alumno, index| %>
+                    <tr>
+                      <% @sesiones.each do |sesion| %>
+                        <td class="centered">
+                          <% if alumno_sesion = AlumnoSesion.where(:alumno_id => alumno, :sesion_id => sesion).first %>
+                            <% if alumno_sesion.presente %>
+                              <button type="button" id="asistencia-<%= alumno.id %>-<%= sesion.id %>" class="btn btn-mini btn-info disabled">P</button>
+                            <% else %>
+                              <button type="button" id="asistencia-<%= alumno.id %>-<%= sesion.id %>" class="btn btn-mini btn-danger disabled">A</button>
+                            <% end %>
+                          <% else %>
+                            <button type="button" id="asistencia-<%= alumno.id %>-<%= sesion.id %>" class="btn btn-mini btn-warning disabled">N</button>
+                          <% end %>
+                        </td>
+                      <% end %>
+                      <td class="centered">
+                        <% if alumno.porcentaje_asistencia(@curso) == "NA" %>
+                          <button type="button" id="porcentaje-<%= alumno.id %>" class="btn btn-mini btn-info disabled">N</button>
+                        <% elsif alumno.porcentaje_asistencia(@curso) < 75 %>
+                          <button type="button" id="porcentaje-<%= alumno.id %>" class="btn btn-mini btn-danger disabled"><%= alumno.porcentaje_asistencia(@curso) %>%</button>
+                        <% else %>
+                          <button type="button" id="porcentaje-<%= alumno.id %>" class="btn btn-mini btn-info disabled"><%= alumno.porcentaje_asistencia(@curso) %>%</button>
+                        <% end %>  
+                      </td>
+                      <td>
+                        <div class="btn-group">
+                          <%= link_to '<i class="icon-search"></i>'.html_safe, alumno_details_path(alumno), :class => 'btn btn-mini' %>
+                          <%= link_to('<i class="icon-pencil"></i>'.html_safe, edit_alumno_path(:id => alumno.id, :curso_id => @curso.id), remote: true, class: "btn btn-mini") %>
+                          <%= link_to('<i class="icon-trash icon-white"></i>'.html_safe, delete_alumno_path(:id => alumno.id, :curso_id => @curso.id), remote: true, class: "btn btn-mini btn-inverse") %>
+                        </div>
+                      </td>
+                    </tr>
+                  <% end %>
+
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
         <%= link_to('Agregar Alumno', new_alumno_path(@curso), remote: true, class: "btn btn-mini btn-info") %>
         <a data-toggle="modal" href="#excel-alumno" class="btn btn-mini btn-success" type="button">Subir Excel</a>
