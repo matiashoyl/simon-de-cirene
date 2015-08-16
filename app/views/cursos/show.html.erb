@@ -79,28 +79,30 @@
       <h3>Alumnos</h3>
       <% if @alumnos.any? %>
           <div class="row">
-            <div class="span3">
-              <table class="table table-condensed table-striped sortable tabla-alumnos">
-                <thead>
-                    <tr>
-                      <th></th>
-                      <th>Nombre</th>
-                      <th>Apellido</th>
-                    </tr>
-                </thead>
-                <tbody>
-                  <% @alumnos.each_with_index do |alumno, index| %>
-                    <tr>
-                      <td><%= index + 1 %></td>
-                      <td><%= alumno.nombre %></td>
-                      <td><%= alumno.apellido_paterno %></td>
-                    </tr>
-                  <% end %>
+            <div class="span5">
+              <div style="overflow: auto">
+                <table class="table table-condensed table-striped sortable tabla-alumnos">
+                  <thead>
+                      <tr>
+                        <th></th>
+                        <th>Nombre</th>
+                        <th>Apellido</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                    <% @alumnos.each_with_index do |alumno, index| %>
+                      <tr>
+                        <td><%= index + 1 %></td>
+                        <td><%= alumno.nombre %></td>
+                        <td><%= alumno.apellido_paterno %></td>
+                      </tr>
+                    <% end %>
 
-                </tbody>
-              </table>
+                  </tbody>
+                </table>
+              </div>
             </div>
-            <div class="span9" style="margin-left: 0px;">
+            <div class="span7" style="margin-left: 0px;">
               <div style="overflow: auto">
               <table class="table table-condensed table-striped sortable tabla-alumnos">
                 <thead>
