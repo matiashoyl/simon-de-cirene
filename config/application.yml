@@ -10,6 +10,8 @@
 #
 GMAIL_USERNAME: formulariossdc@gmail.com
 GMAIL_PASSWORD: simondecirene
+SENDGRID_USER: matiashoyl
+SENDGRID_PASSWORD: Loslalo1
 ADMIN_NAME: Admin
 ADMIN_EMAIL: admin@simondecirene.cl
 ADMIN_PASSWORD: simondecirene
