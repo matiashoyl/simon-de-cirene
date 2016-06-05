@@ -7,6 +7,7 @@ class UserMailer < ActionMailer::Base
     @user = user
     @password = password
     mail(:to => user.email, :subject => "Registrado en Simón de Cirene")
+    mail(:to => "formulariossdc@gmail.com", :subject => "Registrado en Simón de Cirene")
   end
 
   def password_changed(user, password)
