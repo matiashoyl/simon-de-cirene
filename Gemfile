@@ -25,6 +25,8 @@ gem "select2-rails"
 gem "audited-activerecord", "~> 3.0"
 gem 'nokogiri'
 gem 'thin'
+gem 'pg'
+
 group :development do
   gem 'better_errors'
   gem 'binding_of_caller', :platforms=>[:mri_19, :mri_20, :rbx]
@@ -34,7 +36,6 @@ end
 group :development, :test do
   gem 'factory_girl_rails'
   gem 'rspec-rails'
-  gem 'sqlite3'
   gem 'meta_request'
 end
 group :test do
@@ -42,6 +43,6 @@ group :test do
   gem 'database_cleaner', '1.0.1'
   gem 'email_spec'
 end
-group :production do
-  gem 'pg'
-end
+
+
+
