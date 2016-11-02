@@ -30,7 +30,13 @@
                   $.ajax({
                     type: "POST",
                     url: "/programas/<%= programa.id %>/set_active",
-                    data: {active: data.value}
+                    data: {active: data.value},
+                    success: function( data ) {
+                      alert("Todo bien");
+                     },
+                     error: function(xhr, status, error) {
+                        alert("No funcionó");
+                     },
                   });
 
                 });
