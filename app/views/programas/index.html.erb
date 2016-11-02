@@ -28,7 +28,12 @@
               <script type="text/javascript">
                 $('#switch-programa-<%=programa.id%>').on('switchChange.bootstrapSwitch', function (e, data) {
                   
-                  alert("buena wacho");
+                  $.ajax({
+                    type: "POST",
+                    url: "/programas/<%= programa.id %>/set_active",
+                    data: {active: data.value} 
+                  });
+                  
                 });
               </script>
             </td>
