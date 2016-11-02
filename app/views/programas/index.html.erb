@@ -26,7 +26,7 @@
             <td>
               <input id="switch-programa-<%=programa.id%>" class="switch-mini switch" type="checkbox" <% if programa.active %> checked <% end %> data-on="info" data-off="danger" data-on-label="Activo" data-off-label="Inactivo">
               <script type="text/javascript">
-                $('#switch-programa-<%=programa.id%>').on('switch-change', function (e, data) {
+                $('#switch-programa-<%=programa.id%>').on('switchChange.bootstrapSwitch', function (e, data) {
                   
                   alert("buena wacho");
                 });
